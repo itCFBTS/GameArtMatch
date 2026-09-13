@@ -28,10 +28,21 @@ jobs:
       - name: Publish binaries
         run: ./publish.sh
 
-      - name: Create release and upload binaries
+      # Different archive format per platform, not just for convention: .zip is
+      # what Windows users expect (native double-click support), but zip doesn't
+      # reliably preserve the Unix executable bit — a browser download would leave
+      # the Linux binary needing a manual `chmod +x`. tar.gz does round-trip that
+      # bit correctly, which is the actual reason it's the Linux-side choice here.
+      - name: Package release archives
+        run: |
+          version="${{ github.ref_name }}"
+          tar -czf "GameArtMatch-${version}-linux-x64.tar.gz" -C publish/linux-x64 GameArtMatch
+          (cd publish/win-x64 && zip -j "$GITHUB_WORKSPACE/GameArtMatch-${version}-win-x64.zip" GameArtMatch.exe)
+
+      - name: Create release and upload archives
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            publish/linux-x64/GameArtMatch
-            publish/win-x64/GameArtMatch.exe
+            GameArtMatch-${{ github.ref_name }}-linux-x64.tar.gz
+            GameArtMatch-${{ github.ref_name }}-win-x64.zip
           generate_release_notes: true
