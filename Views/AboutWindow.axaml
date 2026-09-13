@@ -1,0 +1,24 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:GameArtMatch.ViewModels"
+        mc:Ignorable="d" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        x:Class="GameArtMatch.Views.AboutWindow"
+        x:DataType="vm:AboutViewModel"
+        Title="About GameArtMatch"
+        Width="380" Height="260"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner">
+
+    <Design.DataContext>
+        <vm:AboutViewModel />
+    </Design.DataContext>
+
+    <StackPanel Margin="20" Spacing="12" VerticalAlignment="Center">
+        <TextBlock Text="{Binding VersionText}" HorizontalAlignment="Center" FontWeight="Bold" />
+        <TextBlock Text="A cross-platform ROM/art filename matcher for Windows and Linux."
+                   TextWrapping="Wrap" TextAlignment="Center" />
+        <TextBlock Text="Heavily inspired by FatMatch (v0.3, 2009) by Fatone85, originally built for the GameEx frontend community. This project reimagines that tool's fuzzy-matching workflow as a single cross-platform app."
+                   TextWrapping="Wrap" TextAlignment="Center" FontSize="12" Foreground="Gray" />
+        <Button Content="Close" HorizontalAlignment="Center" Click="OnCloseClick" />
+    </StackPanel>
+</Window>

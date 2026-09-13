@@ -1,0 +1,120 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:model="using:GameArtMatch.Models"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="520"
+        x:Class="GameArtMatch.Views.OptionsWindow"
+        x:DataType="model:MatchSettings"
+        Title="Options"
+        Width="640" Height="520"
+        MinWidth="520" MinHeight="380"
+        WindowStartupLocation="CenterOwner">
+
+    <Design.DataContext>
+        <model:MatchSettings />
+    </Design.DataContext>
+
+    <Window.Styles>
+        <!-- Obsidian-style settings nav: a plain vertical list of category names on the
+             left rather than the default compact top-tab look — wider, more vertical
+             padding per item, left-aligned text. -->
+        <Style Selector="TabControl">
+            <Setter Property="Padding" Value="0" />
+        </Style>
+        <Style Selector="TabControl[TabStripPlacement=Left] /template/ WrapPanel#PART_ItemsPresenterWrapPanel">
+            <Setter Property="MinWidth" Value="150" />
+        </Style>
+        <Style Selector="TabControl[TabStripPlacement=Left] TabItem">
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="Padding" Value="12,8" />
+            <Setter Property="Margin" Value="0,2" />
+        </Style>
+    </Window.Styles>
+
+    <DockPanel Margin="16">
+        <Button DockPanel.Dock="Bottom" Content="Close" Click="OnCloseClick"
+                HorizontalAlignment="Right" Margin="0,12,0,0" />
+
+        <TabControl TabStripPlacement="Left">
+            <TabItem Header="Path">
+                <ScrollViewer Margin="16,0,0,0">
+                    <StackPanel Spacing="10">
+                        <TextBlock Text="Root folders are remembered between launches and used as the starting point when picking a ROMs/Images folder from the main window."
+                                   TextWrapping="Wrap" Foreground="Gray" FontSize="12" />
+
+                        <TextBlock Text="ROMs root (e.g. the top of your games library)" />
+                        <DockPanel>
+                            <Button DockPanel.Dock="Right" Content="..." Click="OnBrowseRomsRootClick" />
+                            <TextBox Text="{Binding RomsRootPath}" PlaceholderText="Roms root folder" />
+                        </DockPanel>
+
+                        <TextBlock Text="Images root (e.g. the art pack's Covers folder)" />
+                        <DockPanel>
+                            <Button DockPanel.Dock="Right" Content="..." Click="OnBrowseImagesRootClick" />
+                            <TextBox Text="{Binding ImagesRootPath}" PlaceholderText="Images root folder" />
+                        </DockPanel>
+
+                        <DockPanel LastChildFill="False" Margin="0,4,0,0">
+                            <TextBlock Text="ROMs extension(s):" VerticalAlignment="Center" Margin="0,0,8,0" />
+                            <TextBox Text="{Binding RomsExtensions}" Width="100" Margin="0,0,16,0" />
+                            <CheckBox Content="Include subfolders" IsChecked="{Binding RomsIncludeSubfolders}" VerticalAlignment="Center" />
+                        </DockPanel>
+
+                        <DockPanel LastChildFill="False">
+                            <TextBlock Text="Images extension(s):" VerticalAlignment="Center" Margin="0,0,8,0" />
+                            <TextBox Text="{Binding ImagesExtensions}" Width="100" Margin="0,0,16,0" />
+                            <CheckBox Content="Include subfolders" IsChecked="{Binding ImagesIncludeSubfolders}" VerticalAlignment="Center" />
+                        </DockPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Matching">
+                <ScrollViewer Margin="16,0,0,0">
+                    <StackPanel Spacing="10">
+                        <CheckBox Content="Disregard ROM tags, e.g. (USA)/(Rev 1)" IsChecked="{Binding DisregardRomTags}" />
+                        <CheckBox Content="Match standalone letters" IsChecked="{Binding MatchStandaloneLetters}" />
+                        <CheckBox Content="Try numbers as Roman numerals" IsChecked="{Binding TryRomanNumerals}" />
+                        <CheckBox Content="Match case" IsChecked="{Binding MatchCase}" />
+                        <CheckBox Content="Disregard common words" IsChecked="{Binding DisregardCommonWords}" />
+                        <TextBox Text="{Binding CommonWords}" IsEnabled="{Binding DisregardCommonWords}" />
+
+                        <DockPanel LastChildFill="False" Margin="0,8,0,0">
+                            <TextBlock Text="Accuracy — matches greater than:" VerticalAlignment="Center" Margin="0,0,8,0" />
+                            <NumericUpDown Value="{Binding AccuracyThreshold}" Minimum="0" Maximum="100" Width="120" />
+                            <TextBlock Text="%" VerticalAlignment="Center" Margin="4,0,0,0" />
+                        </DockPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Renaming">
+                <ScrollViewer Margin="16,0,0,0">
+                    <StackPanel Spacing="10">
+                        <CheckBox Content="Delete original files" IsChecked="{Binding DeleteOriginalFiles}" />
+                        <CheckBox Content="Export backup script" IsChecked="{Binding ExportBackupScript}" />
+                        <CheckBox Content="Export copy script" IsChecked="{Binding ExportCopyScript}" />
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Console Mode">
+                <ScrollViewer Margin="16,0,0,0">
+                    <StackPanel Spacing="10">
+                        <CheckBox Content="ROM root is MiSTer games folder using Console Mode media folders"
+                                  IsChecked="{Binding IsConsoleMode}" />
+                        <TextBlock Text="Each system folder has its own 'media' subfolder for box art (e.g. MegaCD/media/Sonic CD (USA).png)."
+                                   TextWrapping="Wrap" Foreground="Gray" FontSize="12" Margin="24,-6,0,0" />
+
+                        <CheckBox Content="Skip ROMs that already have matching art"
+                                  IsChecked="{Binding SkipExistingArt}"
+                                  IsEnabled="{Binding IsConsoleMode}" Margin="0,4,0,0" />
+                        <TextBlock Text="Checks &lt;RomsPath&gt;/media/&lt;name&gt;.png/.jpg/.jpeg before matching."
+                                   TextWrapping="Wrap" Foreground="Gray" FontSize="12" Margin="24,-6,0,0" />
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</Window>

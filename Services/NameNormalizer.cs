@@ -1,0 +1,191 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Text.RegularExpressions;
+using GameArtMatch.Models;
+
+namespace GameArtMatch.Services;
+
+/// <summary>
+/// Turns a ROM/image basename into a set of comparable tokens. Rules are ported from
+/// FatMatch.exe's PrepareWord/MatchTheseTwo (reverse-engineered from its compiled IL),
+/// but restructured around real token-set membership instead of FatMatch's ad-hoc
+/// substring/word-boundary string scanning — see MatchingService's class doc for what
+/// that changes. See MatchSettings for what each rule/checkbox controls.
+/// </summary>
+public static partial class NameNormalizer
+{
+    // Same fixed punctuation pass FatMatch always applied, tag-stripping aside.
+    // Apostrophe is deleted outright (not spaced) — "Yoshi's" -> "Yoshis", matching
+    // the original so "Yoshi's Island" and "Yoshis Island" tokenize identically.
+    private static readonly (char Find, char? Replace)[] PunctuationRules =
+    [
+        ('-', ' '), (',', ' '), ('\'', null), ('"', ' '), ('!', ' '), ('.', ' '),
+        ('`', ' '), (';', ' '), ('+', ' '), ('~', ' '), ('^', ' '), ('%', ' '),
+        ('$', ' '), ('#', ' '), ('@', ' '), ('&', ' '),
+    ];
+
+    public static HashSet<string> ToTokens(string rawName, MatchSettings settings)
+    {
+        var comparer = settings.MatchCase ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
+        var name = rawName;
+
+        if (settings.DisregardRomTags)
+        {
+            name = RemoveBetween(name, '(', ')');
+            name = RemoveBetween(name, '[', ']');
+        }
+
+        name = ApplyPunctuationRules(name);
+
+        var commonWords = settings.DisregardCommonWords
+            ? new HashSet<string>(
+                settings.CommonWords.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries),
+                StringComparer.OrdinalIgnoreCase)
+            : null;
+
+        var tokens = new HashSet<string>(comparer);
+        foreach (var raw in name.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+        {
+            // Common-word removal happens per-token (not as a substring replace on the
+            // whole string like the original) so "The" only drops the word "The" —
+            // never mangles it out of the middle of "Theme" or "Gathering".
+            if (commonWords is not null && commonWords.Contains(raw))
+                continue;
+
+            // A 1-letter token can never contribute a match unless the setting allows
+            // it (FatMatch's "Match Standalone Letters") — dropped entirely, same as
+            // the original: it stays in neither side's set, so it can't cause a false
+            // miss either. 2+ letter tokens are always kept and compared as whole
+            // tokens (see SimilarityScorer) — this also fixes a real bug in the
+            // original, where 3+ letter tokens were compared via raw substring
+            // containment (so "Man" would match inside "Mankind").
+            if (raw.Length == 1 && !settings.MatchStandaloneLetters)
+                continue;
+
+            var token = settings.MatchCase ? raw : raw.ToLowerInvariant();
+            tokens.Add(token);
+
+            if (settings.TryRomanNumerals)
+                AddRomanNumeralVariant(tokens, token);
+
+            AddYearAbbreviationVariant(tokens, token);
+        }
+
+        return tokens;
+    }
+
+    /// <summary>Strips everything between (and including) paired open/close markers —
+    /// e.g. "(USA)", "(Rev 1)", "[!]". Handles multiple/nested groups in one linear
+    /// pass (the original counted occurrences and repeated a Remove call per pair).</summary>
+    private static string RemoveBetween(string s, char open, char close)
+    {
+        var sb = new StringBuilder(s.Length);
+        var depth = 0;
+        foreach (var c in s)
+        {
+            if (c == open) { depth++; continue; }
+            if (c == close) { if (depth > 0) depth--; continue; }
+            if (depth == 0) sb.Append(c);
+        }
+        return sb.ToString();
+    }
+
+    private static string ApplyPunctuationRules(string s)
+    {
+        var sb = new StringBuilder(s.Length);
+        foreach (var c in s)
+        {
+            var rule = Array.Find(PunctuationRules, r => r.Find == c);
+            if (rule.Find == c)
+            {
+                if (rule.Replace is char replacement)
+                    sb.Append(replacement);
+                // else: delete (apostrophe) — append nothing
+            }
+            else
+            {
+                sb.Append(c);
+            }
+        }
+        return sb.ToString();
+    }
+
+    /// <summary>Numeric token ("2") also gets its Roman form ("ii") added, and vice
+    /// versa, so "Final Fantasy II" and "Final Fantasy 2" tokenize to overlapping
+    /// sets regardless of which style either name used. Single Roman letters (I, V, X,
+    /// L, C, D, M) are deliberately never auto-converted — too ambiguous with real
+    /// standalone letters like "Mega Man X" — consistent with the 1-letter-token rule.</summary>
+    private static void AddRomanNumeralVariant(HashSet<string> tokens, string token)
+    {
+        if (int.TryParse(token, out var n) && n is > 0 and <= 3999)
+        {
+            tokens.Add(ArabicToRoman(n).ToLowerInvariant());
+        }
+        else if (token.Length >= 2 && !KnownRomanLookalikes.Contains(token) && RomanNumeralPattern().IsMatch(token))
+        {
+            var arabic = RomanToArabic(token);
+            if (arabic is > 0)
+                tokens.Add(arabic.Value.ToString());
+        }
+    }
+
+    /// <summary>Real words that are also syntactically valid Roman numerals — most
+    /// notably "CD" (400), which collides constantly with Sega CD/Mega CD/Turbo CD/
+    /// Neo-Geo CD in ROM titles. Not exhaustive (e.g. "MIX" -> 1009 has the same
+    /// problem); this covers the collision that's actually common in this domain.
+    /// Extend if another false positive turns up in practice.</summary>
+    private static readonly HashSet<string> KnownRomanLookalikes =
+        new(StringComparer.OrdinalIgnoreCase) { "CD", "DC" };
+
+    /// <summary>A 4-digit year in 1900-2009 also gets its 2-digit short form added
+    /// ("1994" -> "94"), so "NBA Jam '94" and "NBA Jam 1994" cross-match. Always on,
+    /// matching the original (it wasn't behind any checkbox there either).</summary>
+    private static void AddYearAbbreviationVariant(HashSet<string> tokens, string token)
+    {
+        if (token.Length == 4 && int.TryParse(token, out var year) && year is > 1899 and < 2010)
+            tokens.Add(token[2..]);
+    }
+
+    private static readonly (int Value, string Numeral)[] RomanValues =
+    [
+        (1000, "M"), (900, "CM"), (500, "D"), (400, "CD"),
+        (100, "C"), (90, "XC"), (50, "L"), (40, "XL"),
+        (10, "X"), (9, "IX"), (5, "V"), (4, "IV"), (1, "I"),
+    ];
+
+    private static string ArabicToRoman(int value)
+    {
+        var sb = new StringBuilder();
+        foreach (var (v, numeral) in RomanValues)
+        {
+            while (value >= v)
+            {
+                sb.Append(numeral);
+                value -= v;
+            }
+        }
+        return sb.ToString();
+    }
+
+    private static readonly Dictionary<char, int> RomanDigitValues = new()
+    {
+        ['I'] = 1, ['V'] = 5, ['X'] = 10, ['L'] = 50, ['C'] = 100, ['D'] = 500, ['M'] = 1000,
+    };
+
+    private static int? RomanToArabic(string token)
+    {
+        var s = token.ToUpperInvariant();
+        var total = 0;
+        for (var i = 0; i < s.Length; i++)
+        {
+            var cur = RomanDigitValues[s[i]];
+            var next = i + 1 < s.Length ? RomanDigitValues[s[i + 1]] : 0;
+            total += cur < next ? -cur : cur;
+        }
+        return total;
+    }
+
+    [GeneratedRegex("^M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$", RegexOptions.IgnoreCase)]
+    private static partial Regex RomanNumeralPattern();
+}

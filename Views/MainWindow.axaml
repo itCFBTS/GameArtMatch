@@ -1,0 +1,61 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:GameArtMatch.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="820" d:DesignHeight="680"
+        x:Class="GameArtMatch.Views.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="GameArtMatch"
+        Width="820" Height="680">
+
+    <Design.DataContext>
+        <vm:MainViewModel />
+    </Design.DataContext>
+
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Options..." Command="{Binding OpenOptionsCommand}" />
+                <Separator />
+                <MenuItem Header="_Exit" Click="OnExitClick" />
+            </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem Header="_About" Command="{Binding ShowAboutCommand}" />
+            </MenuItem>
+        </Menu>
+
+        <!-- Grid overlay: the compact ROMs/Images pickers float in the same top row as the
+             TabControl's own tab strip, right-aligned into the strip's unused space, rather
+             than taking a whole tab of their own (root folders, extensions, and "include
+             subfolders" now live in File > Options — see OptionsWindow). -->
+        <Grid>
+            <TabControl>
+                <TabItem Header="Match">
+                    <ContentControl Content="{Binding MatchVm}" />
+                </TabItem>
+
+                <TabItem Header="Report">
+                    <ContentControl Content="{Binding ReportVm}" />
+                </TabItem>
+            </TabControl>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top"
+                        Spacing="16" Margin="0,10,16,0">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <TextBlock Text="ROMs:" VerticalAlignment="Center" />
+                    <TextBox Text="{Binding Settings.RomsPathDisplayName}" IsReadOnly="True"
+                             Width="110" VerticalAlignment="Center" />
+                    <Button Content="..." Click="OnBrowseRomsClick" Padding="8,2" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <TextBlock Text="Images:" VerticalAlignment="Center" />
+                    <TextBox Text="{Binding Settings.ImagesPathDisplayName}" IsReadOnly="True"
+                             Width="110" VerticalAlignment="Center" />
+                    <Button Content="..." Click="OnBrowseImagesClick" Padding="8,2" />
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </DockPanel>
+</Window>

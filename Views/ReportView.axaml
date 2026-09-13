@@ -1,0 +1,41 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GameArtMatch.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
+             x:Class="GameArtMatch.Views.ReportView"
+             x:DataType="vm:ReportViewModel">
+
+    <Design.DataContext>
+        <vm:ReportViewModel />
+    </Design.DataContext>
+
+    <TabControl Margin="12">
+        <TabItem Header="Missing Images">
+            <DockPanel>
+                <Button DockPanel.Dock="Top" Content="List Missing" Command="{Binding ListMissingCommand}" Margin="0,0,0,8" HorizontalAlignment="Left" />
+                <ListBox ItemsSource="{Binding Missing}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding RomFileName}" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </TabItem>
+
+        <TabItem Header="Matched Images">
+            <DockPanel>
+                <Button DockPanel.Dock="Top" Content="List Matched" Command="{Binding ListMatchedCommand}" Margin="0,0,0,8" HorizontalAlignment="Left" />
+                <ListBox ItemsSource="{Binding Matched}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding RomFileName}" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </TabItem>
+    </TabControl>
+</UserControl>

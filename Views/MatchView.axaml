@@ -1,0 +1,114 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GameArtMatch.ViewModels"
+             xmlns:model="using:GameArtMatch.Models"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
+             x:Class="GameArtMatch.Views.MatchView"
+             x:DataType="vm:MatchViewModel">
+
+    <Design.DataContext>
+        <vm:MatchViewModel />
+    </Design.DataContext>
+
+    <UserControl.Styles>
+        <!-- Lets each RomMatchGroup's own IsExpanded drive its tree node's expansion.
+             Leaf (MatchCandidate) rows don't have that property — the binding just
+             quietly does nothing for them, which is fine, they have no children anyway.
+             Filtering itself is NOT done via IsVisible here — filtered-out rows are
+             removed from the bound Groups/VisibleCandidates collections entirely (see
+             MatchViewModel.ApplyFilters), because merely hiding TreeViewItems left them
+             logically present and made arrow-key navigation get stuck on a collapsed,
+             zero-size row instead of skipping over it. -->
+        <Style Selector="TreeViewItem" x:CompileBindings="False">
+            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+        </Style>
+        <Style Selector="TextBlock.duplicate">
+            <Setter Property="Foreground" Value="Orange" />
+        </Style>
+    </UserControl.Styles>
+
+    <DockPanel Margin="12">
+        <TextBlock DockPanel.Dock="Top" Text="{Binding StatusText}" Margin="0,0,0,8" />
+
+        <ProgressBar DockPanel.Dock="Top" Minimum="0" Maximum="100" Value="{Binding ProgressPercent}"
+                     IsVisible="{Binding IsMatchRunning}" Height="6" Margin="0,0,0,8" />
+
+        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8" LastChildFill="False">
+            <Button Content="Start" Command="{Binding StartCommand}" Margin="0,0,8,0" />
+            <Button Content="Cancel" Command="{Binding CancelCommand}" Margin="0,0,8,0" />
+            <Button Content="Select Best Matched" Command="{Binding SelectBestMatchedCommand}" Margin="0,0,8,0" />
+            <Button Content="Select Single Matches" Command="{Binding SelectSingleMatchesCommand}" Margin="0,0,8,0" />
+            <Button Content="Expand All" Command="{Binding ExpandAllCommand}" Margin="0,0,8,0" />
+            <Button Content="Collapse All" Command="{Binding CollapseAllCommand}" Margin="0,0,8,0" />
+            <Button Content="Rename Selected" Command="{Binding RenameFilesCommand}" />
+        </DockPanel>
+
+        <!-- Post-scan display filter — hides/shows already-computed rows, doesn't re-run
+             matching. File type only ever restricts ROMs; region restricts both ROMs and
+             images, except English Translated, which always shows every image. -->
+        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8" LastChildFill="False">
+            <TextBlock Text="File type:" VerticalAlignment="Center" Margin="0,0,6,0" />
+            <ComboBox ItemsSource="{Binding AvailableFileTypes}" SelectedItem="{Binding SelectedFileType}"
+                      MinWidth="90" Margin="0,0,16,0" />
+            <TextBlock Text="Region:" VerticalAlignment="Center" Margin="0,0,6,0" />
+            <ComboBox ItemsSource="{Binding RegionOptions}" SelectedItem="{Binding SelectedRegion}" MinWidth="140" Margin="0,0,16,0" />
+            <CheckBox Content="100% match only" IsChecked="{Binding ShowOnly100PercentMatches}" VerticalAlignment="Center" />
+        </DockPanel>
+
+        <Grid ColumnDefinitions="2*,8,1*">
+            <DockPanel Grid.Column="0">
+                <Grid DockPanel.Dock="Top" ColumnDefinitions="46,70,*" Margin="4,0,4,4">
+                    <TextBlock Grid.Column="1" Text="Score %" FontWeight="Bold" />
+                    <TextBlock Grid.Column="2" Text="ROM / Image" FontWeight="Bold" />
+                </Grid>
+
+                <!-- Two-level tree: each ROM is a node, its candidate images nest underneath —
+                     mirrors FatMatch's own results tree instead of a flat per-pair list. -->
+                <TreeView Name="ResultsTree" ItemsSource="{Binding Groups}" SelectedItem="{Binding SelectedTreeItem}">
+                    <TreeView.ItemTemplate>
+                        <TreeDataTemplate DataType="vm:RomMatchGroup" ItemsSource="{Binding VisibleCandidates}">
+                            <Grid ColumnDefinitions="28,70,*">
+                                <CheckBox Grid.Column="0" IsThreeState="True" IsChecked="{Binding IsAllSelected}" />
+                                <TextBlock Grid.Column="1" Text="{Binding VisibleCandidates.Count}" Foreground="Gray" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="2" Text="{Binding RomFileName}" FontWeight="Bold" VerticalAlignment="Center" />
+                            </Grid>
+                        </TreeDataTemplate>
+                    </TreeView.ItemTemplate>
+                    <TreeView.DataTemplates>
+                        <DataTemplate x:DataType="model:MatchCandidate">
+                            <Grid ColumnDefinitions="28,70,*">
+                                <CheckBox Grid.Column="0" IsChecked="{Binding IsSelected}" />
+                                <TextBlock Grid.Column="1" Text="{Binding ScorePercent}" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="2" Text="{Binding ImageFileName}" VerticalAlignment="Center"
+                                           Classes.duplicate="{Binding IsDuplicate}" />
+                            </Grid>
+                        </DataTemplate>
+                    </TreeView.DataTemplates>
+                </TreeView>
+            </DockPanel>
+
+            <!-- Preview pane: shows the art for whichever candidate row is highlighted above.
+                 Independent of each row's own checkbox (that's the rename-batch selection). -->
+            <Border Grid.Column="2" BorderBrush="Gray" BorderThickness="1" CornerRadius="4" Padding="8">
+                <Grid RowDefinitions="*,36">
+                    <Panel Grid.Row="0">
+                        <TextBlock Text="Select an image row to preview its art"
+                                   IsVisible="{Binding SelectedCandidate, Converter={x:Static ObjectConverters.IsNull}}"
+                                   Foreground="Gray" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding PreviewError}"
+                                   IsVisible="{Binding PreviewError, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                   Foreground="OrangeRed" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <Image Source="{Binding PreviewImage}"
+                               IsVisible="{Binding PreviewImage, Converter={x:Static ObjectConverters.IsNotNull}}"
+                               Stretch="Uniform" />
+                    </Panel>
+                    <TextBlock Grid.Row="1" Text="{Binding SelectedCandidate.ImageFileName}"
+                               TextTrimming="CharacterEllipsis" TextWrapping="Wrap" FontSize="12" Foreground="Gray"
+                               Margin="0,8,0,0" VerticalAlignment="Top" />
+                </Grid>
+            </Border>
+        </Grid>
+    </DockPanel>
+</UserControl>
