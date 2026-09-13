@@ -1,0 +1,37 @@
+name: Release
+
+# Triggered by pushing a version tag, e.g.:
+#   git tag v0.1.0 && git push --tags
+on:
+  push:
+    tags:
+      - "v*"
+
+# Needed so the auto-provided GITHUB_TOKEN (ephemeral, scoped to just this repo,
+# expires when the job finishes) can create the release and attach files to it —
+# no personal access token or manual credential setup required for this part.
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      # Cross-compiles both RIDs from one Linux runner — no Windows/macOS runner
+      # needed, same as building both locally from this machine.
+      - name: Publish binaries
+        run: ./publish.sh
+
+      - name: Create release and upload binaries
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            publish/linux-x64/GameArtMatch
+            publish/win-x64/GameArtMatch.exe
+          generate_release_notes: true
