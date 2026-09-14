@@ -74,7 +74,6 @@ Settings are stored as plain JSON in the OS's per-user app-data folder:
 |---|---|
 | Linux | `~/.config/GameArtMatch/settings.json` |
 | Windows | `%AppData%\GameArtMatch\settings.json` |
-| macOS | `~/Library/Application Support/GameArtMatch/settings.json` |
 
 What's in it:
 
