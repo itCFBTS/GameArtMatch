@@ -259,11 +259,25 @@ public sealed class MatchingService : IMatchingService
     }
 
     /// <summary>SHA-256 of the file's raw bytes — a strict "same file or not" check (see
-    /// MatchCandidate.ContentHash), deliberately not a perceptual/similarity hash.</summary>
+    /// MatchCandidate.ContentHash), deliberately not a perceptual/similarity hash.
+    /// Broad catch deliberately, same reasoning as MatchViewModel.LoadPreviewAsync: the
+    /// image was enumerated at the start of the scan, but content-hashing only happens
+    /// later, for whichever candidates actually pass the threshold — a real gap in which
+    /// an external move/delete/permissions change can race the scan. Rather than crash
+    /// the whole scan over one file, fall back to a sentinel that's unique per path (so
+    /// it never falsely clusters as "identical" with anything else) and never collides
+    /// with a real hash (SHA-256 hex is always exactly 64 lowercase hex chars).</summary>
     private static string ComputeContentHash(string path)
     {
-        using var stream = File.OpenRead(path);
-        return Convert.ToHexString(SHA256.HashData(stream));
+        try
+        {
+            using var stream = File.OpenRead(path);
+            return Convert.ToHexString(SHA256.HashData(stream));
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            return $"unreadable:{path}";
+        }
     }
 
     private static readonly string[] MisterArtExtensions = [".png", ".jpg", ".jpeg"];
