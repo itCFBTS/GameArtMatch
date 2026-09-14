@@ -66,6 +66,20 @@
                             <TextBox Text="{Binding ImagesExtensions}" Width="100" Margin="0,0,16,0" />
                             <CheckBox Content="Include subfolders" IsChecked="{Binding ImagesIncludeSubfolders}" VerticalAlignment="Center" />
                         </DockPanel>
+
+                        <Separator Margin="0,8" />
+
+                        <TextBlock Text="Console Mode" FontWeight="Bold" />
+                        <CheckBox Content="ROM root is MiSTer games folder using Console Mode media folders"
+                                  IsChecked="{Binding IsConsoleMode}" />
+                        <TextBlock Text="Each system folder has its own 'media' subfolder for box art (e.g. MegaCD/media/Sonic CD (USA).png)."
+                                   TextWrapping="Wrap" Foreground="Gray" FontSize="12" Margin="24,-6,0,0" />
+
+                        <CheckBox Content="Skip ROMs that already have matching art"
+                                  IsChecked="{Binding SkipExistingArt}"
+                                  IsEnabled="{Binding IsConsoleMode}" Margin="0,4,0,0" />
+                        <TextBlock Text="Checks &lt;RomsPath&gt;/media/&lt;name&gt;.png/.jpg/.jpeg before matching."
+                                   TextWrapping="Wrap" Foreground="Gray" FontSize="12" Margin="24,-6,0,0" />
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
@@ -99,22 +113,6 @@
                 </ScrollViewer>
             </TabItem>
 
-            <TabItem Header="Console Mode">
-                <ScrollViewer Margin="16,0,0,0">
-                    <StackPanel Spacing="10">
-                        <CheckBox Content="ROM root is MiSTer games folder using Console Mode media folders"
-                                  IsChecked="{Binding IsConsoleMode}" />
-                        <TextBlock Text="Each system folder has its own 'media' subfolder for box art (e.g. MegaCD/media/Sonic CD (USA).png)."
-                                   TextWrapping="Wrap" Foreground="Gray" FontSize="12" Margin="24,-6,0,0" />
-
-                        <CheckBox Content="Skip ROMs that already have matching art"
-                                  IsChecked="{Binding SkipExistingArt}"
-                                  IsEnabled="{Binding IsConsoleMode}" Margin="0,4,0,0" />
-                        <TextBlock Text="Checks &lt;RomsPath&gt;/media/&lt;name&gt;.png/.jpg/.jpeg before matching."
-                                   TextWrapping="Wrap" Foreground="Gray" FontSize="12" Margin="24,-6,0,0" />
-                    </StackPanel>
-                </ScrollViewer>
-            </TabItem>
         </TabControl>
     </DockPanel>
 </Window>
