@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -23,6 +25,23 @@ public partial class MatchView : UserControl
 
     private void OnResultsTreeKeyDown(object? sender, KeyEventArgs e)
     {
+        if (e.Key == Key.A && e.KeyModifiers == KeyModifiers.Control)
+        {
+            // Scoped to vm.Groups — the already-filtered collection — not every ROM the
+            // last scan found, so Ctrl+A only ever selects what's actually visible under
+            // the current File type/Region/Exact-score filters. Leaf (MatchCandidate) rows
+            // are deliberately left out of "select all"; this is specifically for the
+            // batch-ignore workflow, which only ever acts on ROM rows.
+            if (DataContext is MatchViewModel vm)
+            {
+                ResultsTree.SelectedItems.Clear();
+                foreach (var group in vm.Groups)
+                    ResultsTree.SelectedItems.Add(group);
+            }
+            e.Handled = true;
+            return;
+        }
+
         if (e.Key != Key.Space)
             return;
 
@@ -43,7 +62,15 @@ public partial class MatchView : UserControl
 
     private void OnIgnoreRomClick(object? sender, RoutedEventArgs e)
     {
-        if (sender is MenuItem { DataContext: RomMatchGroup group } && DataContext is MatchViewModel vm)
-            vm.IgnoreRomCommand.Execute(group);
+        if (sender is not MenuItem { DataContext: RomMatchGroup rightClicked } || DataContext is not MatchViewModel vm)
+            return;
+
+        // If the right-clicked row is part of the current multi-selection, act on the
+        // whole selection; otherwise (right-clicking a row that isn't selected) act on
+        // just that one row, matching ordinary desktop context-menu conventions.
+        var selected = ResultsTree.SelectedItems.OfType<RomMatchGroup>().ToList();
+        var targets = selected.Contains(rightClicked) ? selected : new List<RomMatchGroup> { rightClicked };
+
+        vm.IgnoreRomsCommand.Execute(targets);
     }
 }

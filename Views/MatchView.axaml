@@ -122,7 +122,13 @@
 
                 <!-- Two-level tree: each ROM is a node, its candidate images nest underneath —
                      mirrors FatMatch's own results tree instead of a flat per-pair list. -->
-                <TreeView Name="ResultsTree" ItemsSource="{Binding Groups}" SelectedItem="{Binding SelectedTreeItem}">
+                <!-- SelectionMode="Multiple" enables ctrl/shift-click natively; Ctrl+A is
+                     custom (see OnResultsTreeKeyDown) since TreeView has no built-in
+                     "select all" keybinding, and is scoped to Groups (the already-filtered
+                     collection) rather than every ROM the last scan found, so it only ever
+                     selects what's actually visible under the current filters. -->
+                <TreeView Name="ResultsTree" ItemsSource="{Binding Groups}" SelectedItem="{Binding SelectedTreeItem}"
+                          SelectionMode="Multiple">
                     <TreeView.ItemTemplate>
                         <TreeDataTemplate DataType="vm:RomMatchGroup" ItemsSource="{Binding VisibleCandidates}">
                             <Grid ColumnDefinitions="28,70,*">
@@ -133,9 +139,11 @@
                                          MatchViewModel's command from here would need an
                                          #ElementName/NameScope lookup across the flyout's popup
                                          boundary, which is less certain to resolve. Code-behind
-                                         just reads sender's DataContext instead. -->
+                                         just reads sender's DataContext instead, and also decides
+                                         there whether to act on just this row or the whole current
+                                         multi-selection — see OnIgnoreRomClick. -->
                                     <MenuFlyout>
-                                        <MenuItem Header="Ignore This ROM" Click="OnIgnoreRomClick" />
+                                        <MenuItem Header="Ignore Selected ROM(s)" Click="OnIgnoreRomClick" />
                                     </MenuFlyout>
                                 </Grid.ContextFlyout>
                                 <CheckBox Grid.Column="0" IsThreeState="True" IsChecked="{Binding IsAllSelected}" />

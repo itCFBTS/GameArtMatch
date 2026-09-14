@@ -421,20 +421,35 @@ public partial class MatchViewModel : ViewModelBase
                 candidate.IsSelected = false;
     }
 
-    /// <summary>Right-click action on a ROM row — adds it to the persisted ignore list
-    /// (see MatchSettings.IgnoredRomPaths) and removes it from the current results
-    /// immediately, so it disappears from this scan too, not just future ones.
-    /// Single-ROM scope only, matching the TreeView's current single-selection model.</summary>
+    /// <summary>Right-click action on a ROM row (or a multi-selection of them, via the
+    /// TreeView's ctrl/shift/Ctrl+A multi-select — see MatchView.axaml.cs) — adds each to
+    /// the persisted ignore list (see MatchSettings.IgnoredRomPaths) and removes it from
+    /// the current results immediately, so it disappears from this scan too, not just
+    /// future ones. Batched into one ApplyFilters/RomIgnored regardless of count, rather
+    /// than once per ROM, since Ctrl+A could realistically select a large number at once.</summary>
     [RelayCommand]
-    private void IgnoreRom(RomMatchGroup? group)
+    private void IgnoreRoms(IReadOnlyList<RomMatchGroup>? groups)
     {
-        if (group is null || string.IsNullOrEmpty(group.RomFullPath))
+        if (groups is null || groups.Count == 0)
             return;
 
-        _settings.IgnoredRomPaths.Add(group.RomFullPath);
-        _allGroups.Remove(group);
-        ApplyFilters();
+        var anyIgnored = false;
+        foreach (var group in groups)
+        {
+            if (string.IsNullOrEmpty(group.RomFullPath))
+                continue;
 
+            if (_settings.IgnoredRomPaths.Add(group.RomFullPath))
+            {
+                _allGroups.Remove(group);
+                anyIgnored = true;
+            }
+        }
+
+        if (!anyIgnored)
+            return;
+
+        ApplyFilters();
         RomIgnored?.Invoke(this, EventArgs.Empty);
     }
 
