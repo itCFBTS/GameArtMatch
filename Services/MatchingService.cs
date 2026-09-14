@@ -120,7 +120,7 @@ public sealed class MatchingService : IMatchingService
                 cancellationToken.ThrowIfCancellationRequested();
                 var romTokens = NameNormalizer.ToTokens(Path.GetFileNameWithoutExtension(rom) ?? "", settings);
                 if (FindCandidates(Path.GetFileName(rom), romTokens, null, index, entries, unusedTokenCache, null, settings.AccuracyThreshold, settings).Count == 0)
-                    missing.Add(new ReportEntry(Path.GetFileName(rom), null));
+                    missing.Add(new ReportEntry(Path.GetFileName(rom), rom, null));
             }
 
             return (IReadOnlyList<ReportEntry>)missing;
@@ -147,7 +147,7 @@ public sealed class MatchingService : IMatchingService
                 if (candidates.Count > 0)
                 {
                     var best = candidates.OrderByDescending(c => c.DisplayScore).First();
-                    matched.Add(new ReportEntry(Path.GetFileName(rom), Path.GetFileName(best.Entry.Path)));
+                    matched.Add(new ReportEntry(Path.GetFileName(rom), rom, Path.GetFileName(best.Entry.Path)));
                 }
             }
 

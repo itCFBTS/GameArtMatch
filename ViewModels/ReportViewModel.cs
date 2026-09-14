@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -32,6 +33,12 @@ public partial class ReportViewModel : ViewModelBase
     public bool HasIgnoredEntries => Ignored.Count > 0;
 
     [ObservableProperty] public partial bool IsBusy { get; set; }
+
+    /// <summary>Raised whenever IgnoreRomsAsync/UnignoreRomsAsync change
+    /// MatchSettings.IgnoredRomPaths — MainViewModel listens to persist, the same
+    /// pattern as MatchViewModel.RomIgnored (this ViewModel never touches
+    /// ISettingsStore directly).</summary>
+    public event EventHandler? IgnoredRomPathsChanged;
 
     public ReportViewModel(MatchSettings settings, IMatchingService matchingService)
     {
@@ -77,6 +84,49 @@ public partial class ReportViewModel : ViewModelBase
             IsBusy = false;
             OnPropertyChanged(nameof(HasIgnoredEntries));
         }
+    }
+
+    /// <summary>Right-click action from the Missing/Matched tabs — adds each entry's ROM
+    /// to the persisted ignore list, then re-runs GenerateAllAsync so it disappears from
+    /// Missing/Matched and appears under Ignored immediately, the same "recompute
+    /// everything rather than hand-patch three collections" approach GenerateAllAsync
+    /// already uses, just triggered by a mutation instead of a manual Refresh.</summary>
+    [RelayCommand]
+    private async Task IgnoreRomsAsync(IReadOnlyList<ReportEntry>? entries)
+    {
+        if (entries is null || entries.Count == 0)
+            return;
+
+        var anyChanged = false;
+        foreach (var entry in entries)
+            if (_settings.IgnoredRomPaths.Add(entry.RomFullPath))
+                anyChanged = true;
+
+        if (!anyChanged)
+            return;
+
+        IgnoredRomPathsChanged?.Invoke(this, EventArgs.Empty);
+        await GenerateAllAsync(CancellationToken.None);
+    }
+
+    /// <summary>Right-click action from the Ignored tab — removes each path from the
+    /// ignore list (making it eligible for matching again) and refreshes all three tabs.</summary>
+    [RelayCommand]
+    private async Task UnignoreRomsAsync(IReadOnlyList<string>? paths)
+    {
+        if (paths is null || paths.Count == 0)
+            return;
+
+        var anyChanged = false;
+        foreach (var path in paths)
+            if (_settings.IgnoredRomPaths.Remove(path))
+                anyChanged = true;
+
+        if (!anyChanged)
+            return;
+
+        IgnoredRomPathsChanged?.Invoke(this, EventArgs.Empty);
+        await GenerateAllAsync(CancellationToken.None);
     }
 
     /// <summary>Plain-text rendering of everything currently loaded, for the Export

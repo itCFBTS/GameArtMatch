@@ -18,26 +18,47 @@
             <Button Content="Export..." Click="OnExportClick" />
         </DockPanel>
 
+        <!-- All three lists: SelectionMode="Multiple" enables ctrl/shift-click natively;
+             Ctrl+A (custom, see ReportView.axaml.cs — ListBox has no built-in "select
+             all") selects everything currently in that list, which is already whatever
+             passed the underlying scan/ignore-list filtering, not a separate concern to
+             re-filter here. Right-clicking a row that's part of the current selection
+             acts on the whole selection; right-clicking one that isn't acts on just that
+             row — same convention as the Match tab's ROM context menu. -->
         <TabControl>
             <TabItem Header="Missing Images">
-                <ListBox ItemsSource="{Binding Missing}">
+                <ListBox Name="MissingList" ItemsSource="{Binding Missing}" SelectionMode="Multiple">
                     <ListBox.ItemTemplate>
                         <DataTemplate x:DataType="model:ReportEntry">
-                            <TextBlock Text="{Binding RomFileName}" />
+                            <Grid>
+                                <Grid.ContextFlyout>
+                                    <MenuFlyout>
+                                        <MenuItem Header="Ignore Selected ROM(s)" Click="OnIgnoreFromMissingClick" />
+                                    </MenuFlyout>
+                                </Grid.ContextFlyout>
+                                <TextBlock Text="{Binding RomFileName}" />
+                            </Grid>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
             </TabItem>
 
             <TabItem Header="Matched Images">
-                <ListBox ItemsSource="{Binding Matched}">
+                <ListBox Name="MatchedList" ItemsSource="{Binding Matched}" SelectionMode="Multiple">
                     <ListBox.ItemTemplate>
                         <DataTemplate x:DataType="model:ReportEntry">
-                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                <TextBlock Text="{Binding RomFileName}" FontWeight="Bold" />
-                                <TextBlock Text="→" Foreground="{DynamicResource ForegroundMutedBrush}" />
-                                <TextBlock Text="{Binding MatchedImageFileName}" />
-                            </StackPanel>
+                            <Grid>
+                                <Grid.ContextFlyout>
+                                    <MenuFlyout>
+                                        <MenuItem Header="Ignore Selected ROM(s)" Click="OnIgnoreFromMatchedClick" />
+                                    </MenuFlyout>
+                                </Grid.ContextFlyout>
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <TextBlock Text="{Binding RomFileName}" FontWeight="Bold" />
+                                    <TextBlock Text="→" Foreground="{DynamicResource ForegroundMutedBrush}" />
+                                    <TextBlock Text="{Binding MatchedImageFileName}" />
+                                </StackPanel>
+                            </Grid>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
@@ -45,10 +66,17 @@
 
             <!-- Only shown "if any ignored files exist" — not an always-present tab. -->
             <TabItem Header="Ignored" IsVisible="{Binding HasIgnoredEntries}">
-                <ListBox ItemsSource="{Binding Ignored}" x:CompileBindings="False">
+                <ListBox Name="IgnoredList" ItemsSource="{Binding Ignored}" SelectionMode="Multiple" x:CompileBindings="False">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding}" />
+                            <Grid>
+                                <Grid.ContextFlyout>
+                                    <MenuFlyout>
+                                        <MenuItem Header="Un-ignore Selected ROM(s)" Click="OnUnignoreClick" />
+                                    </MenuFlyout>
+                                </Grid.ContextFlyout>
+                                <TextBlock Text="{Binding}" />
+                            </Grid>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>

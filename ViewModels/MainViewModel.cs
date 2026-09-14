@@ -87,6 +87,7 @@ public partial class MainViewModel : ViewModelBase
 
         MatchVm.ScanStarting += OnMatchScanStarting;
         MatchVm.RomIgnored += OnRomIgnored;
+        ReportVm.IgnoredRomPathsChanged += OnRomIgnored;
     }
 
     private void OnSettingsPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -115,6 +116,9 @@ public partial class MainViewModel : ViewModelBase
         Persist();
     }
 
+    // Shared by MatchVm.RomIgnored and ReportVm.IgnoredRomPathsChanged — both just mean
+    // "the ignore list changed, please persist it," regardless of whether a ROM was added
+    // or removed, or from which window it happened.
     private void OnRomIgnored(object? sender, System.EventArgs e) => Persist();
 
     private void Persist()
