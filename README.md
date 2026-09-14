@@ -64,7 +64,39 @@ Output lands in `publish/linux-x64/` and `publish/win-x64/`.
    ignored across a scan.
 
 Folder selections and the last-used ROMs↔Images pairing are remembered
-between launches.
+between launches — see below for exactly what's stored and where.
+
+## Persisted settings
+
+Settings are stored as plain JSON in the OS's per-user app-data folder:
+
+| OS | Path |
+|---|---|
+| Linux | `~/.config/GameArtMatch/settings.json` |
+| Windows | `%AppData%\GameArtMatch\settings.json` |
+| macOS | `~/Library/Application Support/GameArtMatch/settings.json` |
+
+What's in it:
+
+- **Root folders** (`RomsRootPath`, `ImagesRootPath`) — the starting point
+  offered when browsing for a system's ROMs/Images folder from **File >
+  Options**.
+- **Console Mode** (`IsConsoleMode`) and **include subfolders**
+  (`RomsIncludeSubfolders`, `ImagesIncludeSubfolders`).
+- **Last-used folders** (`LastRomsPath`, `LastImagesPath`) — the exact ROMs
+  and Images folders selected last session, restored as-is on next launch.
+- **ROMs↔Images pairing** (`RomsToImagesPathMap`) — whichever Images folder
+  was paired with a given ROMs folder the last time a scan was actually
+  started there, so picking that ROMs folder again (in this session or a
+  future one) auto-fills its matching Images folder.
+- **Ignored ROMs** (`IgnoredRomPaths`) — full paths of ROMs added to the
+  ignore list, global across every folder ever scanned, not just the
+  currently-selected one.
+
+Matching and renaming options (accuracy threshold, tag/case handling,
+backup/copy scripts, etc.) are *not* persisted — they reset to their defaults
+each launch. Deleting the settings file resets everything above to defaults;
+it's recreated automatically the next time something needs to be saved.
 
 ## License
 
