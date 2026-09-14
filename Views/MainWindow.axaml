@@ -38,13 +38,13 @@
                 <StackPanel Orientation="Horizontal" Spacing="{DynamicResource SpaceXs}">
                     <TextBlock Text="ROMs:" VerticalAlignment="Center" />
                     <TextBox Text="{Binding Settings.RomsPathDisplayName}" IsReadOnly="True"
-                             Width="110" VerticalAlignment="Center" />
+                             Width="165" VerticalAlignment="Center" />
                     <Button Content="..." Click="OnBrowseRomsClick" Padding="8,2" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Spacing="{DynamicResource SpaceXs}">
                     <TextBlock Text="Images:" VerticalAlignment="Center" />
                     <TextBox Text="{Binding Settings.ImagesPathDisplayName}" IsReadOnly="True"
-                             Width="110" VerticalAlignment="Center" />
+                             Width="165" VerticalAlignment="Center" />
                     <Button Content="..." Click="OnBrowseImagesClick" Padding="8,2" />
                 </StackPanel>
             </StackPanel>
