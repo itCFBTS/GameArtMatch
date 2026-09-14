@@ -87,10 +87,18 @@ public partial class ReportView : UserControl
 
         var documents = await topLevel.StorageProvider.TryGetWellKnownFolderAsync(WellKnownFolder.Documents);
 
+        // e.g. "GameArtMatch-Report-SMS-20260914-003845" when a ROMs folder is selected,
+        // or just "GameArtMatch-Report-20260914-003845" when none is. Sanitized since the
+        // folder name comes from the filesystem (valid there) but this app ships for both
+        // Windows and Linux, and a folder name can contain characters (":", etc.) that are
+        // fine in a Linux path but invalid in a Windows filename.
+        var romsSegment = vm.RomsFolderName is { } name ? $"-{SanitizeForFileName(name)}" : "";
+        var suggestedFileName = $"GameArtMatch-Report{romsSegment}-{DateTime.Now:yyyyMMdd-HHmmss}";
+
         var file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
             Title = "Export Report",
-            SuggestedFileName = $"GameArtMatch-Report-{DateTime.Now:yyyyMMdd-HHmmss}",
+            SuggestedFileName = suggestedFileName,
             DefaultExtension = "txt",
             SuggestedStartLocation = documents,
             FileTypeChoices = [new FilePickerFileType("Text File") { Patterns = ["*.txt"] }],
@@ -102,5 +110,11 @@ public partial class ReportView : UserControl
         await using var stream = await file.OpenWriteAsync();
         await using var writer = new System.IO.StreamWriter(stream);
         await writer.WriteAsync(vm.BuildExportText());
+    }
+
+    private static string SanitizeForFileName(string name)
+    {
+        var invalid = System.IO.Path.GetInvalidFileNameChars();
+        return string.Concat(name.Select(c => invalid.Contains(c) ? '_' : c));
     }
 }

@@ -32,6 +32,11 @@ public partial class ReportViewModel : ViewModelBase
     /// exist" (per the request), not unconditionally alongside Missing/Matched.</summary>
     public bool HasIgnoredEntries => Ignored.Count > 0;
 
+    /// <summary>Just the leaf folder name of the currently-selected ROMs folder (e.g.
+    /// "SMS"), or null if none is selected — used by ReportView.axaml.cs to name the
+    /// exported file after whichever system this report is actually for.</summary>
+    public string? RomsFolderName => string.IsNullOrWhiteSpace(_settings.RomsPath) ? null : _settings.RomsPathDisplayName;
+
     [ObservableProperty] public partial bool IsBusy { get; set; }
 
     /// <summary>Raised whenever IgnoreRomsAsync/UnignoreRomsAsync change
