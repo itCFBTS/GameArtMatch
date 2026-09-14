@@ -1,9 +1,12 @@
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 using GameArtMatch.Models;
 using GameArtMatch.ViewModels;
@@ -12,6 +15,10 @@ namespace GameArtMatch.Views;
 
 public partial class MatchView : UserControl
 {
+    private static readonly string[] ActivityDotsFrames = [".", "..", "..."];
+    private readonly DispatcherTimer _activityDotsTimer;
+    private int _activityDotsIndex;
+
     public MatchView()
     {
         InitializeComponent();
@@ -21,6 +28,41 @@ public partial class MatchView : UserControl
         // handling is what was swallowing Space when a row was reached via arrow keys
         // rather than a click (see OnResultsTreeKeyDown for the rest of the story).
         ResultsTree.AddHandler(InputElement.KeyDownEvent, OnResultsTreeKeyDown, RoutingStrategies.Tunnel);
+
+        // Avalonia's Style.Animations has no built-in animator for string properties
+        // (confirmed empirically: a Text-targeting KeyFrame throws "No animator
+        // registered for the property Text" the moment the style tries to attach), so
+        // the "." -> ".." -> "..." activity cue is driven by a plain timer instead,
+        // started/stopped as MatchViewModel.IsIndexing changes.
+        _activityDotsTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(400) };
+        _activityDotsTimer.Tick += (_, _) =>
+        {
+            _activityDotsIndex = (_activityDotsIndex + 1) % ActivityDotsFrames.Length;
+            ActivityDotsText.Text = ActivityDotsFrames[_activityDotsIndex];
+        };
+
+        DataContextChanged += (_, _) =>
+        {
+            if (DataContext is MatchViewModel vm)
+                vm.PropertyChanged += OnMatchViewModelPropertyChanged;
+        };
+    }
+
+    private void OnMatchViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName != nameof(MatchViewModel.IsIndexing) || sender is not MatchViewModel vm)
+            return;
+
+        if (vm.IsIndexing)
+        {
+            _activityDotsIndex = 0;
+            ActivityDotsText.Text = ActivityDotsFrames[0];
+            _activityDotsTimer.Start();
+        }
+        else
+        {
+            _activityDotsTimer.Stop();
+        }
     }
 
     private void OnResultsTreeKeyDown(object? sender, KeyEventArgs e)

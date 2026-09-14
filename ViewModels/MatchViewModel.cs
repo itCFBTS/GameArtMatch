@@ -293,7 +293,7 @@ public partial class MatchViewModel : ViewModelBase
         IsMatchRunning = true;
         IsIndexing = true;
         ProgressPercent = 0;
-        StatusText = "Preparing scan...";
+        StatusText = "Preparing scan";
         _allGroups.Clear();
         Groups.Clear();
         SelectedTreeItem = null;

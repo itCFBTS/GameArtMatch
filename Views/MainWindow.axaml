@@ -33,8 +33,8 @@
              the only other tab, so the TabControl itself is gone now that Match is the only
              thing left to host — a lone single-tab strip would've served no purpose. -->
         <DockPanel>
-            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Right"
-                        Spacing="{DynamicResource SpaceLg}" Margin="0,10,16,10">
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Left"
+                        Spacing="{DynamicResource SpaceLg}" Margin="16,10,0,10">
                 <StackPanel Orientation="Horizontal" Spacing="{DynamicResource SpaceXs}">
                     <TextBlock Text="ROMs:" VerticalAlignment="Center" />
                     <TextBox Text="{Binding Settings.RomsPathDisplayName}" IsReadOnly="True"
