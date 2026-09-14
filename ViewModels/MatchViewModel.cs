@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -187,6 +188,12 @@ public partial class MatchViewModel : ViewModelBase
             if (group.VisibleCandidates.Count > 0)
                 Groups.Add(group);
         }
+
+        // A filter can hide a previously-selected candidate (or reveal previously-hidden
+        // ones) without any single candidate's own IsSelected value changing, so this
+        // needs its own explicit re-check rather than relying solely on
+        // OnCandidatePropertyChanged.
+        RenameFilesCommand.NotifyCanExecuteChanged();
     }
 
     /// <summary>Whatever's currently highlighted in the tree — a RomMatchGroup or a
@@ -321,7 +328,12 @@ public partial class MatchViewModel : ViewModelBase
                          .GroupBy(m => m.RomFileName, StringComparer.OrdinalIgnoreCase)
                          .OrderBy(g => g.Key, StringComparer.OrdinalIgnoreCase))
             {
-                _allGroups.Add(new RomMatchGroup(group.Key, group.OrderByBestMatch()));
+                var romGroup = new RomMatchGroup(group.Key, group.OrderByBestMatch());
+                // So RenameFilesCommand's enabled state can react to a checkbox toggle
+                // anywhere in the tree — see OnCandidatePropertyChanged.
+                foreach (var candidate in romGroup.Candidates)
+                    candidate.PropertyChanged += OnCandidatePropertyChanged;
+                _allGroups.Add(romGroup);
             }
 
             AvailableFileTypes.Clear();
@@ -377,6 +389,21 @@ public partial class MatchViewModel : ViewModelBase
     }
 
     private bool CanStart() => !IsBusy;
+
+    /// <summary>Mirrors exactly what RenameFilesAsync itself acts on — a VISIBLE and
+    /// selected candidate — so the button disables itself the moment there's nothing to
+    /// rename, rather than being clickable and just showing a "Nothing selected" message.</summary>
+    private bool CanRenameFiles() => !IsBusy && Groups.Any(g => g.VisibleCandidates.Any(c => c.IsSelected));
+
+    /// <summary>Fires RenameFilesCommand's CanExecute re-check whenever any candidate's
+    /// checkbox toggles anywhere in the tree — IsSelected isn't a single ObservableProperty
+    /// on this ViewModel (it's spread across every MatchCandidate), so it can't use the
+    /// usual [NotifyCanExecuteChangedFor] attribute the way IsBusy does above.</summary>
+    private void OnCandidatePropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(MatchCandidate.IsSelected))
+            RenameFilesCommand.NotifyCanExecuteChanged();
+    }
 
     [RelayCommand(CanExecute = nameof(CanCancel))]
     private void Cancel() => _cts?.Cancel();
@@ -472,7 +499,7 @@ public partial class MatchViewModel : ViewModelBase
         AreGroupsExpanded = expand;
     }
 
-    [RelayCommand(CanExecute = nameof(CanStart))]
+    [RelayCommand(CanExecute = nameof(CanRenameFiles))]
     private async Task RenameFilesAsync()
     {
         var selected = Groups.SelectMany(g => g.VisibleCandidates).Where(c => c.IsSelected).ToList();
