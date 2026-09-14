@@ -39,9 +39,9 @@
         <TabControl TabStripPlacement="Left">
             <TabItem Header="Path">
                 <ScrollViewer Margin="16,0,0,0">
-                    <StackPanel Spacing="10">
+                    <StackPanel Spacing="{DynamicResource SpaceSm}">
                         <TextBlock Text="Root folders are remembered between launches and used as the starting point when picking a ROMs/Images folder from the main window."
-                                   TextWrapping="Wrap" Foreground="Gray" FontSize="12" />
+                                   TextWrapping="Wrap" Foreground="{DynamicResource ForegroundMutedBrush}" FontSize="{DynamicResource FontSizeSmall}" />
 
                         <TextBlock Text="ROMs root (e.g. the top of your games library)" />
                         <DockPanel>
@@ -73,20 +73,20 @@
                         <CheckBox Content="ROM root is MiSTer games folder using Console Mode media folders"
                                   IsChecked="{Binding IsConsoleMode}" />
                         <TextBlock Text="Each system folder has its own 'media' subfolder for box art (e.g. MegaCD/media/Sonic CD (USA).png)."
-                                   TextWrapping="Wrap" Foreground="Gray" FontSize="12" Margin="24,-6,0,0" />
+                                   TextWrapping="Wrap" Foreground="{DynamicResource ForegroundMutedBrush}" FontSize="{DynamicResource FontSizeSmall}" Margin="24,-6,0,0" />
 
                         <CheckBox Content="Skip ROMs that already have matching art"
                                   IsChecked="{Binding SkipExistingArt}"
                                   IsEnabled="{Binding IsConsoleMode}" Margin="0,4,0,0" />
                         <TextBlock Text="Checks &lt;RomsPath&gt;/media/&lt;name&gt;.png/.jpg/.jpeg before matching."
-                                   TextWrapping="Wrap" Foreground="Gray" FontSize="12" Margin="24,-6,0,0" />
+                                   TextWrapping="Wrap" Foreground="{DynamicResource ForegroundMutedBrush}" FontSize="{DynamicResource FontSizeSmall}" Margin="24,-6,0,0" />
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
 
             <TabItem Header="Matching">
                 <ScrollViewer Margin="16,0,0,0">
-                    <StackPanel Spacing="10">
+                    <StackPanel Spacing="{DynamicResource SpaceSm}">
                         <CheckBox Content="Disregard ROM tags, e.g. (USA)/(Rev 1)" IsChecked="{Binding DisregardRomTags}" />
                         <CheckBox Content="Match standalone letters" IsChecked="{Binding MatchStandaloneLetters}" />
                         <CheckBox Content="Try numbers as Roman numerals" IsChecked="{Binding TryRomanNumerals}" />
@@ -105,7 +105,7 @@
 
             <TabItem Header="Renaming">
                 <ScrollViewer Margin="16,0,0,0">
-                    <StackPanel Spacing="10">
+                    <StackPanel Spacing="{DynamicResource SpaceSm}">
                         <CheckBox Content="Delete original files" IsChecked="{Binding DeleteOriginalFiles}" />
                         <CheckBox Content="Export backup script" IsChecked="{Binding ExportBackupScript}" />
                         <CheckBox Content="Export copy script" IsChecked="{Binding ExportCopyScript}" />

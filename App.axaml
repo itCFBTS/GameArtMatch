@@ -12,4 +12,17 @@
     <Application.Styles>
         <FluentTheme />
     </Application.Styles>
+
+    <!-- Merged after FluentTheme (above) so our design tokens take precedence over
+         Fluent's own defaults app-wide — see Tokens.axaml, the single place to edit
+         the app's look. Application.Resources resolves ahead of resources merely
+         contributed by a Styles entry like FluentTheme, regardless of declaration
+         order, but this is placed textually after it to read the same way. -->
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://GameArtMatch/Tokens.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
 </Application>

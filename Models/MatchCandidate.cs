@@ -17,6 +17,28 @@ public partial class MatchCandidate : ObservableObject
 
     public required double ScorePercent { get; init; }
 
+    /// <summary>True when the ROM and image basenames are literally identical (extension
+    /// aside) — always case-insensitive, deliberately independent of settings.MatchCase
+    /// (which controls fuzzy token comparison; this is a stricter, separate concept, so
+    /// don't "fix" it to respect MatchCase later). A pure function of this one pair, so
+    /// it's set at construction like ScorePercent rather than mutated later like
+    /// IsDuplicate below.</summary>
+    public required bool IsExactMatch { get; init; }
+
+    /// <summary>SHA-256 (hex) of the image file's raw bytes — a strict "same file or not"
+    /// check, deliberately not a perceptual/similarity hash: a genuinely different scan
+    /// or crop of the same box art should stay distinct, only byte-identical copies
+    /// should collapse together. Computed once per distinct image path per scan (see
+    /// MatchingService), regardless of which/how many ROMs it's a candidate for.</summary>
+    public required string ContentHash { get; init; }
+
+    /// <summary>True when the immediately-preceding VISIBLE candidate in this ROM's list
+    /// has the same ContentHash — i.e., this is a byte-identical copy of the row right
+    /// above it, just under a different filename. Recomputed by MatchViewModel.ApplyFilters
+    /// whenever the visible set changes, since which row counts as "above" depends on the
+    /// current filters — so it's mutable, not set at construction.</summary>
+    [ObservableProperty] public partial bool IsSameAsAbove { get; set; }
+
     /// <summary>True when this image was also picked as a candidate for another ROM —
     /// an ambiguous match worth a second look before renaming. Computed after a full
     /// scan (see MatchingService), so it's mutable rather than set at construction.</summary>

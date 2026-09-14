@@ -1,0 +1,84 @@
+<!--
+  Design tokens — this is the single place to edit to change GameArtMatch's look.
+  Merged into App.axaml AFTER FluentTheme, so every value here overrides Fluent's
+  own default app-wide. Views should reference these via DynamicResource, never
+  hardcode a color/size directly, so a future look-and-feel pass only ever touches
+  this one file.
+
+  Color/brush tokens live under ThemeDictionaries (Light/Dark) since they're the
+  values expected to differ by theme variant. Spacing, corner radius, and font
+  tokens are plain top-level entries since those don't vary by theme.
+
+  This first pass is deliberately behavior-preserving: every value here is seeded
+  from whatever the app already rendered before this refactor (see the reverse-
+  engineered originals in the comments below), so swapping hardcoded values for
+  DynamicResource lookups doesn't change how anything looks yet — only makes it
+  centrally editable.
+-->
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Light">
+            <!-- Aliases Fluent's own live SystemAccentColor rather than a guessed hex,
+                 so this token starts identical to Fluent's default and stays in sync
+                 with it — confirmed at runtime to resolve to Avalonia's standard
+                 Fluent blue (#ff0078d7) in this app. -->
+            <SolidColorBrush x:Key="AccentBrush" Color="{DynamicResource SystemAccentColor}" />
+
+            <!-- Not currently referenced by any view (nothing sets an explicit window
+                 background/foreground today — everything inherits Fluent's own), so
+                 these are seeded with plain Fluent-Light-ish defaults for future use
+                 rather than reverse-engineered from an existing literal. -->
+            <SolidColorBrush x:Key="BackgroundBrush" Color="#FFFFFFFF" />
+            <SolidColorBrush x:Key="ForegroundBrush" Color="#FF1B1B1B" />
+
+            <!-- These four ARE reverse-engineered from the app's existing hardcoded
+                 literals (Foreground="Gray", BorderBrush="Gray", Foreground="OrangeRed"
+                 on the preview error text, Foreground="Orange" on the duplicate-match
+                 highlight) — same value in both variants for now, matching how the app
+                 already looked identically regardless of system theme before this pass. -->
+            <SolidColorBrush x:Key="ForegroundMutedBrush" Color="Gray" />
+            <SolidColorBrush x:Key="BorderBrush" Color="Gray" />
+            <SolidColorBrush x:Key="ErrorBrush" Color="OrangeRed" />
+            <SolidColorBrush x:Key="WarningBrush" Color="Orange" />
+        </ResourceDictionary>
+
+        <ResourceDictionary x:Key="Dark">
+            <SolidColorBrush x:Key="AccentBrush" Color="{DynamicResource SystemAccentColor}" />
+            <SolidColorBrush x:Key="BackgroundBrush" Color="#FF202020" />
+            <SolidColorBrush x:Key="ForegroundBrush" Color="#FFFFFFFF" />
+            <SolidColorBrush x:Key="ForegroundMutedBrush" Color="Gray" />
+            <SolidColorBrush x:Key="BorderBrush" Color="Gray" />
+            <SolidColorBrush x:Key="ErrorBrush" Color="OrangeRed" />
+            <SolidColorBrush x:Key="WarningBrush" Color="Orange" />
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
+
+    <!-- Variant-independent: shape/spacing/type don't change with light vs dark. -->
+
+    <!-- Reverse-engineered from MatchView's preview-pane Border (CornerRadius="4"),
+         the only CornerRadius literal in the app. -->
+    <CornerRadius x:Key="CornerRadiusBase">4</CornerRadius>
+
+    <!-- Reverse-engineered from every StackPanel.Spacing value already in use:
+         6 (MainWindow's compact ROMs/Images sub-rows), 10 (all three OptionsWindow
+         tab bodies), 12 (AboutWindow), 16 (MainWindow's outer picker row). -->
+    <x:Double x:Key="SpaceXs">6</x:Double>
+    <x:Double x:Key="SpaceSm">10</x:Double>
+    <x:Double x:Key="SpaceMd">12</x:Double>
+    <x:Double x:Key="SpaceLg">16</x:Double>
+
+    <!-- Matches what Avalonia.Fonts.Inter + WithInterFont() already renders by
+         default — declared explicitly so a future font change has one place to edit. -->
+    <FontFamily x:Key="FontFamilyBase">Inter</FontFamily>
+
+    <!-- FontSizeSmall is reverse-engineered from every FontSize="12" literal in the
+         app (all secondary/hint text). FontSizeDefault/Large aren't used by any
+         current literal — the app relies on Fluent's inherited default everywhere
+         else — but are declared now to establish the scale for future use. -->
+    <x:Double x:Key="FontSizeSmall">12</x:Double>
+    <x:Double x:Key="FontSizeDefault">13</x:Double>
+    <x:Double x:Key="FontSizeLarge">16</x:Double>
+
+</ResourceDictionary>

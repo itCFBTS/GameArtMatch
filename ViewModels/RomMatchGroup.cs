@@ -46,7 +46,17 @@ public partial class RomMatchGroup : ObservableObject
     public RomMatchGroup(string romFileName, IEnumerable<MatchCandidate> candidates)
     {
         RomFileName = romFileName;
-        Candidates = new ObservableCollection<MatchCandidate>(candidates);
+
+        // Cluster byte-identical images (same ContentHash) adjacent to each other, so
+        // MatchViewModel.ApplyFilters can label every one after the first "Same as
+        // above". GroupBy is stable — groups come out in first-occurrence order and each
+        // group's members keep their original relative order — so this preserves the
+        // incoming best-match ordering (the highest-scoring member of a cluster still
+        // leads) while pulling its identical siblings to sit right after it, even if a
+        // differently-scored, different-content candidate would otherwise have sorted
+        // between them.
+        var clustered = candidates.GroupBy(c => c.ContentHash).SelectMany(g => g);
+        Candidates = new ObservableCollection<MatchCandidate>(clustered);
 
         foreach (var candidate in Candidates)
             candidate.PropertyChanged += OnCandidatePropertyChanged;
@@ -81,7 +91,7 @@ public partial class RomMatchGroup : ObservableObject
         _suppressCascade = true;
         if (value.Value)
         {
-            var best = Candidates.OrderByDescending(c => c.ScorePercent).FirstOrDefault();
+            var best = Candidates.OrderByBestMatch().FirstOrDefault();
             foreach (var candidate in Candidates)
                 candidate.IsSelected = candidate == best;
         }
@@ -99,7 +109,7 @@ public partial class RomMatchGroup : ObservableObject
     {
         _suppressCascade = true;
         var selected = Candidates.FirstOrDefault(c => c.IsSelected);
-        var best = Candidates.OrderByDescending(c => c.ScorePercent).FirstOrDefault();
+        var best = Candidates.OrderByBestMatch().FirstOrDefault();
         IsAllSelected = selected is null ? false : selected == best ? true : null;
         _suppressCascade = false;
     }

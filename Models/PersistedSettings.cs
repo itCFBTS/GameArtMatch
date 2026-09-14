@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace GameArtMatch.Models;
 
 /// <summary>
@@ -29,4 +31,16 @@ public sealed class PersistedSettings
     /// false would silently override MatchSettings' true default on every fresh install.</summary>
     public bool? RomsIncludeSubfolders { get; set; }
     public bool? ImagesIncludeSubfolders { get; set; }
+
+    /// <summary>The exact ROMs/Images folders selected last session — restored as-is on
+    /// next launch (plain "resume where I left off", independent of the smarter map
+    /// below).</summary>
+    public string? LastRomsPath { get; set; }
+    public string? LastImagesPath { get; set; }
+
+    /// <summary>Remembers which Images folder was paired with a given ROMs folder the
+    /// last time a scan was actually started there (not just browsed to) — so picking
+    /// that same ROMs folder again later, in a future session or later the same one,
+    /// auto-fills its matching Images folder instead of making you re-pick it.</summary>
+    public Dictionary<string, string>? RomsToImagesPathMap { get; set; }
 }

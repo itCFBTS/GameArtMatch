@@ -43,6 +43,18 @@ public partial class MatchViewModel : ViewModelBase
     /// stale matching percentage during an unrelated rename operation.</summary>
     [ObservableProperty] public partial bool IsMatchRunning { get; set; }
 
+    /// <summary>True from the moment Start is clicked until MatchingService finishes
+    /// tokenizing every image (MatchPhase.Indexing) and starts scoring ROMs against them
+    /// (MatchPhase.Scanning) — that indexing pass has no per-item feedback of its own
+    /// otherwise, so the view shows a spinner over it instead of a bar that looks frozen.</summary>
+    [ObservableProperty] public partial bool IsIndexing { get; set; }
+
+    /// <summary>Fraction of the single overall progress bar given to the Indexing phase
+    /// before Scanning fills the rest. Fixed rather than weighted by relative image/ROM
+    /// counts, since indexing (tokenize one image) and scanning (score one ROM against
+    /// the index) aren't comparable units of work.</summary>
+    private const double IndexingPhaseWeight = 0.15;
+
     // --- Match tab filters: a post-scan display filter, doesn't affect scoring or
     // re-run matching — just shows/hides already-computed rows (see ApplyFilters). ---
 
@@ -54,19 +66,28 @@ public partial class MatchViewModel : ViewModelBase
 
     [ObservableProperty] public partial string SelectedFileType { get; set; } = FileTypeAll;
 
-    public string[] RegionOptions => RegionFilter.Options;
+    /// <summary>Populated after each scan from the regions actually found among that
+    /// scan's ROM/image filenames — "All" plus whichever of RegionFilter.Options are
+    /// actually present, same "don't offer choices that can't do anything" approach as
+    /// AvailableFileTypes above.</summary>
+    public ObservableCollection<string> AvailableRegions { get; } = [RegionFilter.All];
 
     [ObservableProperty] public partial string SelectedRegion { get; set; } = RegionFilter.All;
 
     /// <summary>When on, only candidates scoring a full 100% are shown — a quick way to
-    /// see just the sure things, hiding everything that still needs a human look.</summary>
-    [ObservableProperty] public partial bool ShowOnly100PercentMatches { get; set; }
+    /// see just the sure things, hiding everything that still needs a human look. Kept
+    /// as a >= 100 score check rather than IsExactMatch: the redefined tag-inclusive
+    /// score already means only true exact/near-exact matches reach 100, so this stays
+    /// simple and matches the checkbox's "Exact score only" wording. IsExactMatch remains
+    /// the stricter, ground-truth flag (visual marker + best-match tie-break) in the rare
+    /// case the two ever diverge.</summary>
+    [ObservableProperty] public partial bool ShowOnlyExactScoreMatches { get; set; }
 
     partial void OnSelectedFileTypeChanged(string value) => ApplyFilters();
 
     partial void OnSelectedRegionChanged(string value) => ApplyFilters();
 
-    partial void OnShowOnly100PercentMatchesChanged(bool value) => ApplyFilters();
+    partial void OnShowOnlyExactScoreMatchesChanged(bool value) => ApplyFilters();
 
     /// <summary>File type only ever restricts ROMs (never images). Region restricts both
     /// — except English Translated, which by design shows every image and only narrows
@@ -94,9 +115,17 @@ public partial class MatchViewModel : ViewModelBase
                 foreach (var candidate in group.Candidates)
                 {
                     var regionOk = RegionFilter.Matches(candidate.ImageFileName, SelectedRegion, isImage: true);
-                    var scoreOk = !ShowOnly100PercentMatches || candidate.ScorePercent >= 100;
+                    var scoreOk = !ShowOnlyExactScoreMatches || candidate.ScorePercent >= 100;
                     if (regionOk && scoreOk)
+                    {
+                        // "Same as above" is relative to whatever's currently VISIBLE, not
+                        // fixed at scan time — so if a filter hides the representative of a
+                        // content-identical cluster, the next surviving member correctly
+                        // stops claiming to be "the same as" a row that isn't shown anymore.
+                        candidate.IsSameAsAbove = group.VisibleCandidates.Count > 0
+                            && group.VisibleCandidates[^1].ContentHash == candidate.ContentHash;
                         group.VisibleCandidates.Add(candidate);
+                    }
                 }
             }
 
@@ -117,6 +146,12 @@ public partial class MatchViewModel : ViewModelBase
 
     [ObservableProperty] public partial Bitmap? PreviewImage { get; set; }
     [ObservableProperty] public partial string? PreviewError { get; set; }
+
+    /// <summary>Raised right as a scan begins — MainViewModel listens for this to
+    /// remember which Images folder was paired with the current ROMs folder, so
+    /// picking that ROMs folder again later auto-recalls it. Deliberately fires on
+    /// Start (not on every folder pick), matching "when a start scan was hit".</summary>
+    public event System.EventHandler? ScanStarting;
 
     [NotifyCanExecuteChangedFor(nameof(StartCommand))]
     [NotifyCanExecuteChangedFor(nameof(CancelCommand))]
@@ -191,17 +226,30 @@ public partial class MatchViewModel : ViewModelBase
     [RelayCommand(CanExecute = nameof(CanStart))]
     private async Task StartAsync()
     {
+        ScanStarting?.Invoke(this, EventArgs.Empty);
+
         IsBusy = true;
         IsMatchRunning = true;
+        IsIndexing = true;
         ProgressPercent = 0;
+        StatusText = "Preparing scan...";
         _allGroups.Clear();
         Groups.Clear();
         SelectedTreeItem = null;
         _cts = new CancellationTokenSource();
         var progress = new Progress<MatchProgress>(p =>
         {
-            StatusText = $"Scanning: {p.CurrentName} ({p.Current}/{p.Total})";
-            ProgressPercent = p.PercentComplete;
+            if (p.Phase == MatchPhase.Indexing)
+            {
+                StatusText = $"Indexing images: {p.CurrentName} ({p.Current}/{p.Total})";
+                ProgressPercent = p.PercentComplete * IndexingPhaseWeight;
+            }
+            else
+            {
+                IsIndexing = false;
+                StatusText = $"Scanning: {p.CurrentName} ({p.Current}/{p.Total})";
+                ProgressPercent = IndexingPhaseWeight * 100 + p.PercentComplete * (1 - IndexingPhaseWeight);
+            }
         });
 
         try
@@ -212,7 +260,7 @@ public partial class MatchViewModel : ViewModelBase
                          .GroupBy(m => m.RomFileName, StringComparer.OrdinalIgnoreCase)
                          .OrderBy(g => g.Key, StringComparer.OrdinalIgnoreCase))
             {
-                _allGroups.Add(new RomMatchGroup(group.Key, group.OrderByDescending(c => c.ScorePercent)));
+                _allGroups.Add(new RomMatchGroup(group.Key, group.OrderByBestMatch()));
             }
 
             AvailableFileTypes.Clear();
@@ -226,9 +274,27 @@ public partial class MatchViewModel : ViewModelBase
                 AvailableFileTypes.Add(ext);
             }
 
+            AvailableRegions.Clear();
+            AvailableRegions.Add(RegionFilter.All);
+            foreach (var region in RegionFilter.Options.Where(r => r != RegionFilter.All))
+            {
+                // English Translated only ever restricts ROMs (RegionFilter.Matches
+                // exempts images from it entirely, always returning true for them) — so
+                // checking image filenames here would make it look "found" even when no
+                // ROM actually carries the marker. Every other region legitimately shows
+                // up on either side.
+                var found = region == RegionFilter.EnglishTranslated
+                    ? _allGroups.Any(g => RegionFilter.Matches(g.RomFileName, region, isImage: false))
+                    : _allGroups.Any(g => RegionFilter.Matches(g.RomFileName, region, isImage: false)
+                                        || g.Candidates.Any(c => RegionFilter.Matches(c.ImageFileName, region, isImage: true)));
+                if (found)
+                    AvailableRegions.Add(region);
+            }
+
             SelectedFileType = FileTypeAll;
             SelectedRegion = RegionFilter.All;
-            ShowOnly100PercentMatches = false;
+            ShowOnlyExactScoreMatches = false;
+            AreGroupsExpanded = true; // matches RomMatchGroup's own default expand state
             ApplyFilters();
 
             var totalCandidates = Groups.Sum(g => g.Candidates.Count);
@@ -244,6 +310,7 @@ public partial class MatchViewModel : ViewModelBase
         {
             IsBusy = false;
             IsMatchRunning = false;
+            IsIndexing = false;
         }
     }
 
@@ -267,7 +334,7 @@ public partial class MatchViewModel : ViewModelBase
             if (group.VisibleCandidates.Count == 0)
                 continue;
 
-            var best = group.VisibleCandidates.OrderByDescending(c => c.ScorePercent).First();
+            var best = group.VisibleCandidates.OrderByBestMatch().First();
             foreach (var candidate in group.VisibleCandidates)
                 candidate.IsSelected = candidate == best;
         }
@@ -285,17 +352,30 @@ public partial class MatchViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void ExpandAll()
+    private void DeselectAll()
     {
         foreach (var group in Groups)
-            group.IsExpanded = true;
+            foreach (var candidate in group.VisibleCandidates)
+                candidate.IsSelected = false;
     }
 
+    /// <summary>Tracks which action the toggle button performs next, independent of any
+    /// individual group's own expand state (a group can still be expanded/collapsed
+    /// one at a time via the tree itself) — this is purely "what happens if I click the
+    /// button now", not a live reflection of the tree's actual mixed state.</summary>
+    [ObservableProperty] public partial bool AreGroupsExpanded { get; set; } = true;
+
+    public string ExpandCollapseButtonText => AreGroupsExpanded ? "Collapse All" : "Expand All";
+
+    partial void OnAreGroupsExpandedChanged(bool value) => OnPropertyChanged(nameof(ExpandCollapseButtonText));
+
     [RelayCommand]
-    private void CollapseAll()
+    private void ToggleExpandCollapse()
     {
+        var expand = !AreGroupsExpanded;
         foreach (var group in Groups)
-            group.IsExpanded = false;
+            group.IsExpanded = expand;
+        AreGroupsExpanded = expand;
     }
 
     [RelayCommand(CanExecute = nameof(CanStart))]

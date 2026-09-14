@@ -42,14 +42,14 @@
             </TabControl>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top"
-                        Spacing="16" Margin="0,10,16,0">
-                <StackPanel Orientation="Horizontal" Spacing="6">
+                        Spacing="{DynamicResource SpaceLg}" Margin="0,10,16,0">
+                <StackPanel Orientation="Horizontal" Spacing="{DynamicResource SpaceXs}">
                     <TextBlock Text="ROMs:" VerticalAlignment="Center" />
                     <TextBox Text="{Binding Settings.RomsPathDisplayName}" IsReadOnly="True"
                              Width="110" VerticalAlignment="Center" />
                     <Button Content="..." Click="OnBrowseRomsClick" Padding="8,2" />
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" Spacing="6">
+                <StackPanel Orientation="Horizontal" Spacing="{DynamicResource SpaceXs}">
                     <TextBlock Text="Images:" VerticalAlignment="Center" />
                     <TextBox Text="{Binding Settings.ImagesPathDisplayName}" IsReadOnly="True"
                              Width="110" VerticalAlignment="Center" />

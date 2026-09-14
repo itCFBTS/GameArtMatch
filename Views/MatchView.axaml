@@ -25,23 +25,68 @@
             <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
         </Style>
         <Style Selector="TextBlock.duplicate">
-            <Setter Property="Foreground" Value="Orange" />
+            <Setter Property="Foreground" Value="{DynamicResource WarningBrush}" />
+        </Style>
+        <Style Selector="TextBlock.exactMatch">
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+        </Style>
+        <!-- Spun via a plain rotation animation on a partial-stroke ring (StrokeDashArray
+             leaves most of the circle blank) rather than a dedicated control — Avalonia's
+             Fluent theme doesn't ship a "ProgressRing". Shown only during MatchPhase.Indexing,
+             the otherwise-silent pass over every image before per-ROM scanning begins. -->
+        <Style Selector="Ellipse.spinner">
+            <Style.Animations>
+                <Animation Duration="0:0:0.9" IterationCount="Infinite">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="RotateTransform.Angle" Value="0" />
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="RotateTransform.Angle" Value="360" />
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
         </Style>
     </UserControl.Styles>
 
     <DockPanel Margin="12">
-        <TextBlock DockPanel.Dock="Top" Text="{Binding StatusText}" Margin="0,0,0,8" />
+        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,4">
+            <Ellipse DockPanel.Dock="Left" Classes="spinner" Width="16" Height="16" StrokeThickness="2.5"
+                     Stroke="{DynamicResource AccentBrush}" StrokeDashArray="11,33"
+                     RenderTransformOrigin="0.5,0.5" VerticalAlignment="Center" Margin="0,0,8,0"
+                     IsVisible="{Binding IsIndexing}">
+                <Ellipse.RenderTransform>
+                    <RotateTransform />
+                </Ellipse.RenderTransform>
+            </Ellipse>
+            <TextBlock Text="{Binding StatusText}" VerticalAlignment="Center" />
+        </DockPanel>
 
-        <ProgressBar DockPanel.Dock="Top" Minimum="0" Maximum="100" Value="{Binding ProgressPercent}"
-                     IsVisible="{Binding IsMatchRunning}" Height="6" Margin="0,0,0,8" />
+        <!-- Single bar spanning both MatchPhase.Indexing and MatchPhase.Scanning (see
+             MatchViewModel.IndexingPhaseWeight) rather than an indeterminate/determinate
+             swap, so it's always visibly moving instead of appearing to freeze during
+             the indexing pass. -->
+        <Grid DockPanel.Dock="Top" Margin="0,0,0,8" IsVisible="{Binding IsMatchRunning}">
+            <ProgressBar Minimum="0" Maximum="100" Value="{Binding ProgressPercent}" Height="20" />
+            <TextBlock Text="{Binding ProgressPercent, StringFormat={}{0:0}%}"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                       FontSize="{DynamicResource FontSizeSmall}" />
+        </Grid>
 
         <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8" LastChildFill="False">
             <Button Content="Start" Command="{Binding StartCommand}" Margin="0,0,8,0" />
             <Button Content="Cancel" Command="{Binding CancelCommand}" Margin="0,0,8,0" />
-            <Button Content="Select Best Matched" Command="{Binding SelectBestMatchedCommand}" Margin="0,0,8,0" />
-            <Button Content="Select Single Matches" Command="{Binding SelectSingleMatchesCommand}" Margin="0,0,8,0" />
-            <Button Content="Expand All" Command="{Binding ExpandAllCommand}" Margin="0,0,8,0" />
-            <Button Content="Collapse All" Command="{Binding CollapseAllCommand}" Margin="0,0,8,0" />
+            <DropDownButton Content="Selection" Margin="0,0,8,0">
+                <DropDownButton.Flyout>
+                    <MenuFlyout Placement="BottomEdgeAlignedLeft">
+                        <MenuItem Header="Select Best Matched" Command="{Binding SelectBestMatchedCommand}" />
+                        <MenuItem Header="Select Single Matches" Command="{Binding SelectSingleMatchesCommand}" />
+                        <Separator />
+                        <MenuItem Header="Deselect All" Command="{Binding DeselectAllCommand}" />
+                    </MenuFlyout>
+                </DropDownButton.Flyout>
+            </DropDownButton>
+            <Button Content="{Binding ExpandCollapseButtonText}" Command="{Binding ToggleExpandCollapseCommand}" Margin="0,0,8,0" />
             <Button Content="Rename Selected" Command="{Binding RenameFilesCommand}" />
         </DockPanel>
 
@@ -53,8 +98,8 @@
             <ComboBox ItemsSource="{Binding AvailableFileTypes}" SelectedItem="{Binding SelectedFileType}"
                       MinWidth="90" Margin="0,0,16,0" />
             <TextBlock Text="Region:" VerticalAlignment="Center" Margin="0,0,6,0" />
-            <ComboBox ItemsSource="{Binding RegionOptions}" SelectedItem="{Binding SelectedRegion}" MinWidth="140" Margin="0,0,16,0" />
-            <CheckBox Content="100% match only" IsChecked="{Binding ShowOnly100PercentMatches}" VerticalAlignment="Center" />
+            <ComboBox ItemsSource="{Binding AvailableRegions}" SelectedItem="{Binding SelectedRegion}" MinWidth="140" Margin="0,0,16,0" />
+            <CheckBox Content="Exact score only" IsChecked="{Binding ShowOnlyExactScoreMatches}" VerticalAlignment="Center" />
         </DockPanel>
 
         <Grid ColumnDefinitions="2*,8,1*">
@@ -71,7 +116,7 @@
                         <TreeDataTemplate DataType="vm:RomMatchGroup" ItemsSource="{Binding VisibleCandidates}">
                             <Grid ColumnDefinitions="28,70,*">
                                 <CheckBox Grid.Column="0" IsThreeState="True" IsChecked="{Binding IsAllSelected}" />
-                                <TextBlock Grid.Column="1" Text="{Binding VisibleCandidates.Count}" Foreground="Gray" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="1" Text="{Binding VisibleCandidates.Count}" Foreground="{DynamicResource ForegroundMutedBrush}" VerticalAlignment="Center" />
                                 <TextBlock Grid.Column="2" Text="{Binding RomFileName}" FontWeight="Bold" VerticalAlignment="Center" />
                             </Grid>
                         </TreeDataTemplate>
@@ -81,8 +126,14 @@
                             <Grid ColumnDefinitions="28,70,*">
                                 <CheckBox Grid.Column="0" IsChecked="{Binding IsSelected}" />
                                 <TextBlock Grid.Column="1" Text="{Binding ScorePercent}" VerticalAlignment="Center" />
-                                <TextBlock Grid.Column="2" Text="{Binding ImageFileName}" VerticalAlignment="Center"
-                                           Classes.duplicate="{Binding IsDuplicate}" />
+                                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                                    <TextBlock Text="{Binding ImageFileName}" VerticalAlignment="Center"
+                                               Classes.duplicate="{Binding IsDuplicate}"
+                                               Classes.exactMatch="{Binding IsExactMatch}" />
+                                    <TextBlock Text=" · Same as above" VerticalAlignment="Center"
+                                               Foreground="{DynamicResource ForegroundMutedBrush}"
+                                               IsVisible="{Binding IsSameAsAbove}" />
+                                </StackPanel>
                             </Grid>
                         </DataTemplate>
                     </TreeView.DataTemplates>
@@ -91,21 +142,23 @@
 
             <!-- Preview pane: shows the art for whichever candidate row is highlighted above.
                  Independent of each row's own checkbox (that's the rename-batch selection). -->
-            <Border Grid.Column="2" BorderBrush="Gray" BorderThickness="1" CornerRadius="4" Padding="8">
+            <Border Grid.Column="2" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                    CornerRadius="{DynamicResource CornerRadiusBase}" Padding="8">
                 <Grid RowDefinitions="*,36">
                     <Panel Grid.Row="0">
                         <TextBlock Text="Select an image row to preview its art"
                                    IsVisible="{Binding SelectedCandidate, Converter={x:Static ObjectConverters.IsNull}}"
-                                   Foreground="Gray" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                   Foreground="{DynamicResource ForegroundMutedBrush}" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" />
                         <TextBlock Text="{Binding PreviewError}"
                                    IsVisible="{Binding PreviewError, Converter={x:Static ObjectConverters.IsNotNull}}"
-                                   Foreground="OrangeRed" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                   Foreground="{DynamicResource ErrorBrush}" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" />
                         <Image Source="{Binding PreviewImage}"
                                IsVisible="{Binding PreviewImage, Converter={x:Static ObjectConverters.IsNotNull}}"
                                Stretch="Uniform" />
                     </Panel>
                     <TextBlock Grid.Row="1" Text="{Binding SelectedCandidate.ImageFileName}"
-                               TextTrimming="CharacterEllipsis" TextWrapping="Wrap" FontSize="12" Foreground="Gray"
+                               TextTrimming="CharacterEllipsis" TextWrapping="Wrap"
+                               FontSize="{DynamicResource FontSizeSmall}" Foreground="{DynamicResource ForegroundMutedBrush}"
                                Margin="0,8,0,0" VerticalAlignment="Top" />
                 </Grid>
             </Border>
