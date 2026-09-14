@@ -126,6 +126,18 @@
                     <TreeView.ItemTemplate>
                         <TreeDataTemplate DataType="vm:RomMatchGroup" ItemsSource="{Binding VisibleCandidates}">
                             <Grid ColumnDefinitions="28,70,*">
+                                <Grid.ContextFlyout>
+                                    <!-- Click (not Command) deliberately — a MenuItem inside a
+                                         Flyout inherits this row's DataContext (RomMatchGroup)
+                                         reliably via normal DataContext inheritance, but reaching
+                                         MatchViewModel's command from here would need an
+                                         #ElementName/NameScope lookup across the flyout's popup
+                                         boundary, which is less certain to resolve. Code-behind
+                                         just reads sender's DataContext instead. -->
+                                    <MenuFlyout>
+                                        <MenuItem Header="Ignore This ROM" Click="OnIgnoreRomClick" />
+                                    </MenuFlyout>
+                                </Grid.ContextFlyout>
                                 <CheckBox Grid.Column="0" IsThreeState="True" IsChecked="{Binding IsAllSelected}" />
                                 <TextBlock Grid.Column="1" Text="{Binding VisibleCandidates.Count}" Foreground="{DynamicResource ForegroundMutedBrush}" VerticalAlignment="Center" />
                                 <TextBlock Grid.Column="2" Text="{Binding RomFileName}" FontWeight="Bold" VerticalAlignment="Center" />

@@ -8,6 +8,13 @@ public partial class MatchCandidate : ObservableObject
     [ObservableProperty] public partial bool IsSelected { get; set; }
 
     public required string RomFileName { get; init; }
+
+    /// <summary>Full path to the ROM on disk — needed (not just RomFileName) because
+    /// "Include subfolders" can match a file that isn't directly under RomsPath, and
+    /// because ignoring a ROM (see MatchViewModel.IgnoreRomCommand) is keyed by full
+    /// path so a same-named ROM in a different folder isn't accidentally also skipped.</summary>
+    public required string RomFullPath { get; init; }
+
     public required string ImageFileName { get; init; }
 
     /// <summary>Full path to the image on disk — needed (not just ImageFileName) because

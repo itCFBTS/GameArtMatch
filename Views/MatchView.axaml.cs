@@ -40,4 +40,10 @@ public partial class MatchView : UserControl
             e.Handled = true;
         }
     }
+
+    private void OnIgnoreRomClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is MenuItem { DataContext: RomMatchGroup group } && DataContext is MatchViewModel vm)
+            vm.IgnoreRomCommand.Execute(group);
+    }
 }

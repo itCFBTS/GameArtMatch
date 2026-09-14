@@ -22,6 +22,12 @@ public partial class RomMatchGroup : ObservableObject
 
     public string RomFileName { get; }
 
+    /// <summary>Full path to the ROM on disk — every candidate in this group shares the
+    /// same one, so it's read from whichever member happens to be first. Used by
+    /// MatchViewModel.IgnoreRomCommand, which needs the full path (not just the
+    /// filename) to persist an unambiguous entry in MatchSettings.IgnoredRomPaths.</summary>
+    public string RomFullPath { get; }
+
     /// <summary>The full, unfiltered set of candidates — selection/exclusivity logic
     /// always operates on this, regardless of what the Match tab's filters currently
     /// show. See VisibleCandidates for the filtered view the tree actually binds to.</summary>
@@ -47,6 +53,12 @@ public partial class RomMatchGroup : ObservableObject
     {
         RomFileName = romFileName;
 
+        // Materialized once so both RomFullPath and the clustering below see a stable
+        // list rather than re-enumerating (or only ever partially enumerating) the
+        // incoming sequence.
+        var candidateList = candidates.ToList();
+        RomFullPath = candidateList.Count > 0 ? candidateList[0].RomFullPath : "";
+
         // Cluster byte-identical images (same ContentHash) adjacent to each other, so
         // MatchViewModel.ApplyFilters can label every one after the first "Same as
         // above". GroupBy is stable — groups come out in first-occurrence order and each
@@ -55,7 +67,7 @@ public partial class RomMatchGroup : ObservableObject
         // leads) while pulling its identical siblings to sit right after it, even if a
         // differently-scored, different-content candidate would otherwise have sorted
         // between them.
-        var clustered = candidates.GroupBy(c => c.ContentHash).SelectMany(g => g);
+        var clustered = candidateList.GroupBy(c => c.ContentHash).SelectMany(g => g);
         Candidates = new ObservableCollection<MatchCandidate>(clustered);
 
         foreach (var candidate in Candidates)

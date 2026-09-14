@@ -208,6 +208,12 @@ public partial class MatchViewModel : ViewModelBase
     /// Start (not on every folder pick), matching "when a start scan was hit".</summary>
     public event System.EventHandler? ScanStarting;
 
+    /// <summary>Raised right after a ROM is added to MatchSettings.IgnoredRomPaths —
+    /// MainViewModel listens for this to persist the updated ignore list (it's the sole
+    /// ISettingsStore owner; this ViewModel only ever mutates the shared, in-memory
+    /// HashSet directly).</summary>
+    public event System.EventHandler? RomIgnored;
+
     [NotifyCanExecuteChangedFor(nameof(StartCommand))]
     [NotifyCanExecuteChangedFor(nameof(CancelCommand))]
     [NotifyCanExecuteChangedFor(nameof(RenameFilesCommand))]
@@ -413,6 +419,23 @@ public partial class MatchViewModel : ViewModelBase
         foreach (var group in Groups)
             foreach (var candidate in group.VisibleCandidates)
                 candidate.IsSelected = false;
+    }
+
+    /// <summary>Right-click action on a ROM row — adds it to the persisted ignore list
+    /// (see MatchSettings.IgnoredRomPaths) and removes it from the current results
+    /// immediately, so it disappears from this scan too, not just future ones.
+    /// Single-ROM scope only, matching the TreeView's current single-selection model.</summary>
+    [RelayCommand]
+    private void IgnoreRom(RomMatchGroup? group)
+    {
+        if (group is null || string.IsNullOrEmpty(group.RomFullPath))
+            return;
+
+        _settings.IgnoredRomPaths.Add(group.RomFullPath);
+        _allGroups.Remove(group);
+        ApplyFilters();
+
+        RomIgnored?.Invoke(this, EventArgs.Empty);
     }
 
     /// <summary>Tracks which action the toggle button performs next, independent of any

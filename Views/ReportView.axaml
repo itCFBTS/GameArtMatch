@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:GameArtMatch.ViewModels"
+             xmlns:model="using:GameArtMatch.Models"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
@@ -11,31 +12,47 @@
         <vm:ReportViewModel />
     </Design.DataContext>
 
-    <TabControl Margin="12">
-        <TabItem Header="Missing Images">
-            <DockPanel>
-                <Button DockPanel.Dock="Top" Content="List Missing" Command="{Binding ListMissingCommand}" Margin="0,0,0,8" HorizontalAlignment="Left" />
+    <DockPanel Margin="12">
+        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8" LastChildFill="False">
+            <Button Content="Refresh" Command="{Binding GenerateAllCommand}" Margin="0,0,8,0" />
+            <Button Content="Export..." Click="OnExportClick" />
+        </DockPanel>
+
+        <TabControl>
+            <TabItem Header="Missing Images">
                 <ListBox ItemsSource="{Binding Missing}">
                     <ListBox.ItemTemplate>
-                        <DataTemplate>
+                        <DataTemplate x:DataType="model:ReportEntry">
                             <TextBlock Text="{Binding RomFileName}" />
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
-            </DockPanel>
-        </TabItem>
+            </TabItem>
 
-        <TabItem Header="Matched Images">
-            <DockPanel>
-                <Button DockPanel.Dock="Top" Content="List Matched" Command="{Binding ListMatchedCommand}" Margin="0,0,0,8" HorizontalAlignment="Left" />
+            <TabItem Header="Matched Images">
                 <ListBox ItemsSource="{Binding Matched}">
                     <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding RomFileName}" />
+                        <DataTemplate x:DataType="model:ReportEntry">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <TextBlock Text="{Binding RomFileName}" FontWeight="Bold" />
+                                <TextBlock Text="→" Foreground="{DynamicResource ForegroundMutedBrush}" />
+                                <TextBlock Text="{Binding MatchedImageFileName}" />
+                            </StackPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
-            </DockPanel>
-        </TabItem>
-    </TabControl>
+            </TabItem>
+
+            <!-- Only shown "if any ignored files exist" — not an always-present tab. -->
+            <TabItem Header="Ignored" IsVisible="{Binding HasIgnoredEntries}">
+                <ListBox ItemsSource="{Binding Ignored}" x:CompileBindings="False">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
 </UserControl>

@@ -81,6 +81,7 @@ public sealed class MatchingService : IMatchingService
                     results.Add(new MatchCandidate
                     {
                         RomFileName = romFileName,
+                        RomFullPath = rom,
                         ImageFileName = Path.GetFileName(c.Entry.Path),
                         ImageFullPath = c.Entry.Path,
                         ScorePercent = c.DisplayScore,
@@ -296,6 +297,12 @@ public sealed class MatchingService : IMatchingService
 
         if (settings.IsConsoleMode && settings.SkipExistingArt)
             roms = roms.Where(r => !HasExistingArt(settings.RomsPath, Path.GetFileNameWithoutExtension(r))).ToList();
+
+        // Applied last and to every caller (FindMatchesAsync/FindMissingAsync/
+        // FindMatchedAsync all funnel through here) so an ignored ROM never resurfaces
+        // in any of the three, regardless of which RomsPath it's currently found under.
+        if (settings.IgnoredRomPaths.Count > 0)
+            roms = roms.Where(r => !settings.IgnoredRomPaths.Contains(r)).ToList();
 
         return roms;
     }

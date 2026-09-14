@@ -43,4 +43,9 @@ public sealed class PersistedSettings
     /// that same ROMs folder again later, in a future session or later the same one,
     /// auto-fills its matching Images folder instead of making you re-pick it.</summary>
     public Dictionary<string, string>? RomsToImagesPathMap { get; set; }
+
+    /// <summary>Full paths of ROMs the user has explicitly ignored — see
+    /// MatchSettings.IgnoredRomPaths. Persisted so an ignored ROM stays skipped across
+    /// launches, not just for the rest of the current session.</summary>
+    public List<string>? IgnoredRomPaths { get; set; }
 }

@@ -19,6 +19,11 @@ public partial class MainWindow : Window
             {
                 vm.AboutRequested += (_, _) => new AboutWindow { DataContext = new AboutViewModel() }.ShowDialog(this);
                 vm.OptionsRequested += (_, _) => new OptionsWindow { DataContext = vm.Settings }.ShowDialog(this);
+                // Non-modal (Show, not ShowDialog) — Report is a reference window you'd
+                // reasonably want open alongside continued work in the Match tab (e.g.
+                // ignoring more ROMs, then hitting Refresh), unlike the blocking Options
+                // dialog.
+                vm.ReportRequested += (_, _) => new ReportWindow { DataContext = vm.ReportVm }.Show(this);
             }
         };
     }

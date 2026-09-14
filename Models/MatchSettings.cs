@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -80,4 +82,13 @@ public partial class MatchSettings : ObservableObject
     /// (e.g. "MegaCD/media/Sonic CD (USA).png") is dropped from the match candidates
     /// entirely — the goal becomes filling gaps, not reviewing/overwriting existing art.</summary>
     [ObservableProperty] public partial bool SkipExistingArt { get; set; } = false;
+
+    /// <summary>Full paths of ROMs to always skip during scanning (see
+    /// MatchingService.ListRoms) — global across every system/folder ever scanned, not
+    /// scoped to the current RomsPath, since a ROM ignored once should stay ignored no
+    /// matter which folder you point the app at later. Populated from PersistedSettings
+    /// at startup and mutated directly (not reassigned) by MatchViewModel.IgnoreRom, so
+    /// MainViewModel — the sole ISettingsStore owner — can persist the same instance
+    /// after the fact rather than needing a round-trip.</summary>
+    public HashSet<string> IgnoredRomPaths { get; } = new(StringComparer.OrdinalIgnoreCase);
 }

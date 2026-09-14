@@ -36,6 +36,11 @@ public partial class MainViewModel : ViewModelBase
     /// tab and into File > Options, an Avalonia-idiomatic modal preferences window.</summary>
     public event System.EventHandler? OptionsRequested;
 
+    /// <summary>Raised (via the view) to open the Report window — moved out of its own
+    /// main-window tab and into File > Report, a non-modal window so it can stay open
+    /// alongside continued work in the Match tab.</summary>
+    public event System.EventHandler? ReportRequested;
+
     public MainViewModel() : this(new MatchingService(), new RenameService(), new SettingsStore())
     {
     }
@@ -62,6 +67,10 @@ public partial class MainViewModel : ViewModelBase
             ? new Dictionary<string, string>(map, StringComparer.OrdinalIgnoreCase)
             : new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
+        if (persisted.IgnoredRomPaths is { } ignored)
+            foreach (var path in ignored)
+                Settings.IgnoredRomPaths.Add(path);
+
         // Plain "resume where I left off" — restored as-is, deliberately BEFORE the
         // PropertyChanged subscription below attaches, so this exact restoration wins
         // at startup rather than the map (below) potentially overriding ImagesPath.
@@ -77,6 +86,7 @@ public partial class MainViewModel : ViewModelBase
         ReportVm = new ReportViewModel(Settings, matchingService);
 
         MatchVm.ScanStarting += OnMatchScanStarting;
+        MatchVm.RomIgnored += OnRomIgnored;
     }
 
     private void OnSettingsPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -105,6 +115,8 @@ public partial class MainViewModel : ViewModelBase
         Persist();
     }
 
+    private void OnRomIgnored(object? sender, System.EventArgs e) => Persist();
+
     private void Persist()
     {
         _settingsStore.Save(new PersistedSettings
@@ -117,6 +129,7 @@ public partial class MainViewModel : ViewModelBase
             LastRomsPath = Settings.RomsPath,
             LastImagesPath = Settings.ImagesPath,
             RomsToImagesPathMap = new Dictionary<string, string>(_romsToImagesPathMap, StringComparer.OrdinalIgnoreCase),
+            IgnoredRomPaths = new List<string>(Settings.IgnoredRomPaths),
         });
     }
 
@@ -125,4 +138,7 @@ public partial class MainViewModel : ViewModelBase
 
     [RelayCommand]
     private void OpenOptions() => OptionsRequested?.Invoke(this, System.EventArgs.Empty);
+
+    [RelayCommand]
+    private void OpenReport() => ReportRequested?.Invoke(this, System.EventArgs.Empty);
 }
