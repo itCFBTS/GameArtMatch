@@ -83,11 +83,19 @@ public partial class MatchViewModel : ViewModelBase
     /// case the two ever diverge.</summary>
     [ObservableProperty] public partial bool ShowOnlyExactScoreMatches { get; set; }
 
+    /// <summary>When on, collapses each byte-identical-content cluster (see
+    /// MatchCandidate.ContentHash/IsSameAsAbove) down to just its first — best-scoring —
+    /// member, hiding the rest instead of merely labeling them. A candidate already
+    /// filtered out by region/exact-score stays out regardless of this setting.</summary>
+    [ObservableProperty] public partial bool HideSameImages { get; set; }
+
     partial void OnSelectedFileTypeChanged(string value) => ApplyFilters();
 
     partial void OnSelectedRegionChanged(string value) => ApplyFilters();
 
     partial void OnShowOnlyExactScoreMatchesChanged(bool value) => ApplyFilters();
+
+    partial void OnHideSameImagesChanged(bool value) => ApplyFilters();
 
     /// <summary>File type only ever restricts ROMs (never images). Region restricts both
     /// — except English Translated, which by design shows every image and only narrows
@@ -112,20 +120,67 @@ public partial class MatchViewModel : ViewModelBase
             group.VisibleCandidates.Clear();
             if (romTypeOk && romRegionOk)
             {
+                var candidatesPassingBasicFilters = new List<MatchCandidate>();
                 foreach (var candidate in group.Candidates)
                 {
                     var regionOk = RegionFilter.Matches(candidate.ImageFileName, SelectedRegion, isImage: true);
                     var scoreOk = !ShowOnlyExactScoreMatches || candidate.ScorePercent >= 100;
                     if (regionOk && scoreOk)
+                        candidatesPassingBasicFilters.Add(candidate);
+                }
+
+                // HideSameImages collapses a run of identical-content candidates down to
+                // just the first (best-scoring, since RomMatchGroup already clusters them
+                // in best-match order) — comparing against the last KEPT hash, not just the
+                // previous candidate, so a whole run of 3+ duplicates collapses correctly
+                // rather than only dropping every other one.
+                var visible = new List<MatchCandidate>();
+                string? lastKeptHash = null;
+                foreach (var candidate in candidatesPassingBasicFilters)
+                {
+                    if (HideSameImages && candidate.ContentHash == lastKeptHash)
+                        continue;
+                    visible.Add(candidate);
+                    lastKeptHash = candidate.ContentHash;
+                }
+
+                // How many VISIBLE candidates share each content hash — a count of 1 means
+                // a singleton, which gets no "Same as above" label and no background shade
+                // at all. Counted against the final visible set (post-HideSameImages), for
+                // the same "depends on what's actually shown" reason as the label itself —
+                // when HideSameImages is on, every surviving candidate is unique-in-the-list
+                // by construction, so shading naturally turns itself off with no special case.
+                var hashCounts = visible
+                    .GroupBy(c => c.ContentHash)
+                    .ToDictionary(g => g.Key, g => g.Count());
+
+                string? lastHash = null;
+                var altShade = false;
+                foreach (var candidate in visible)
+                {
+                    var isMulti = hashCounts[candidate.ContentHash] > 1;
+
+                    // "Same as above" is relative to whatever's currently VISIBLE, not
+                    // fixed at scan time — so if a filter hides the representative of a
+                    // content-identical cluster, the next surviving member correctly
+                    // stops claiming to be "the same as" a row that isn't shown anymore.
+                    candidate.IsSameAsAbove = candidate.ContentHash == lastHash;
+
+                    if (candidate.ContentHash != lastHash)
                     {
-                        // "Same as above" is relative to whatever's currently VISIBLE, not
-                        // fixed at scan time — so if a filter hides the representative of a
-                        // content-identical cluster, the next surviving member correctly
-                        // stops claiming to be "the same as" a row that isn't shown anymore.
-                        candidate.IsSameAsAbove = group.VisibleCandidates.Count > 0
-                            && group.VisibleCandidates[^1].ContentHash == candidate.ContentHash;
-                        group.VisibleCandidates.Add(candidate);
+                        // Flip only on entering a new MULTI-member cluster, so a singleton
+                        // sitting between two duplicate clusters doesn't consume a color
+                        // slot — RomMatchGroup already clusters identical content adjacent,
+                        // so this only ever toggles between genuinely distinct clusters.
+                        if (isMulti)
+                            altShade = !altShade;
+                        lastHash = candidate.ContentHash;
                     }
+
+                    candidate.IsContentShadeA = isMulti && !altShade;
+                    candidate.IsContentShadeB = isMulti && altShade;
+
+                    group.VisibleCandidates.Add(candidate);
                 }
             }
 
@@ -294,6 +349,7 @@ public partial class MatchViewModel : ViewModelBase
             SelectedFileType = FileTypeAll;
             SelectedRegion = RegionFilter.All;
             ShowOnlyExactScoreMatches = false;
+            HideSameImages = false;
             AreGroupsExpanded = true; // matches RomMatchGroup's own default expand state
             ApplyFilters();
 

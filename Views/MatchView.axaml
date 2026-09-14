@@ -31,6 +31,16 @@
             <Setter Property="FontWeight" Value="Bold" />
             <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
         </Style>
+        <!-- Full-row background tint grouping a multi-member identical-content cluster
+             (see MatchCandidate.IsContentShadeA/B) — applied to the row's own Grid rather
+             than just the filename text, so the whole row reads as part of the same
+             cluster at a glance. -->
+        <Style Selector="Grid.shadeA">
+            <Setter Property="Background" Value="{DynamicResource ContentGroupShadeABrush}" />
+        </Style>
+        <Style Selector="Grid.shadeB">
+            <Setter Property="Background" Value="{DynamicResource ContentGroupShadeBBrush}" />
+        </Style>
         <!-- Spun via a plain rotation animation on a partial-stroke ring (StrokeDashArray
              leaves most of the circle blank) rather than a dedicated control — Avalonia's
              Fluent theme doesn't ship a "ProgressRing". Shown only during MatchPhase.Indexing,
@@ -99,7 +109,8 @@
                       MinWidth="90" Margin="0,0,16,0" />
             <TextBlock Text="Region:" VerticalAlignment="Center" Margin="0,0,6,0" />
             <ComboBox ItemsSource="{Binding AvailableRegions}" SelectedItem="{Binding SelectedRegion}" MinWidth="140" Margin="0,0,16,0" />
-            <CheckBox Content="Exact score only" IsChecked="{Binding ShowOnlyExactScoreMatches}" VerticalAlignment="Center" />
+            <CheckBox Content="Exact score only" IsChecked="{Binding ShowOnlyExactScoreMatches}" VerticalAlignment="Center" Margin="0,0,16,0" />
+            <CheckBox Content="Hide same images" IsChecked="{Binding HideSameImages}" VerticalAlignment="Center" />
         </DockPanel>
 
         <Grid ColumnDefinitions="2*,8,1*">
@@ -123,7 +134,9 @@
                     </TreeView.ItemTemplate>
                     <TreeView.DataTemplates>
                         <DataTemplate x:DataType="model:MatchCandidate">
-                            <Grid ColumnDefinitions="28,70,*">
+                            <Grid ColumnDefinitions="28,70,*"
+                                  Classes.shadeA="{Binding IsContentShadeA}"
+                                  Classes.shadeB="{Binding IsContentShadeB}">
                                 <CheckBox Grid.Column="0" IsChecked="{Binding IsSelected}" />
                                 <TextBlock Grid.Column="1" Text="{Binding ScorePercent}" VerticalAlignment="Center" />
                                 <StackPanel Grid.Column="2" Orientation="Horizontal">

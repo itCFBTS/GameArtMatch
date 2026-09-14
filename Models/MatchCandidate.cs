@@ -39,6 +39,14 @@ public partial class MatchCandidate : ObservableObject
     /// current filters — so it's mutable, not set at construction.</summary>
     [ObservableProperty] public partial bool IsSameAsAbove { get; set; }
 
+    /// <summary>Alternating row-background markers for a multi-member identical-content
+    /// cluster (2+ visible candidates sharing ContentHash within this ROM) — at most one
+    /// is ever true, and both are false for a singleton (unique-content) candidate, which
+    /// gets no shading at all. Recomputed by MatchViewModel.ApplyFilters alongside
+    /// IsSameAsAbove, for the same reason — depends on the current visible set.</summary>
+    [ObservableProperty] public partial bool IsContentShadeA { get; set; }
+    [ObservableProperty] public partial bool IsContentShadeB { get; set; }
+
     /// <summary>True when this image was also picked as a candidate for another ROM —
     /// an ambiguous match worth a second look before renaming. Computed after a full
     /// scan (see MatchingService), so it's mutable rather than set at construction.</summary>

@@ -42,6 +42,16 @@
             <SolidColorBrush x:Key="BorderBrush" Color="Gray" />
             <SolidColorBrush x:Key="ErrorBrush" Color="OrangeRed" />
             <SolidColorBrush x:Key="WarningBrush" Color="Orange" />
+
+            <!-- Alternating row-background tints for clustering byte-identical candidate
+                 images (see MatchCandidate.IsContentShadeA/B) — low-alpha overlays rather
+                 than opaque colors, so the same value reads reasonably against either
+                 theme's row background instead of needing separate hand-tuned hex per
+                 variant. Deliberately distinct hues from AccentBrush (exact-match marker)
+                 and WarningBrush (cross-ROM duplicate marker) so this doesn't get read as
+                 either of those unrelated meanings. -->
+            <SolidColorBrush x:Key="ContentGroupShadeABrush" Color="#222E9BF0" />
+            <SolidColorBrush x:Key="ContentGroupShadeBBrush" Color="#228E44AD" />
         </ResourceDictionary>
 
         <ResourceDictionary x:Key="Dark">
@@ -52,6 +62,8 @@
             <SolidColorBrush x:Key="BorderBrush" Color="Gray" />
             <SolidColorBrush x:Key="ErrorBrush" Color="OrangeRed" />
             <SolidColorBrush x:Key="WarningBrush" Color="Orange" />
+            <SolidColorBrush x:Key="ContentGroupShadeABrush" Color="#222E9BF0" />
+            <SolidColorBrush x:Key="ContentGroupShadeBBrush" Color="#228E44AD" />
         </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>
 
