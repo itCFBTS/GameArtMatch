@@ -91,10 +91,7 @@ public static partial class NameNormalizer
                 continue;
 
             var token = settings.MatchCase ? raw : raw.ToLowerInvariant();
-            tokens.Add(token);
-
-            if (settings.TryRomanNumerals)
-                AddRomanNumeralVariant(tokens, token);
+            tokens.Add(settings.TryRomanNumerals ? NormalizeNumeralToken(token) : token);
 
             AddYearAbbreviationVariant(tokens, token);
         }
@@ -163,23 +160,37 @@ public static partial class NameNormalizer
         return sb.ToString();
     }
 
-    /// <summary>Numeric token ("2") also gets its Roman form ("ii") added, and vice
-    /// versa, so "Final Fantasy II" and "Final Fantasy 2" tokenize to overlapping
-    /// sets regardless of which style either name used. Single Roman letters (I, V, X,
-    /// L, C, D, M) are deliberately never auto-converted — too ambiguous with real
-    /// standalone letters like "Mega Man X" — consistent with the 1-letter-token rule.</summary>
-    private static void AddRomanNumeralVariant(HashSet<string> tokens, string token)
+    /// <summary>Returns the single canonical form to store for this word: a Roman
+    /// numeral gets converted to its arabic-digit equivalent; an arabic digit is
+    /// already canonical and passes through unchanged; anything else (not a numeral at
+    /// all) also passes through unchanged. So "Final Fantasy II" and "Final Fantasy 2"
+    /// tokenize to the identical set regardless of which style either name used.
+    ///
+    /// Deliberately canonicalizes rather than adding a second alias token alongside the
+    /// original the way this used to work — see ADR-0002 (docs/adr). Aliasing meant a
+    /// numeral occupied two slots in its own token set ("2" AND "ii"), so two titles
+    /// sharing only a sequel number could double-count that one shared concept against
+    /// SimilarityScorer's flat per-token intersection count, outweighing what a single
+    /// shared, genuinely distinctive word would contribute. Canonicalizing keeps the
+    /// cross-notation matching without that duplication: a numeral occupies exactly one
+    /// slot either way.
+    ///
+    /// Single Roman letters (I, V, X, L, C, D, M) are deliberately never auto-converted
+    /// — too ambiguous with real standalone letters like "Mega Man X" — consistent with
+    /// the 1-letter-token rule.</summary>
+    private static string NormalizeNumeralToken(string token)
     {
         if (int.TryParse(token, out var n) && n is > 0 and <= 3999)
-        {
-            tokens.Add(ArabicToRoman(n).ToLowerInvariant());
-        }
-        else if (token.Length >= 2 && !KnownRomanLookalikes.Contains(token) && RomanNumeralPattern().IsMatch(token))
+            return token; // already the canonical arabic form
+
+        if (token.Length >= 2 && !KnownRomanLookalikes.Contains(token) && RomanNumeralPattern().IsMatch(token))
         {
             var arabic = RomanToArabic(token);
             if (arabic is > 0)
-                tokens.Add(arabic.Value.ToString());
+                return arabic.Value.ToString();
         }
+
+        return token; // not a numeral at all
     }
 
     /// <summary>Real words that are also syntactically valid Roman numerals — most
@@ -197,27 +208,6 @@ public static partial class NameNormalizer
     {
         if (token.Length == 4 && int.TryParse(token, out var year) && year is > 1899 and < 2010)
             tokens.Add(token[2..]);
-    }
-
-    private static readonly (int Value, string Numeral)[] RomanValues =
-    [
-        (1000, "M"), (900, "CM"), (500, "D"), (400, "CD"),
-        (100, "C"), (90, "XC"), (50, "L"), (40, "XL"),
-        (10, "X"), (9, "IX"), (5, "V"), (4, "IV"), (1, "I"),
-    ];
-
-    private static string ArabicToRoman(int value)
-    {
-        var sb = new StringBuilder();
-        foreach (var (v, numeral) in RomanValues)
-        {
-            while (value >= v)
-            {
-                sb.Append(numeral);
-                value -= v;
-            }
-        }
-        return sb.ToString();
     }
 
     private static readonly Dictionary<char, int> RomanDigitValues = new()
