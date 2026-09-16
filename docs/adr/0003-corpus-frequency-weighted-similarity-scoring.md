@@ -2,8 +2,7 @@
 
 ## Status
 
-Accepted in principle — implementation and cross-library-size validation
-pending
+Design finalized — implementation and cross-library-size validation pending
 
 ## Context
 
@@ -21,20 +20,138 @@ accuracy thresholds.
 
 ## Decision
 
-Move to corpus-frequency-weighted scoring, in the spirit of TF-IDF: weight
-each token's contribution to the intersection by how rare it is across the
-current scan's own corpus (inverse document frequency), rather than counting
-every shared token as 1. A token present in only a few entries contributes
-close to full weight; a token present in a large fraction of entries
-contributes close to none. `MatchingService.BuildImageIndex`'s existing
-inverted index (`Dictionary<string, List<int>>`) already tracks, for free,
-how many images contain each token (`index[token].Count`) — the
-document-frequency input this needs already exists as a side effect of the
-existing recall/candidacy lookup. The ROM side has no equivalent index today
-and will need one built the same way for symmetric weighting.
+### Formula
+
+Weight each token's contribution by how rare it is across the scan's corpus,
+in the spirit of TF-IDF/inverse document frequency — but weight **both**
+sides of the containment ratio, not just the shared-token count:
+
+```
+weightedIntersect = Σ weight(t) for t in (A ∩ B)
+scoreFromA = weightedIntersect / Σ weight(t) for t in A
+scoreFromB = weightedIntersect / Σ weight(t) for t in B
+score = average(scoreFromA, scoreFromB) * 100
+```
+
+This isn't a stylistic choice — it's forced by an invariant the existing
+formula already guarantees and that we shouldn't give up: identical token
+sets must score exactly 100%. If only the numerator were weighted (`Σ
+weight(t) for t in A∩B` divided by a *plain* `|A|`), a set matched against
+itself would score the *average weight* of its own tokens, not 1 — breaking
+100%-on-identical-match for any title not made entirely of maximally-rare
+tokens. Weighting both sides makes numerator and denominator the same sum
+when `A == B`, so the ratio is exactly 1 regardless of what the individual
+weights are — the guarantee falls out of the algebra rather than needing
+special-cased code.
+
+`weight(t)` itself, normalized to `[0, 1]` so it composes cleanly into a
+percentage-based formula (raw IDF, `log(N/df)`, is unbounded and grows with
+corpus size):
+
+```
+weight(t) = 1 - log(df(t)) / log(N)
+```
+
+where `df(t)` = number of documents (ROM + image titles combined — see
+below) containing token `t`, and `N` = total document count. `df(t) = 1`
+(as rare as possible) → weight 1. `df(t) = N` (in every document) → weight
+0. **Guard: if `N ≤ 1`, define every token's weight as 1** (rarity is
+meaningless with zero or one document to measure it against, and the raw
+formula divides by `log(N) = 0` in that case — this is a correctness fix
+required regardless of anything else below, not a design choice).
+
+### One combined corpus, not two
+
+Document frequency is computed over ROM titles and image titles *together*
+as a single population, rather than keeping separate ROM-corpus and
+image-corpus frequency tables. Keeping them separate would create a real
+ambiguity: a shared (intersecting) token would need one `weight(t)` value,
+but a two-corpus setup could compute two different values for it (rare among
+ROMs, common among images, or vice versa) with no principled way to pick
+between them short of an arbitrary tie-break. A single combined corpus gives
+every token exactly one document frequency and therefore exactly one weight,
+used consistently on both sides of the ratio and in the intersection term.
+
+### Where the document frequencies come from
+
+Images already have this for free: `BuildImageIndex`'s existing inverted
+index (`Dictionary<string, List<int>>`) tracks, per token, which images
+contain it — `index[token].Count` is document frequency, no extra work
+needed. ROMs have no equivalent today (tokenized on the fly, inside the main
+matching loop, and discarded immediately after use). This adds a ROM-side
+pre-pass, shaped like `BuildImageIndex` but simpler:
+
+- A plain `Dictionary<string, int>` (token → count), not a full inverted
+  index — ROMs never need "which ROMs contain this token" for a lookup the
+  way images do (nothing does a reverse candidacy search from an image back
+  to ROMs); only the count is needed for weighting.
+- As a side effect, caches each ROM's own tokenized set, so the main
+  matching loop can reuse it instead of re-tokenizing the same ROM a second
+  time.
+
+Combined: `df(t) = image_index[t].Count + rom_token_freq[t]`, `N =
+images.Count + roms.Count`. Every token's `weight(t)` is precomputed once,
+right after both passes finish and before the main matching loop starts —
+not recomputed per candidate pair, since `weight(t)` only depends on the
+token, and the same common tokens (a bare "2", a region tag) get looked at
+across many candidate comparisons.
+
+### Scope: only the token universe candidacy already uses
+
+There are two separate scoring computations today: a candidacy/threshold
+score (decides whether something becomes a candidate at all) using
+*stripped* tokens (tags removed, or left untouched if "Disregard ROM tags"
+is off — either way, whatever `NameNormalizer.ToTokens`'s default
+`StripPerSettings` handling produces), and — only when "Disregard ROM tags"
+is on — a *separate* display-only score recomputed with tag-inclusive
+tokens (tags canonicalized, not removed), since a token like `"(japan)"`
+only exists in that second universe.
+
+This weighting applies only to the first (candidacy) universe — the same
+one `BuildImageIndex` and the new ROM-side pass already tokenize. The
+tag-inclusive display recomputation is left unweighted for now. Reasoning:
+the false-positive problem this ADR exists to fix is a candidacy problem
+(an unrelated title clearing the threshold at all) — fixing that already
+prevents the bad candidate from ever reaching the display-score computation,
+which doesn't gate anything and only cosmetically affects an already-good
+candidate's shown percentage. Weighting it too would require eagerly
+tokenizing every ROM and image with `ForceInclude` up front to get a
+corpus-wide count — but that computation is deliberately lazy today (only
+run for images that already survived the stripped-token threshold, cached
+in `fullTokenCache`), and abandoning that laziness to support a score that
+doesn't gate anything isn't justified without evidence it's still a problem
+after the candidacy fix lands. When "Disregard ROM tags" is off, there's no
+split at all — the one computation both universes use is the (unweighted-
+for-tags-but-otherwise-weighted) stripped-token one, so this scope
+boundary only actually excludes something in the "tags on" configuration.
+
+### Small-corpus behavior: validate before adding complexity
+
+The weight formula is legitimately more sensitive with a small `N` — e.g. at
+`N = 5`, a token's `df` going from 1 to 2 swings its weight from 1.0 to
+~0.57, a much bigger jump than the same `df` change would cause at `N =
+2500`. Three ways to soften this were considered — a hard corpus-size floor
+below which weighting is disabled entirely (simple, but the threshold is
+arbitrary and small libraries get none of this fix's benefit), a smooth
+blend between weighted and flat scoring that phases in as `N` grows (no hard
+cliff, but still has an arbitrary saturation constant), and additive/
+Laplace-style smoothing inside the formula itself (`1 - log(df+k)/log(N+k)`,
+softens but doesn't eliminate small-N sensitivity, still needs `k` chosen).
+None of these are adopted yet. Real scan data already exists across a
+genuine size range (8, 44, 80, and 2,526 ROMs, from earlier profiling this
+session) — the plan is to implement the plain formula (with only the `N ≤
+1` crash-guard above, which is unconditional regardless of this question)
+and run it against that same range before deciding whether any of the three
+options is actually needed, rather than picking one speculatively.
 
 ## Alternatives considered
 
+- **Weight only the numerator, leave denominators as plain counts**:
+  rejected — breaks the "identical sets score 100%" guarantee, as derived
+  above.
+- **Separate ROM-corpus and image-corpus frequency tables**: rejected —
+  creates an unresolvable ambiguity for which weight applies to a token
+  shared between the two corpora, without a principled tie-break rule.
 - **Explicitly flag and discount "generated variant" tokens** (Roman-numeral/
   year aliases) rather than general corpus-frequency weighting: narrower —
   only fixes numeral-shaped collisions, not other generic-but-not-numeral
@@ -51,15 +168,17 @@ and will need one built the same way for symmetric weighting.
   degrade on very small libraries (rarity isn't a meaningful signal with only
   a handful of documents to measure it against) — a toggle would leave a user
   with a small collection quietly getting worse results with no way to know
-  why. That's a real problem to solve directly (e.g. a minimum-corpus-size
-  floor before weighting applies), not one to defer to user choice.
+  why. That's a problem to solve directly (see "Small-corpus behavior"
+  above), not one to defer to user choice.
 
 ## Consequences
 
-Needs a document-frequency source for ROM tokens (new), not just image
-tokens (existing). Must be validated across a range of library sizes before
-being treated as final — specifically including a small library (e.g. the
-~8-ROM case already seen in earlier testing) to confirm it doesn't misbehave
-exactly where the "Alternatives considered" concern predicts it might.
-Implementation should happen on its own git branch (see ADR-0001) so it can
-be compared against real scans before merging.
+Needs a document-frequency source for ROM tokens (new, a lightweight
+`Dictionary<string, int>` pre-pass), not just image tokens (existing, from
+`BuildImageIndex`). `SimilarityScorer.ScorePercent`'s signature changes to
+accept a weight lookup rather than working from raw set sizes alone. Must be
+validated across the same range of real library sizes already profiled this
+session before being treated as final, per the "Small-corpus behavior"
+section above. Implementation happens on `experiment/tfidf-weighting` (see
+ADR-0001) so it can be compared against real scans before merging into
+`main`.
