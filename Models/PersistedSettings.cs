@@ -48,4 +48,8 @@ public sealed class PersistedSettings
     /// MatchSettings.IgnoredRomPaths. Persisted so an ignored ROM stays skipped across
     /// launches, not just for the rest of the current session.</summary>
     public List<string>? IgnoredRomPaths { get; set; }
+
+    /// <summary>Full folder paths the user has explicitly ignored — see
+    /// MatchSettings.IgnoredRomFolders.</summary>
+    public List<string>? IgnoredRomFolders { get; set; }
 }

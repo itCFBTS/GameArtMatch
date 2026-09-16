@@ -28,6 +28,12 @@ public partial class MainViewModel : ViewModelBase
     public MatchViewModel MatchVm { get; }
     public ReportViewModel ReportVm { get; }
 
+    public IgnoredRomsViewModel IgnoredRomsVm { get; }
+
+    /// <summary>Folder the persisted settings.json lives in — backs File > Open Settings
+    /// Folder (see MainWindow.axaml.cs).</summary>
+    public string SettingsFolderPath => _settingsStore.FolderPath;
+
     /// <summary>Raised (via the view) to show the About dialog — kept out of the tab strip
     /// per the request to move it into a menu instead of a launcher button.</summary>
     public event System.EventHandler? AboutRequested;
@@ -71,6 +77,10 @@ public partial class MainViewModel : ViewModelBase
             foreach (var path in ignored)
                 Settings.IgnoredRomPaths.Add(path);
 
+        if (persisted.IgnoredRomFolders is { } ignoredFolders)
+            foreach (var folder in ignoredFolders)
+                Settings.IgnoredRomFolders.Add(folder);
+
         // Plain "resume where I left off" — restored as-is, deliberately BEFORE the
         // PropertyChanged subscription below attaches, so this exact restoration wins
         // at startup rather than the map (below) potentially overriding ImagesPath.
@@ -83,11 +93,13 @@ public partial class MainViewModel : ViewModelBase
         Settings.PropertyChanged += OnSettingsPropertyChanged;
 
         MatchVm = new MatchViewModel(Settings, matchingService, renameService);
-        ReportVm = new ReportViewModel(Settings, matchingService);
+        ReportVm = new ReportViewModel(Settings, MatchVm);
+        IgnoredRomsVm = new IgnoredRomsViewModel(Settings);
 
         MatchVm.ScanStarting += OnMatchScanStarting;
         MatchVm.RomIgnored += OnRomIgnored;
         ReportVm.IgnoredRomPathsChanged += OnRomIgnored;
+        IgnoredRomsVm.IgnoredRomPathsChanged += OnRomIgnored;
     }
 
     private void OnSettingsPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -134,6 +146,7 @@ public partial class MainViewModel : ViewModelBase
             LastImagesPath = Settings.ImagesPath,
             RomsToImagesPathMap = new Dictionary<string, string>(_romsToImagesPathMap, StringComparer.OrdinalIgnoreCase),
             IgnoredRomPaths = new List<string>(Settings.IgnoredRomPaths),
+            IgnoredRomFolders = new List<string>(Settings.IgnoredRomFolders),
         });
     }
 

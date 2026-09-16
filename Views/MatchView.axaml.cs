@@ -9,6 +9,7 @@ using Avalonia.Interactivity;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using GameArtMatch.Models;
+using GameArtMatch.Services;
 using GameArtMatch.ViewModels;
 
 namespace GameArtMatch.Views;
@@ -114,5 +115,32 @@ public partial class MatchView : UserControl
         var targets = selected.Contains(rightClicked) ? selected : new List<RomMatchGroup> { rightClicked };
 
         vm.IgnoreRomsCommand.Execute(targets);
+    }
+
+    // Always acts on just the right-clicked row, not the broader multi-selection —
+    // unlike OnIgnoreRomClick above, opening a file manager window per selected row
+    // wouldn't make sense (see FileExplorerService's doc comment).
+
+    private void OnOpenRomFilePathClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is MenuItem { DataContext: RomMatchGroup group })
+            FileExplorerService.Reveal(group.RomFullPath);
+    }
+
+    // e.Source (not sender) deliberately — this handler is attached to the parent
+    // "Ignore Folder" MenuItem, and Click bubbles up from whichever auto-generated
+    // child (one per IgnorableAncestorFolders entry) was actually clicked; sender here
+    // would always be the parent itself (DataContext = RomMatchGroup, not a folder
+    // path), while e.Source is the specific child that raised the event.
+    private void OnIgnoreFolderClick(object? sender, RoutedEventArgs e)
+    {
+        if (e.Source is MenuItem { DataContext: string folderPath } && DataContext is MatchViewModel vm)
+            vm.IgnoreFolderCommand.Execute(folderPath);
+    }
+
+    private void OnOpenImageFilePathClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is MenuItem { DataContext: MatchCandidate candidate })
+            FileExplorerService.Reveal(candidate.ImageFullPath);
     }
 }

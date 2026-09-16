@@ -28,6 +28,17 @@ public partial class RomMatchGroup : ObservableObject
     /// filename) to persist an unambiguous entry in MatchSettings.IgnoredRomPaths.</summary>
     public string RomFullPath { get; }
 
+    /// <summary>Every folder between this ROM and the scan's RomsPath, nearest first —
+    /// e.g. for a ROM at ".../Saturn/Extras/Palettes/file.pal" scanned with RomsPath
+    /// ".../Saturn", this is [".../Saturn/Extras/Palettes", ".../Saturn/Extras"].
+    /// RomsPath itself is deliberately never included — ignoring the folder you
+    /// explicitly configured as the scan root would silently zero out an entire
+    /// system with no obvious explanation why, so "Ignore Folder" (see MatchView.axaml's
+    /// context menu) never offers it as an option. Backs that menu's ItemsSource.</summary>
+    public IReadOnlyList<string> IgnorableAncestorFolders { get; }
+
+    public bool HasIgnorableAncestorFolders => IgnorableAncestorFolders.Count > 0;
+
     /// <summary>The full, unfiltered set of candidates — selection/exclusivity logic
     /// always operates on this, regardless of what the Match tab's filters currently
     /// show. See VisibleCandidates for the filtered view the tree actually binds to.</summary>
@@ -47,9 +58,16 @@ public partial class RomMatchGroup : ObservableObject
     /// cycle) is a no-op; indeterminate isn't something the user deliberately picks.</summary>
     [ObservableProperty] public partial bool? IsAllSelected { get; set; }
 
+    /// <summary>Defaults to expanded — safe because MatchViewModel.OnRomMatched adds one
+    /// group at a time as a scan streams in, so the TreeView only ever has to realize one
+    /// group's candidate rows per call rather than every group's at once. That per-call
+    /// realization naturally interleaves with rendering the same way the rest of a
+    /// streamed scan does, amortizing the cost across the whole Matching phase instead of
+    /// dumping it into a single synchronous burst at some later moment (a full scan
+    /// finishing, or a first "Expand All" click).</summary>
     [ObservableProperty] public partial bool IsExpanded { get; set; } = true;
 
-    public RomMatchGroup(string romFileName, IEnumerable<MatchCandidate> candidates)
+    public RomMatchGroup(string romFileName, IEnumerable<MatchCandidate> candidates, string romsPath)
     {
         RomFileName = romFileName;
 
@@ -58,6 +76,7 @@ public partial class RomMatchGroup : ObservableObject
         // incoming sequence.
         var candidateList = candidates.ToList();
         RomFullPath = candidateList.Count > 0 ? candidateList[0].RomFullPath : "";
+        IgnorableAncestorFolders = FolderAncestry.ComputeIgnorableAncestorFolders(RomFullPath, romsPath);
 
         // Cluster byte-identical images (same ContentHash) adjacent to each other, so
         // MatchViewModel.ApplyFilters can label every one after the first "Same as
@@ -71,6 +90,31 @@ public partial class RomMatchGroup : ObservableObject
         Candidates = new ObservableCollection<MatchCandidate>(clustered);
 
         foreach (var candidate in Candidates)
+            candidate.PropertyChanged += OnCandidatePropertyChanged;
+
+        RecomputeIsAllSelected();
+    }
+
+    /// <summary>Folds a second batch of candidates into this already-constructed group —
+    /// needed because live-streamed results can hand two ROMs the same RomFileName (e.g.
+    /// same-named files in two different subfolders when RomsIncludeSubfolders is on),
+    /// which the old batch code transparently merged into one group by grouping over the
+    /// COMPLETE candidate list up front. Re-clusters the COMBINED set from scratch (not a
+    /// concatenation of two independently-sorted runs) so the global best-match ordering
+    /// matches what the old one-shot construction would have produced.</summary>
+    public void MergeCandidates(IReadOnlyList<MatchCandidate> newCandidates)
+    {
+        var combined = Candidates.Concat(newCandidates)
+            .OrderByBestMatch()
+            .GroupBy(c => c.ContentHash)
+            .SelectMany(g => g)
+            .ToList();
+
+        Candidates.Clear();
+        foreach (var candidate in combined)
+            Candidates.Add(candidate);
+
+        foreach (var candidate in newCandidates)
             candidate.PropertyChanged += OnCandidatePropertyChanged;
 
         RecomputeIsAllSelected();

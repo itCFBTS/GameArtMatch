@@ -1,6 +1,8 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:model="using:GameArtMatch.Models"
+        xmlns:vm="using:GameArtMatch.ViewModels"
+        xmlns:behaviors="using:GameArtMatch.Behaviors"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="520"
@@ -41,7 +43,7 @@
                 <ScrollViewer Margin="16,0,0,0">
                     <StackPanel Spacing="{DynamicResource SpaceSm}">
                         <TextBlock Text="Root folders are remembered between launches and used as the starting point when picking a ROMs/Images folder from the main window."
-                                   TextWrapping="Wrap" Foreground="{DynamicResource ForegroundMutedBrush}" FontSize="{DynamicResource FontSizeSmall}" />
+                                   Classes="hint" />
 
                         <TextBlock Text="ROMs root (e.g. the top of your games library)" />
                         <DockPanel>
@@ -69,17 +71,17 @@
 
                         <Separator Margin="0,8" />
 
-                        <TextBlock Text="Console Mode" FontWeight="Bold" />
+                        <TextBlock Text="Console Mode" Classes="retroLabel" />
                         <CheckBox Content="ROM root is MiSTer games folder using Console Mode media folders"
                                   IsChecked="{Binding IsConsoleMode}" />
                         <TextBlock Text="Each system folder has its own 'media' subfolder for box art (e.g. MegaCD/media/Sonic CD (USA).png)."
-                                   TextWrapping="Wrap" Foreground="{DynamicResource ForegroundMutedBrush}" FontSize="{DynamicResource FontSizeSmall}" Margin="24,-6,0,0" />
+                                   Classes="hint" Margin="24,-6,0,0" />
 
                         <CheckBox Content="Skip ROMs that already have matching art"
                                   IsChecked="{Binding SkipExistingArt}"
                                   IsEnabled="{Binding IsConsoleMode}" Margin="0,4,0,0" />
                         <TextBlock Text="Checks &lt;RomsPath&gt;/media/&lt;name&gt;.png/.jpg/.jpeg before matching."
-                                   TextWrapping="Wrap" Foreground="{DynamicResource ForegroundMutedBrush}" FontSize="{DynamicResource FontSizeSmall}" Margin="24,-6,0,0" />
+                                   Classes="hint" Margin="24,-6,0,0" />
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
@@ -111,6 +113,86 @@
                         <CheckBox Content="Export copy script" IsChecked="{Binding ExportCopyScript}" />
                     </StackPanel>
                 </ScrollViewer>
+            </TabItem>
+
+            <!-- x:CompileBindings="False" — this tab's own DataContext (set below via
+                 $parent[Window]) is IgnoredRomsViewModel, not this Window's MatchSettings,
+                 so compiled bindings (which assume x:DataType="model:MatchSettings" from
+                 the Window root) don't apply here; same opt-out the old Report window's
+                 Ignored tab used for the same reason. -->
+            <TabItem Header="Ignored ROMs" x:CompileBindings="False">
+                <Grid DataContext="{Binding $parent[Window].IgnoredRomsVm}" Margin="16,0,0,0" RowDefinitions="Auto,Auto,Auto,*">
+                    <TextBlock Grid.Row="0" Text="ROMs excluded via &quot;Ignore Selected ROM(s)&quot;, grouped by folder — plus whole folders excluded via &quot;Ignore Folder&quot;, listed separately below."
+                               Classes="hint" Margin="0,0,0,8" />
+
+                    <!-- Whole ignored folders — a separate MatchSettings.IgnoredRomFolders
+                         setting, not the same thing as a folder that merely happens to
+                         contain some individually-ignored files (the tree below), so kept
+                         visually distinct rather than merged into that tree. -->
+                    <StackPanel Grid.Row="1" Spacing="{DynamicResource SpaceXs}" Margin="0,0,0,8"
+                                IsVisible="{Binding HasIgnoredFolders}">
+                        <TextBlock Text="Ignored folders" Classes="retroLabel" />
+                        <!-- Height, not MaxHeight — a virtualizing ListBox placed in an
+                             unbounded ("Auto" row) height often can't compute a
+                             virtualization window and realizes zero items; MaxHeight
+                             alone only caps a height, it doesn't force a real one. -->
+                        <ListBox Name="IgnoredFoldersList" ItemsSource="{Binding IgnoredFolders}"
+                                 SelectionMode="Multiple" Height="120">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ContextFlyout>
+                                            <MenuFlyout>
+                                                <MenuItem Header="Open File Path" Click="OnOpenIgnoredFolderPathClick" />
+                                                <MenuItem Header="Un-ignore Selected Folder(s)" Click="OnUnignoreFolderClick" />
+                                            </MenuFlyout>
+                                        </Grid.ContextFlyout>
+                                        <Border ClipToBounds="True" Height="20">
+                                            <Canvas>
+                                                <TextBlock Text="{Binding}" behaviors:MarqueeOnHoverBehavior.IsEnabled="True" />
+                                            </Canvas>
+                                        </Border>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </StackPanel>
+
+                    <TextBlock Grid.Row="2" Text="No individually-ignored ROMs." Classes="muted"
+                               IsVisible="{Binding !HasEntries}" />
+
+                    <!-- Two-level tree, same shape as MatchView's ROM/candidate tree — a
+                         folder is a node, the ignored ROMs directly inside it nest underneath.
+                         HorizontalScrollBarVisibility="Disabled" — see MatchView.axaml's
+                         ResultsTree for why (TreeView's "Auto" default breaks both plain
+                         truncation and MarqueeOnHoverBehavior's overflow math). -->
+                    <TreeView Grid.Row="3" Name="IgnoredTree" ItemsSource="{Binding Groups}"
+                              SelectionMode="Multiple" IsVisible="{Binding HasEntries}"
+                              ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                        <TreeView.ItemTemplate>
+                            <TreeDataTemplate DataType="vm:IgnoredRomGroup" ItemsSource="{Binding Entries}">
+                                <TextBlock Text="{Binding FolderPath}" FontWeight="Bold" />
+                            </TreeDataTemplate>
+                        </TreeView.ItemTemplate>
+                        <TreeView.DataTemplates>
+                            <DataTemplate DataType="model:IgnoredRomEntry">
+                                <Grid>
+                                    <Grid.ContextFlyout>
+                                        <MenuFlyout>
+                                            <MenuItem Header="Open File Path" Click="OnOpenIgnoredFilePathClick" />
+                                            <MenuItem Header="Un-ignore Selected ROM(s)" Click="OnUnignoreClick" />
+                                        </MenuFlyout>
+                                    </Grid.ContextFlyout>
+                                    <Border ClipToBounds="True" Height="20">
+                                        <Canvas>
+                                            <TextBlock Text="{Binding FileName}" behaviors:MarqueeOnHoverBehavior.IsEnabled="True" />
+                                        </Canvas>
+                                    </Border>
+                                </Grid>
+                            </DataTemplate>
+                        </TreeView.DataTemplates>
+                    </TreeView>
+                </Grid>
             </TabItem>
 
         </TabControl>

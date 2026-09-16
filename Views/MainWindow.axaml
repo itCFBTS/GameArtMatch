@@ -17,10 +17,50 @@
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
+                <MenuItem Header="_Rename Selected" Command="{Binding MatchVm.RenameFilesCommand}" />
+                <Separator />
                 <MenuItem Header="_Report..." Command="{Binding OpenReportCommand}" />
                 <MenuItem Header="_Options..." Command="{Binding OpenOptionsCommand}" />
+                <MenuItem Header="Open Settings _Folder" Click="OnOpenSettingsFolderClick" />
                 <Separator />
                 <MenuItem Header="_Exit" Click="OnExitClick" />
+            </MenuItem>
+            <MenuItem Header="_Select">
+                <MenuItem Header="Select Best Matched" Command="{Binding MatchVm.SelectBestMatchedCommand}" />
+                <MenuItem Header="Select Single Matches" Command="{Binding MatchVm.SelectSingleMatchesCommand}" />
+                <Separator />
+                <MenuItem Header="Deselect All" Command="{Binding MatchVm.DeselectAllCommand}" />
+            </MenuItem>
+            <MenuItem Header="_View">
+                <MenuItem Header="{Binding MatchVm.ExpandCollapseButtonText}" Command="{Binding MatchVm.ToggleExpandCollapseCommand}" />
+                <Separator />
+                <!-- Post-scan display filters — hide/show already-computed rows, don't
+                     re-run matching. File type only ever restricts ROMs; region restricts
+                     both ROMs and images, except English Translated, which always shows
+                     every image (see RegionFilter.Matches).
+                     File Type/Region are single-choice from a dynamic, scan-dependent
+                     list (MatchVm.AvailableFileTypes/AvailableRegions), so each is its own
+                     submenu of radio-checkable items rather than a combo box embedded in
+                     a menu — Click bubbles up from whichever auto-generated child was
+                     actually clicked (see OnFileTypeClick/OnRegionClick, which read
+                     e.Source for exactly that reason, same technique as MatchView's
+                     "Ignore Folder" submenu), and SubmenuOpened refreshes each child's
+                     checkmark against the current selection right before it's shown
+                     (see OnFileTypeSubmenuOpened/OnRegionSubmenuOpened) rather than via a
+                     live two-way binding, since nothing needs to reflect a change while
+                     the submenu isn't even open. The parent item's own header shows the
+                     current selection ("File Type: All") so it's visible without opening
+                     the submenu at all. -->
+                <MenuItem Header="{Binding MatchVm.SelectedFileType, StringFormat='File Type: {0}'}"
+                          ItemsSource="{Binding MatchVm.AvailableFileTypes}"
+                          Click="OnFileTypeClick" SubmenuOpened="OnFileTypeSubmenuOpened" />
+                <MenuItem Header="{Binding MatchVm.SelectedRegion, StringFormat='Region: {0}'}"
+                          ItemsSource="{Binding MatchVm.AvailableRegions}"
+                          Click="OnRegionClick" SubmenuOpened="OnRegionSubmenuOpened" />
+                <MenuItem Header="Exact Score Only" ToggleType="CheckBox"
+                          IsChecked="{Binding MatchVm.ShowOnlyExactScoreMatches, Mode=TwoWay}" />
+                <MenuItem Header="Hide Same Images" ToggleType="CheckBox"
+                          IsChecked="{Binding MatchVm.HideSameImages, Mode=TwoWay}" />
             </MenuItem>
             <MenuItem Header="_Help">
                 <MenuItem Header="_About" Command="{Binding ShowAboutCommand}" />
@@ -35,6 +75,8 @@
         <DockPanel>
             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Left"
                         Spacing="{DynamicResource SpaceLg}" Margin="16,10,0,10">
+                <Button Content="{Binding MatchVm.StartCancelButtonText}" Command="{Binding MatchVm.ToggleStartCancelCommand}"
+                        VerticalAlignment="Center" />
                 <StackPanel Orientation="Horizontal" Spacing="{DynamicResource SpaceXs}">
                     <TextBlock Text="ROMs:" VerticalAlignment="Center" />
                     <TextBox Text="{Binding Settings.RomsPathDisplayName}" IsReadOnly="True"

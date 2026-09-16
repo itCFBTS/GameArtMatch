@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -25,18 +26,40 @@ public sealed class MatchingService : IMatchingService
 {
     private readonly record struct ImageEntry(string Path, HashSet<string> Tokens);
 
-    public async Task<IReadOnlyList<MatchCandidate>> FindMatchesAsync(
+    public async Task<MatchScanResult> FindMatchesAsync(
         MatchSettings settings,
         IProgress<MatchProgress>? progress,
+        IProgress<RomMatchResult>? romMatched,
         CancellationToken cancellationToken)
     {
-        return await Task.Run(() =>
+        var (results, missing, imageUseCount) = await Task.Run(() =>
         {
-            var roms = ListRoms(settings);
-            var images = ListFiles(settings.ImagesPath, settings.ImagesExtensions, settings.ImagesIncludeSubfolders);
+            // TEMPORARY: per-phase timing to inform how the progress bar should weight
+            // each phase (see MatchViewModel.IndexingPhaseWeight, currently a guess) —
+            // remove once that decision is made from real numbers across a few
+            // differently-sized ROM sets.
+            var totalStopwatch = Stopwatch.StartNew();
+
+            progress?.Report(new MatchProgress(MatchPhase.Listing, 0, 0, "ROMs"));
+            var romsStopwatch = Stopwatch.StartNew();
+            var roms = ListRoms(settings, progress, cancellationToken);
+            Console.WriteLine($"[Timing] ROMs listing (incl. existing-art check): {romsStopwatch.ElapsedMilliseconds}ms, {roms.Count} ROMs");
+
+            progress?.Report(new MatchProgress(MatchPhase.Listing, 0, 0, "images"));
+            var imagesStopwatch = Stopwatch.StartNew();
+            var images = ListFiles(settings.ImagesPath, settings.ImagesExtensions, settings.ImagesIncludeSubfolders, progress, "images", cancellationToken);
+            Console.WriteLine($"[Timing] Images listing: {imagesStopwatch.ElapsedMilliseconds}ms, {images.Count} images");
+
+            var indexStopwatch = Stopwatch.StartNew();
             var (index, entries) = BuildImageIndex(images, settings, progress, cancellationToken);
+            Console.WriteLine($"[Timing] Indexing: {indexStopwatch.ElapsedMilliseconds}ms");
 
             var results = new List<MatchCandidate>();
+            // A ROM that scores zero candidates above the threshold — tracked as a side
+            // effect of this same pass rather than via a separate FindMissingAsync scan,
+            // so the Report window's Missing tab (see MatchViewModel.MissingRoms) can
+            // just read this instead of re-scanning from scratch.
+            var missing = new List<ReportEntry>();
             var imageUseCount = new Dictionary<string, int>();
 
             // Populated lazily inside FindCandidates, keyed by index into entries — an
@@ -55,13 +78,14 @@ public sealed class MatchingService : IMatchingService
             // dispatcher posts than a progress bar can even visually distinguish.
             var reportInterval = Math.Max(1, roms.Count / 200);
 
+            var matchingStopwatch = Stopwatch.StartNew();
             for (var i = 0; i < roms.Count; i++)
             {
                 var rom = roms[i];
                 cancellationToken.ThrowIfCancellationRequested();
 
                 if (i % reportInterval == 0 || i == roms.Count - 1)
-                    progress?.Report(new MatchProgress(MatchPhase.Scanning, i + 1, roms.Count, Path.GetFileName(rom)));
+                    progress?.Report(new MatchProgress(MatchPhase.Matching, i + 1, roms.Count, Path.GetFileName(rom)));
 
                 var romFileName = Path.GetFileName(rom);
                 var romBaseName = Path.GetFileNameWithoutExtension(rom) ?? "";
@@ -76,9 +100,16 @@ public sealed class MatchingService : IMatchingService
 
                 var candidates = FindCandidates(romFileName, romTokens, romFullTokens, index, entries, fullTokenCache, contentHashCache, settings.AccuracyThreshold, settings);
 
+                if (candidates.Count == 0)
+                {
+                    missing.Add(new ReportEntry(romFileName, rom, null, settings.RomsPath));
+                    continue;
+                }
+
+                var romResults = new List<MatchCandidate>(candidates.Count);
                 foreach (var c in candidates.OrderByDescending(x => x.DisplayScore))
                 {
-                    results.Add(new MatchCandidate
+                    var candidate = new MatchCandidate
                     {
                         RomFileName = romFileName,
                         RomFullPath = rom,
@@ -87,72 +118,33 @@ public sealed class MatchingService : IMatchingService
                         ScorePercent = c.DisplayScore,
                         IsExactMatch = c.IsExactMatch,
                         ContentHash = c.ContentHash,
-                    });
+                    };
+                    romResults.Add(candidate);
                     imageUseCount[c.Entry.Path] = imageUseCount.GetValueOrDefault(c.Entry.Path) + 1;
                 }
+                results.AddRange(romResults);
+                romMatched?.Report(new RomMatchResult(romFileName, romResults));
             }
+            Console.WriteLine($"[Timing] Matching: {matchingStopwatch.ElapsedMilliseconds}ms, {roms.Count} ROMs scored, {results.Count} candidates found");
+            Console.WriteLine($"[Timing] TOTAL: {totalStopwatch.ElapsedMilliseconds}ms");
 
-            foreach (var candidate in results)
-                candidate.IsDuplicate = imageUseCount[candidate.ImageFullPath] > 1;
-
-            return (IReadOnlyList<MatchCandidate>)results;
+            return (results, missing, imageUseCount);
         }, cancellationToken);
-    }
 
-    public async Task<IReadOnlyList<ReportEntry>> FindMissingAsync(MatchSettings settings, CancellationToken cancellationToken)
-    {
-        return await Task.Run(() =>
-        {
-            var roms = ListRoms(settings);
-            var images = ListFiles(settings.ImagesPath, settings.ImagesExtensions, settings.ImagesIncludeSubfolders);
-            var (index, entries) = BuildImageIndex(images, settings, progress: null, cancellationToken);
+        // Cross-ROM: an image only "counts" as reused once every ROM that might claim
+        // it has been scanned, so this can't run until the whole loop above is done —
+        // deliberately kept OUTSIDE the Task.Run background-thread lambda, since by now
+        // early-arriving candidates are likely already sitting inside ObservableCollections
+        // bound to a live TreeView (see RomMatchResult's doc comment). Mutating IsDuplicate
+        // from a background thread would raise PropertyChanged off the UI thread for
+        // objects already exposed to Avalonia's binding system; running it here instead,
+        // after the await, resumes on the caller's captured SynchronizationContext (the UI
+        // thread, since MatchViewModel.StartAsync is the caller) with no manual Dispatcher
+        // code needed in this UI-framework-agnostic service.
+        foreach (var candidate in results)
+            candidate.IsDuplicate = imageUseCount[candidate.ImageFullPath] > 1;
 
-            // romFullTokens/contentHashCache deliberately null — the Report tab never
-            // surfaces scores or a content-identical marker (ReportEntry has neither
-            // field), so there's no reason to pay for the tag-inclusive rescore or the
-            // file-hashing pass here. Deliberate opt-outs for cost, not oversights —
-            // don't "fix" these to match the Match tab's behavior.
-            var unusedTokenCache = new Dictionary<int, HashSet<string>?>();
-
-            var missing = new List<ReportEntry>();
-            foreach (var rom in roms)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                var romTokens = NameNormalizer.ToTokens(Path.GetFileNameWithoutExtension(rom) ?? "", settings);
-                if (FindCandidates(Path.GetFileName(rom), romTokens, null, index, entries, unusedTokenCache, null, settings.AccuracyThreshold, settings).Count == 0)
-                    missing.Add(new ReportEntry(Path.GetFileName(rom), rom, null));
-            }
-
-            return (IReadOnlyList<ReportEntry>)missing;
-        }, cancellationToken);
-    }
-
-    public async Task<IReadOnlyList<ReportEntry>> FindMatchedAsync(MatchSettings settings, CancellationToken cancellationToken)
-    {
-        return await Task.Run(() =>
-        {
-            var roms = ListRoms(settings);
-            var images = ListFiles(settings.ImagesPath, settings.ImagesExtensions, settings.ImagesIncludeSubfolders);
-            var (index, entries) = BuildImageIndex(images, settings, progress: null, cancellationToken);
-
-            // See FindMissingAsync above — romFullTokens/contentHashCache deliberately null here too.
-            var unusedTokenCache = new Dictionary<int, HashSet<string>?>();
-
-            var matched = new List<ReportEntry>();
-            foreach (var rom in roms)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                var romTokens = NameNormalizer.ToTokens(Path.GetFileNameWithoutExtension(rom) ?? "", settings);
-                var candidates = FindCandidates(Path.GetFileName(rom), romTokens, null, index, entries, unusedTokenCache, null, settings.AccuracyThreshold, settings);
-                if (candidates.Count > 0)
-                {
-                    var best = candidates.OrderByDescending(c => c.DisplayScore).First();
-                    matched.Add(new ReportEntry(Path.GetFileName(rom), rom, Path.GetFileName(best.Entry.Path)));
-                }
-            }
-
-            return (IReadOnlyList<ReportEntry>)matched;
-        }, cancellationToken);
+        return new MatchScanResult(results, missing);
     }
 
     private static (Dictionary<string, List<int>> Index, List<ImageEntry> Entries) BuildImageIndex(
@@ -280,28 +272,58 @@ public sealed class MatchingService : IMatchingService
         }
     }
 
-    private static readonly string[] MisterArtExtensions = [".png", ".jpg", ".jpeg"];
-
     /// <summary>MiSTer Console Mode convention: box art lives in a "media" subfolder next
-    /// to the ROMs, named after the ROM (any extension). Used to skip ROMs that already
-    /// have art in place, rather than re-matching/overwriting them.</summary>
-    private static bool HasExistingArt(string romsPath, string? romBaseName)
-    {
-        if (string.IsNullOrWhiteSpace(romBaseName))
-            return false;
-
-        var mediaDir = Path.Combine(romsPath, "media");
-        if (!Directory.Exists(mediaDir))
-            return false;
-
-        return MisterArtExtensions.Any(ext => File.Exists(Path.Combine(mediaDir, romBaseName + ext)));
-    }
+    /// to the ROMs, named after the ROM (any extension).</summary>
+    private static readonly string[] MisterArtExtensions = [".png", ".jpg", ".jpeg"];
 
     /// <summary>ROMs listing that, in Console Mode, always excludes the "media" subfolder —
     /// otherwise a recursive scan would treat existing art files as if they were ROMs.</summary>
-    private static List<string> ListRoms(MatchSettings settings)
+    private static List<string> ListRoms(MatchSettings settings, IProgress<MatchProgress>? progress, CancellationToken cancellationToken)
     {
-        var files = ListFiles(settings.RomsPath, settings.RomsExtensions, settings.RomsIncludeSubfolders);
+        // Built BEFORE listing ROMs (not filtered out afterward) so a ROM that already
+        // has matching art never gets added to the "N ROMs" count in the first place —
+        // the displayed count just climbs straight to its final, already-filtered value
+        // instead of counting up past it and then visibly (or silently) dropping back
+        // down. One enumeration of the media folder, not up to 3 File.Exists syscalls PER
+        // ROM (checking .png/.jpg/.jpeg) like this used to do — for a large library,
+        // especially on slower/mounted storage, that was easily the single slowest step
+        // in the whole scan. A HashSet lookup per ROM afterward is effectively free by
+        // comparison. StringComparer.OrdinalIgnoreCase on both the set and the extension
+        // check makes matching uniformly case-insensitive everywhere — the old
+        // File.Exists approach was actually case-insensitive on Windows but
+        // case-sensitive on Linux (this app targets both), so this is a deliberate small
+        // consistency improvement, not a behavior regression.
+        // TEMPORARY timing breakdown — see FindMatchesAsync's totalStopwatch comment.
+        var mediaScanStopwatch = Stopwatch.StartNew();
+
+        HashSet<string>? existingArtBaseNames = null;
+        if (settings.IsConsoleMode && settings.SkipExistingArt)
+        {
+            var mediaDir = Path.Combine(settings.RomsPath, "media");
+
+            // Left null (not just an empty set) when there's no media folder at all —
+            // nothing to skip, so ListFiles below gets no skip predicate rather than one
+            // that always returns false.
+            if (Directory.Exists(mediaDir))
+            {
+                existingArtBaseNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                var mediaFilesSeen = 0;
+                foreach (var file in Directory.EnumerateFiles(mediaDir))
+                {
+                    if (++mediaFilesSeen % 250 == 0)
+                        cancellationToken.ThrowIfCancellationRequested();
+
+                    if (MisterArtExtensions.Contains(Path.GetExtension(file), StringComparer.OrdinalIgnoreCase))
+                        existingArtBaseNames.Add(Path.GetFileNameWithoutExtension(file));
+                }
+            }
+            Console.WriteLine($"[Timing]   existing-art media scan: {mediaScanStopwatch.ElapsedMilliseconds}ms, {existingArtBaseNames?.Count ?? 0} existing-art basenames");
+        }
+
+        var romWalkStopwatch = Stopwatch.StartNew();
+        var files = ListFiles(settings.RomsPath, settings.RomsExtensions, settings.RomsIncludeSubfolders, progress, "ROMs", cancellationToken,
+            existingArtBaseNames is null ? null : rom => existingArtBaseNames.Contains(Path.GetFileNameWithoutExtension(rom) ?? ""));
+        Console.WriteLine($"[Timing]   ROMs directory walk: {romWalkStopwatch.ElapsedMilliseconds}ms, {files.Count} files kept");
 
         var roms = !settings.IsConsoleMode || !settings.RomsIncludeSubfolders
             ? files
@@ -309,31 +331,84 @@ public sealed class MatchingService : IMatchingService
                 Path.Combine(settings.RomsPath, "media") + Path.DirectorySeparatorChar,
                 StringComparison.OrdinalIgnoreCase)).ToList();
 
-        if (settings.IsConsoleMode && settings.SkipExistingArt)
-            roms = roms.Where(r => !HasExistingArt(settings.RomsPath, Path.GetFileNameWithoutExtension(r))).ToList();
-
-        // Applied last and to every caller (FindMatchesAsync/FindMissingAsync/
-        // FindMatchedAsync all funnel through here) so an ignored ROM never resurfaces
-        // in any of the three, regardless of which RomsPath it's currently found under.
+        // Applied last, so an ignored ROM never resurfaces regardless of which RomsPath
+        // it's currently found under.
         if (settings.IgnoredRomPaths.Count > 0)
             roms = roms.Where(r => !settings.IgnoredRomPaths.Contains(r)).ToList();
 
-        return roms;
+        if (settings.IgnoredRomFolders.Count > 0)
+            roms = roms.Where(r => !settings.IgnoredRomFolders.Any(folder => FolderAncestry.IsUnderFolder(r, folder))).ToList();
+
+        // Sorted once, here, so the Matching loop below scores ROMs in the same order
+        // the UI wants to display them in — MatchViewModel used to re-sort the whole
+        // batch result downstream after the fact; now that results stream in live as
+        // each ROM is scored, they need to already arrive in display order so the UI can
+        // just append instead of needing a sorted-insert. By filename (not full path),
+        // matching the old downstream GroupBy/OrderBy key, so same-named ROMs in
+        // different subfolders still sort adjacently.
+        return roms.OrderBy(r => Path.GetFileName(r), StringComparer.OrdinalIgnoreCase).ToList();
     }
 
-    private static List<string> ListFiles(string folder, string extensionSpec, bool includeSubfolders = false)
+    /// <summary>Reports a running found/examined count as it goes (see MatchPhase.
+    /// Listing) rather than only at the end — Directory.EnumerateFiles streams results
+    /// lazily (unlike Directory.GetFiles, which blocks until it has the whole list), so
+    /// a plain foreach over it already gives incremental results for free, with no need
+    /// for a hand-rolled recursive walker. shouldSkip (see ListRoms' existing-art check)
+    /// excludes a file from the result — and from the reported count — during this same
+    /// walk, rather than the caller filtering the returned list afterward; a skipped file
+    /// still counts toward "examined" (see the throttling comment below), just not
+    /// toward the "N ROMs" figure shown to the user.</summary>
+    private static List<string> ListFiles(
+        string folder, string extensionSpec, bool includeSubfolders,
+        IProgress<MatchProgress>? progress, string listingLabel, CancellationToken cancellationToken,
+        Func<string, bool>? shouldSkip = null)
     {
         if (string.IsNullOrWhiteSpace(folder) || !Directory.Exists(folder))
             return [];
 
         var searchOption = includeSubfolders ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
         var extensions = extensionSpec.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-        if (extensions.Length == 0 || extensions.Contains("*"))
-            return Directory.EnumerateFiles(folder, "*", searchOption).ToList();
 
-        return extensions
-            .SelectMany(ext => Directory.EnumerateFiles(folder, $"*.{ext.TrimStart('.')}", searchOption))
-            .Distinct()
-            .ToList();
+        // Null (not an empty HashSet) signals "match everything" — same one-walk
+        // structure below handles both cases identically rather than duplicating the
+        // foreach for the "*"/no-filter case.
+        HashSet<string>? allowedExtensions = extensions.Length == 0 || extensions.Contains("*")
+            ? null
+            // One walk of the tree regardless of how many extensions are configured —
+            // this used to call Directory.EnumerateFiles once PER extension, each one a
+            // full, separate recursive re-walk of the entire tree from scratch. For a
+            // large multi-system library (especially on slower/network storage), listing
+            // 3-4 extensions meant re-scanning everything 3-4 times over for no reason.
+            // A HashSet lookup per file, in one single pass, is effectively free by
+            // comparison.
+            : new HashSet<string>(extensions.Select(ext => "." + ext.TrimStart('.')), StringComparer.OrdinalIgnoreCase);
+
+        var result = new List<string>();
+        var examined = 0;
+        foreach (var file in Directory.EnumerateFiles(folder, "*", searchOption))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            examined++;
+
+            if ((allowedExtensions is null || allowedExtensions.Contains(Path.GetExtension(file)))
+                && (shouldSkip is null || !shouldSkip(file)))
+                result.Add(file);
+
+            // Throttled to every 250 files EXAMINED, not every 250 matched — a long
+            // stretch of non-matching files (other extensions, save states, whatever
+            // else lives under this root) would otherwise report nothing at all for
+            // however long that stretch takes, which reads as a freeze even though the
+            // walk is still moving. Reporting on examined count keeps this visibly
+            // ticking regardless of how sparse the matches are.
+            if (examined % 250 == 0)
+                progress?.Report(new MatchProgress(MatchPhase.Listing, result.Count, examined, listingLabel));
+        }
+
+        // Final report so the displayed count reflects the true total even when the
+        // walk ends between throttled intervals (e.g. exactly 16,000 examined with no
+        // remainder would otherwise show a stale count from 250 files back).
+        progress?.Report(new MatchProgress(MatchPhase.Listing, result.Count, examined, listingLabel));
+
+        return result;
     }
 }

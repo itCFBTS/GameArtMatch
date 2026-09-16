@@ -36,10 +36,11 @@ public static partial class NameNormalizer
         /// true, so title matching stays insensitive to version/region noise.</summary>
         StripPerSettings,
 
-        /// <summary>Never strip tags — region words inside them are first canonicalized
-        /// (see CanonicalizeRegionTags) so region-spelling differences don't count against
+        /// <summary>Never strip tags — region words, plus a handful of other known
+        /// cross-spelling tag words (e.g. "Prototype"/"Proto"), are first canonicalized
+        /// (see CanonicalizeTagWords) so those spelling differences don't count against
         /// the resulting token set, but every other tag word (version numbers, "Unl",
-        /// "Proto", "Rev A") stays literal and does count.</summary>
+        /// "Rev A") stays literal and does count.</summary>
         ForceInclude,
     }
 
@@ -59,7 +60,7 @@ public static partial class NameNormalizer
         }
         else
         {
-            name = CanonicalizeRegionTags(name);
+            name = CanonicalizeTagWords(name);
         }
 
         name = ApplyPunctuationRules(name);
@@ -101,13 +102,14 @@ public static partial class NameNormalizer
         return tokens;
     }
 
-    /// <summary>Replaces any region-synonym word found inside a "(...)"/"[...]" group
-    /// with its canonical spelling (e.g. "US" -> "USA"), leaving every other word — both
-    /// non-region tag words and the actual title text outside any group — untouched. Run
-    /// as a single pass over the raw string, before punctuation/splitting, because once
-    /// tokens are split there's no way to tell which ones came from inside a tag group
-    /// without re-plumbing that context through the rest of the pipeline.</summary>
-    private static string CanonicalizeRegionTags(string name)
+    /// <summary>Replaces any region- or tag-word synonym found inside a "(...)"/"[...]"
+    /// group with its canonical spelling (e.g. "US" -> "USA", "Prototype" -> "Proto"),
+    /// leaving every other word — both unrecognized tag words and the actual title text
+    /// outside any group — untouched. Run as a single pass over the raw string, before
+    /// punctuation/splitting, because once tokens are split there's no way to tell which
+    /// ones came from inside a tag group without re-plumbing that context through the
+    /// rest of the pipeline.</summary>
+    private static string CanonicalizeTagWords(string name)
     {
         var result = name;
         // Replace back-to-front so each earlier match's span/index stays valid as later
@@ -116,7 +118,7 @@ public static partial class NameNormalizer
         {
             var inner = match.Groups[1].Value;
             var rewritten = string.Join(' ', RegionCatalog.SplitWords(inner)
-                .Select(word => RegionCatalog.TryCanonicalize(word) ?? word));
+                .Select(word => RegionCatalog.TryCanonicalize(word) ?? TagWordCatalog.TryCanonicalize(word) ?? word));
 
             var openChar = result[match.Index];
             var closeChar = openChar == '(' ? ')' : ']';

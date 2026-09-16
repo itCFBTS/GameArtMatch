@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:GameArtMatch.ViewModels"
              xmlns:model="using:GameArtMatch.Models"
+             xmlns:behaviors="using:GameArtMatch.Behaviors"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
@@ -51,17 +52,18 @@
                  properties like Text (confirmed: attempting it throws
                  "No animator registered for the property Text" the moment the style
                  tries to attach), so this can't be done as a plain XAML animation the
-                 way the old rotating-ring spinner was. Shown only during
-                 MatchPhase.Indexing, the otherwise-silent pass over every image before
-                 per-ROM scanning begins. -->
+                 way the old rotating-ring spinner was. Shown throughout MatchPhase.
+                 Listing and MatchPhase.Indexing, both otherwise-silent (no per-item
+                 feedback) passes before per-ROM matching begins. -->
             <TextBlock Name="ActivityDotsText" Text="." VerticalAlignment="Center"
                        IsVisible="{Binding IsIndexing}" />
         </DockPanel>
 
-        <!-- Single bar spanning both MatchPhase.Indexing and MatchPhase.Scanning (see
+        <!-- Single bar spanning MatchPhase.Indexing and MatchPhase.Matching (see
              MatchViewModel.IndexingPhaseWeight) rather than an indeterminate/determinate
              swap, so it's always visibly moving instead of appearing to freeze during
-             the indexing pass. -->
+             the indexing pass. Stays at 0% through MatchPhase.Listing — a directory walk
+             has no meaningful percentage to show, only the activity dots above. -->
         <Grid DockPanel.Dock="Top" Margin="0,0,0,8" IsVisible="{Binding IsMatchRunning}">
             <ProgressBar Minimum="0" Maximum="100" Value="{Binding ProgressPercent}" Height="20" />
             <TextBlock Text="{Binding ProgressPercent, StringFormat={}{0:0}%}"
@@ -69,41 +71,11 @@
                        FontSize="{DynamicResource FontSizeSmall}" />
         </Grid>
 
-        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8" LastChildFill="False">
-            <Button Content="Start" Command="{Binding StartCommand}" Margin="0,0,8,0" />
-            <Button Content="Cancel" Command="{Binding CancelCommand}" Margin="0,0,8,0" />
-            <DropDownButton Content="Selection" Margin="0,0,8,0">
-                <DropDownButton.Flyout>
-                    <MenuFlyout Placement="BottomEdgeAlignedLeft">
-                        <MenuItem Header="Select Best Matched" Command="{Binding SelectBestMatchedCommand}" />
-                        <MenuItem Header="Select Single Matches" Command="{Binding SelectSingleMatchesCommand}" />
-                        <Separator />
-                        <MenuItem Header="Deselect All" Command="{Binding DeselectAllCommand}" />
-                    </MenuFlyout>
-                </DropDownButton.Flyout>
-            </DropDownButton>
-            <Button Content="{Binding ExpandCollapseButtonText}" Command="{Binding ToggleExpandCollapseCommand}" Margin="0,0,8,0" />
-            <Button Content="Rename Selected" Command="{Binding RenameFilesCommand}" />
-        </DockPanel>
-
-        <!-- Post-scan display filter — hides/shows already-computed rows, doesn't re-run
-             matching. File type only ever restricts ROMs; region restricts both ROMs and
-             images, except English Translated, which always shows every image. -->
-        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8" LastChildFill="False">
-            <TextBlock Text="File type:" VerticalAlignment="Center" Margin="0,0,6,0" />
-            <ComboBox ItemsSource="{Binding AvailableFileTypes}" SelectedItem="{Binding SelectedFileType}"
-                      MinWidth="90" Margin="0,0,16,0" />
-            <TextBlock Text="Region:" VerticalAlignment="Center" Margin="0,0,6,0" />
-            <ComboBox ItemsSource="{Binding AvailableRegions}" SelectedItem="{Binding SelectedRegion}" MinWidth="140" Margin="0,0,16,0" />
-            <CheckBox Content="Exact score only" IsChecked="{Binding ShowOnlyExactScoreMatches}" VerticalAlignment="Center" Margin="0,0,16,0" />
-            <CheckBox Content="Hide same images" IsChecked="{Binding HideSameImages}" VerticalAlignment="Center" />
-        </DockPanel>
-
         <Grid ColumnDefinitions="2*,8,1*">
             <DockPanel Grid.Column="0">
-                <Grid DockPanel.Dock="Top" ColumnDefinitions="46,70,*" Margin="4,0,4,4">
-                    <TextBlock Grid.Column="1" Text="Score %" FontWeight="Bold" />
-                    <TextBlock Grid.Column="2" Text="ROM / Image" FontWeight="Bold" />
+                <Grid DockPanel.Dock="Top" ColumnDefinitions="46,100,*" Margin="4,0,4,4">
+                    <TextBlock Grid.Column="1" Text="Score %" Classes="columnHeader" />
+                    <TextBlock Grid.Column="2" Text="ROM / Image" Classes="columnHeader" />
                 </Grid>
 
                 <!-- Two-level tree: each ROM is a node, its candidate images nest underneath —
@@ -113,11 +85,19 @@
                      "select all" keybinding, and is scoped to Groups (the already-filtered
                      collection) rather than every ROM the last scan found, so it only ever
                      selects what's actually visible under the current filters. -->
+                <!-- HorizontalScrollBarVisibility="Disabled" — TreeView defaults to "Auto",
+                     which measures rows at their natural (unclipped) width and lets them
+                     scroll sideways instead of constraining to the visible column width.
+                     That let long filenames size to their full natural width rather than
+                     actually clip, which broke MarqueeOnHoverBehavior's overflow math (it
+                     reads each TextBlock's real arranged Bounds.Width, so if nothing ever
+                     clips, there's nothing to reveal) and meant ROM/image names simply
+                     extended into scrollable space instead of visibly truncating at all. -->
                 <TreeView Name="ResultsTree" ItemsSource="{Binding Groups}" SelectedItem="{Binding SelectedTreeItem}"
-                          SelectionMode="Multiple">
+                          SelectionMode="Multiple" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                     <TreeView.ItemTemplate>
                         <TreeDataTemplate DataType="vm:RomMatchGroup" ItemsSource="{Binding VisibleCandidates}">
-                            <Grid ColumnDefinitions="28,70,*">
+                            <Grid ColumnDefinitions="28,100,*">
                                 <Grid.ContextFlyout>
                                     <!-- Click (not Command) deliberately — a MenuItem inside a
                                          Flyout inherits this row's DataContext (RomMatchGroup)
@@ -129,30 +109,72 @@
                                          there whether to act on just this row or the whole current
                                          multi-selection — see OnIgnoreRomClick. -->
                                     <MenuFlyout>
+                                        <MenuItem Header="Open File Path" Click="OnOpenRomFilePathClick" />
                                         <MenuItem Header="Ignore Selected ROM(s)" Click="OnIgnoreRomClick" />
+                                        <!-- Sub-items come from IgnorableAncestorFolders (nearest
+                                             folder first, RomsPath itself never included — see
+                                             that property's doc comment). BottomSubmenuMenuItemTheme
+                                             (see Styles.axaml) makes this submenu open centered
+                                             below rather than Fluent's default side-flyout
+                                             placement. One handler on this parent item catches
+                                             Click bubbling up from whichever auto-generated child
+                                             was actually clicked (see OnIgnoreFolderClick, which
+                                             reads e.Source, not sender, for exactly that reason).
+                                             Disabled entirely when the ROM sits directly in
+                                             RomsPath with no folder to offer. -->
+                                        <MenuItem Header="Ignore Folder" Click="OnIgnoreFolderClick"
+                                                  Theme="{StaticResource BottomSubmenuMenuItemTheme}"
+                                                  ItemsSource="{Binding IgnorableAncestorFolders}"
+                                                  IsEnabled="{Binding HasIgnorableAncestorFolders}" />
                                     </MenuFlyout>
                                 </Grid.ContextFlyout>
                                 <CheckBox Grid.Column="0" IsThreeState="True" IsChecked="{Binding IsAllSelected}" />
-                                <TextBlock Grid.Column="1" Text="{Binding VisibleCandidates.Count}" Foreground="{DynamicResource ForegroundMutedBrush}" VerticalAlignment="Center" />
-                                <TextBlock Grid.Column="2" Text="{Binding RomFileName}" FontWeight="Bold" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="1" Text="{Binding VisibleCandidates.Count}" Classes="muted" VerticalAlignment="Center" />
+                                <!-- Border clips (ClipToBounds="True"); Canvas gives the
+                                     TextBlock inside it truly unconstrained measurement
+                                     (Canvas.MeasureOverride always measures children at
+                                     Infinity — see MarqueeOnHoverBehavior's doc comment)
+                                     so its Bounds.Width reflects the real, full filename
+                                     width regardless of this column's visible size. -->
+                                <Border Grid.Column="2" ClipToBounds="True" Height="20">
+                                    <Canvas>
+                                        <TextBlock Text="{Binding RomFileName}" FontWeight="Bold"
+                                                   behaviors:MarqueeOnHoverBehavior.IsEnabled="True" />
+                                    </Canvas>
+                                </Border>
                             </Grid>
                         </TreeDataTemplate>
                     </TreeView.ItemTemplate>
                     <TreeView.DataTemplates>
                         <DataTemplate x:DataType="model:MatchCandidate">
-                            <Grid ColumnDefinitions="28,70,*"
+                            <Grid ColumnDefinitions="28,100,*"
                                   Classes.shadeA="{Binding IsContentShadeA}"
                                   Classes.shadeB="{Binding IsContentShadeB}">
+                                <Grid.ContextFlyout>
+                                    <MenuFlyout>
+                                        <MenuItem Header="Open File Path" Click="OnOpenImageFilePathClick" />
+                                    </MenuFlyout>
+                                </Grid.ContextFlyout>
                                 <CheckBox Grid.Column="0" IsChecked="{Binding IsSelected}" />
                                 <TextBlock Grid.Column="1" Text="{Binding ScorePercent}" VerticalAlignment="Center" />
-                                <StackPanel Grid.Column="2" Orientation="Horizontal">
-                                    <TextBlock Text="{Binding ImageFileName}" VerticalAlignment="Center"
-                                               Classes.duplicate="{Binding IsDuplicate}"
-                                               Classes.exactMatch="{Binding IsExactMatch}" />
-                                    <TextBlock Text=" · Same as above" VerticalAlignment="Center"
-                                               Foreground="{DynamicResource ForegroundMutedBrush}"
+                                <!-- Grid, not the StackPanel this used to be — StackPanel gives
+                                     each child its full natural width instead of constraining
+                                     it, which left the filename with no real clip boundary to
+                                     scroll within. "*" for the filename (clippable, scrollable),
+                                     "Auto" for the fixed-size "Same as above" suffix next to it. -->
+                                <Grid Grid.Column="2" ColumnDefinitions="*,Auto">
+                                    <Border Grid.Column="0" ClipToBounds="True" Height="20">
+                                        <Canvas>
+                                            <TextBlock Text="{Binding ImageFileName}"
+                                                       Classes.duplicate="{Binding IsDuplicate}"
+                                                       Classes.exactMatch="{Binding IsExactMatch}"
+                                                       behaviors:MarqueeOnHoverBehavior.IsEnabled="True" />
+                                        </Canvas>
+                                    </Border>
+                                    <TextBlock Grid.Column="1" Text=" · Same as above" VerticalAlignment="Center"
+                                               Classes="muted"
                                                IsVisible="{Binding IsSameAsAbove}" />
-                                </StackPanel>
+                                </Grid>
                             </Grid>
                         </DataTemplate>
                     </TreeView.DataTemplates>
@@ -161,13 +183,13 @@
 
             <!-- Preview pane: shows the art for whichever candidate row is highlighted above.
                  Independent of each row's own checkbox (that's the rename-batch selection). -->
-            <Border Grid.Column="2" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+            <Border Grid.Column="2" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
                     CornerRadius="{DynamicResource CornerRadiusBase}" Padding="8">
                 <Grid RowDefinitions="*,36">
                     <Panel Grid.Row="0">
-                        <TextBlock Text="Select an image row to preview its art"
+                        <TextBlock Text="Select image row to preview art"
                                    IsVisible="{Binding SelectedCandidate, Converter={x:Static ObjectConverters.IsNull}}"
-                                   Foreground="{DynamicResource ForegroundMutedBrush}" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                   Classes="muted" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" />
                         <TextBlock Text="{Binding PreviewError}"
                                    IsVisible="{Binding PreviewError, Converter={x:Static ObjectConverters.IsNotNull}}"
                                    Foreground="{DynamicResource ErrorBrush}" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" />
@@ -176,8 +198,7 @@
                                Stretch="Uniform" />
                     </Panel>
                     <TextBlock Grid.Row="1" Text="{Binding SelectedCandidate.ImageFileName}"
-                               TextTrimming="CharacterEllipsis" TextWrapping="Wrap"
-                               FontSize="{DynamicResource FontSizeSmall}" Foreground="{DynamicResource ForegroundMutedBrush}"
+                               TextTrimming="CharacterEllipsis" Classes="hint"
                                Margin="0,8,0,0" VerticalAlignment="Top" />
                 </Grid>
             </Border>

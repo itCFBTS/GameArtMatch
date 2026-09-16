@@ -66,7 +66,9 @@ public static partial class RegionCatalog
 
     /// <summary>Looks up a single already-split word (e.g. "US", "JP") and returns its
     /// canonical region name, or null if the word isn't a recognized region synonym at
-    /// all — non-region tag words ("Unl", "Proto", "v3.11.088") always return null.</summary>
+    /// all — non-region tag words ("Unl", "v3.11.088") always return null here (see
+    /// TagWordCatalog for other cross-spelling tag-word synonyms, e.g. "Proto"/
+    /// "Prototype", handled separately since they aren't regions).</summary>
     public static string? TryCanonicalize(string word) =>
         WordToCanonical.TryGetValue(word, out var canonical) ? canonical : null;
 

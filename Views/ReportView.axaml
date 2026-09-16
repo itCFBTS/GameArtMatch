@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:GameArtMatch.ViewModels"
              xmlns:model="using:GameArtMatch.Models"
+             xmlns:behaviors="using:GameArtMatch.Behaviors"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
@@ -14,73 +15,53 @@
 
     <DockPanel Margin="12">
         <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8" LastChildFill="False">
-            <Button Content="Refresh" Command="{Binding GenerateAllCommand}" Margin="0,0,8,0" />
+            <Button Content="Refresh" Command="{Binding RefreshCommand}" Margin="0,0,8,0" />
             <Button Content="Export..." Click="OnExportClick" />
         </DockPanel>
 
-        <!-- All three lists: SelectionMode="Multiple" enables ctrl/shift-click natively;
-             Ctrl+A (custom, see ReportView.axaml.cs — ListBox has no built-in "select
-             all") selects everything currently in that list, which is already whatever
-             passed the underlying scan/ignore-list filtering, not a separate concern to
-             re-filter here. Right-clicking a row that's part of the current selection
-             acts on the whole selection; right-clicking one that isn't acts on just that
-             row — same convention as the Match tab's ROM context menu. -->
-        <TabControl>
-            <TabItem Header="Missing Images">
-                <ListBox Name="MissingList" ItemsSource="{Binding Missing}" SelectionMode="Multiple">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate x:DataType="model:ReportEntry">
-                            <Grid>
-                                <Grid.ContextFlyout>
-                                    <MenuFlyout>
-                                        <MenuItem Header="Ignore Selected ROM(s)" Click="OnIgnoreFromMissingClick" />
-                                    </MenuFlyout>
-                                </Grid.ContextFlyout>
-                                <TextBlock Text="{Binding RomFileName}" />
-                            </Grid>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </TabItem>
+        <!-- Reflects whatever the Match tab's last scan found — not re-scanned here, see
+             ReportViewModel — so results are stale until a scan has actually run there. -->
+        <TextBlock DockPanel.Dock="Top" Margin="0,0,0,8" Classes="hint"
+                   Text="ROMs the Match tab's last scan found no art for. Run (or re-run) a scan there, then hit Refresh." />
 
-            <TabItem Header="Matched Images">
-                <ListBox Name="MatchedList" ItemsSource="{Binding Matched}" SelectionMode="Multiple">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate x:DataType="model:ReportEntry">
-                            <Grid>
-                                <Grid.ContextFlyout>
-                                    <MenuFlyout>
-                                        <MenuItem Header="Ignore Selected ROM(s)" Click="OnIgnoreFromMatchedClick" />
-                                    </MenuFlyout>
-                                </Grid.ContextFlyout>
-                                <StackPanel Orientation="Horizontal" Spacing="6">
-                                    <TextBlock Text="{Binding RomFileName}" FontWeight="Bold" />
-                                    <TextBlock Text="→" Foreground="{DynamicResource ForegroundMutedBrush}" />
-                                    <TextBlock Text="{Binding MatchedImageFileName}" />
-                                </StackPanel>
-                            </Grid>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </TabItem>
-
-            <!-- Only shown "if any ignored files exist" — not an always-present tab. -->
-            <TabItem Header="Ignored" IsVisible="{Binding HasIgnoredEntries}">
-                <ListBox Name="IgnoredList" ItemsSource="{Binding Ignored}" SelectionMode="Multiple" x:CompileBindings="False">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <Grid.ContextFlyout>
-                                    <MenuFlyout>
-                                        <MenuItem Header="Un-ignore Selected ROM(s)" Click="OnUnignoreClick" />
-                                    </MenuFlyout>
-                                </Grid.ContextFlyout>
-                                <TextBlock Text="{Binding}" />
-                            </Grid>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </TabItem>
-        </TabControl>
+        <!-- Matched was dropped — Missing is the only list left, so (matching
+             MainWindow's own single-tab precedent) there's no TabControl anymore, just
+             the list directly. SelectionMode="Multiple" enables ctrl/shift-click
+             natively; Ctrl+A (custom, see ReportView.axaml.cs — ListBox has no built-in
+             "select all") selects everything currently in the list. Right-clicking a row
+             that's part of the current selection acts on the whole selection;
+             right-clicking one that isn't acts on just that row — same convention as the
+             Match tab's ROM context menu. -->
+        <ListBox Name="MissingList" ItemsSource="{Binding Missing}" SelectionMode="Multiple">
+            <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="model:ReportEntry">
+                    <Grid>
+                        <Grid.ContextFlyout>
+                            <MenuFlyout>
+                                <MenuItem Header="Open File Path" Click="OnOpenFilePathFromMissingClick" />
+                                <MenuItem Header="Ignore Selected ROM(s)" Click="OnIgnoreFromMissingClick" />
+                                <!-- Same shape as MatchView.axaml's ROM row: sub-items come
+                                     from IgnorableAncestorFolders, BottomSubmenuMenuItemTheme
+                                     (see Styles.axaml) opens this submenu centered below
+                                     rather than Fluent's default side placement, and one
+                                     handler catches Click bubbling up from whichever
+                                     auto-generated child was actually clicked (see
+                                     OnIgnoreFolderFromMissingClick, which reads e.Source, not
+                                     sender). -->
+                                <MenuItem Header="Ignore Folder" Click="OnIgnoreFolderFromMissingClick"
+                                          Theme="{StaticResource BottomSubmenuMenuItemTheme}"
+                                          ItemsSource="{Binding IgnorableAncestorFolders}"
+                                          IsEnabled="{Binding HasIgnorableAncestorFolders}" />
+                            </MenuFlyout>
+                        </Grid.ContextFlyout>
+                        <Border ClipToBounds="True" Height="20">
+                            <Canvas>
+                                <TextBlock Text="{Binding RomFileName}" behaviors:MarqueeOnHoverBehavior.IsEnabled="True" />
+                            </Canvas>
+                        </Border>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
     </DockPanel>
 </UserControl>

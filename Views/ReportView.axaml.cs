@@ -6,6 +6,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using GameArtMatch.Models;
+using GameArtMatch.Services;
 using GameArtMatch.ViewModels;
 
 namespace GameArtMatch.Views;
@@ -24,10 +25,6 @@ public partial class ReportView : UserControl
         // assigned externally after construction.
         MissingList.AddHandler(InputElement.KeyDownEvent,
             (_, e) => HandleSelectAll(e, MissingList, (DataContext as ReportViewModel)?.Missing), RoutingStrategies.Tunnel);
-        MatchedList.AddHandler(InputElement.KeyDownEvent,
-            (_, e) => HandleSelectAll(e, MatchedList, (DataContext as ReportViewModel)?.Matched), RoutingStrategies.Tunnel);
-        IgnoredList.AddHandler(InputElement.KeyDownEvent,
-            (_, e) => HandleSelectAll(e, IgnoredList, (DataContext as ReportViewModel)?.Ignored), RoutingStrategies.Tunnel);
     }
 
     private static void HandleSelectAll(KeyEventArgs e, ListBox list, System.Collections.IEnumerable? items)
@@ -58,20 +55,25 @@ public partial class ReportView : UserControl
         vm.IgnoreRomsCommand.Execute(ResolveTargets(MissingList, rightClicked));
     }
 
-    private void OnIgnoreFromMatchedClick(object? sender, RoutedEventArgs e)
+    // Always acts on just the right-clicked row — see MatchView.axaml.cs's equivalent
+    // handlers/FileExplorerService's doc comment for why this deliberately doesn't use
+    // ResolveTargets like the Ignore handlers above/below do.
+    private void OnOpenFilePathFromMissingClick(object? sender, RoutedEventArgs e)
     {
-        if (sender is not MenuItem { DataContext: ReportEntry rightClicked } || DataContext is not ReportViewModel vm)
-            return;
-
-        vm.IgnoreRomsCommand.Execute(ResolveTargets(MatchedList, rightClicked));
+        if (sender is MenuItem { DataContext: ReportEntry rightClicked })
+            FileExplorerService.Reveal(rightClicked.RomFullPath);
     }
 
-    private void OnUnignoreClick(object? sender, RoutedEventArgs e)
+    // e.Source (not sender) deliberately — this handler is attached to the parent
+    // "Ignore Folder" MenuItem, and Click bubbles up from whichever auto-generated
+    // child (one per IgnorableAncestorFolders entry) was actually clicked; sender here
+    // would always be the parent itself (DataContext = ReportEntry, not a folder path),
+    // while e.Source is the specific child that raised the event — same pattern as
+    // MatchView.axaml.cs's OnIgnoreFolderClick.
+    private void OnIgnoreFolderFromMissingClick(object? sender, RoutedEventArgs e)
     {
-        if (sender is not MenuItem { DataContext: string rightClicked } || DataContext is not ReportViewModel vm)
-            return;
-
-        vm.UnignoreRomsCommand.Execute(ResolveTargets(IgnoredList, rightClicked));
+        if (e.Source is MenuItem { DataContext: string folderPath } && DataContext is ReportViewModel vm)
+            vm.IgnoreFolderCommand.Execute(folderPath);
     }
 
     // TopLevel.GetTopLevel(this) rather than a Window-typed field — this UserControl is

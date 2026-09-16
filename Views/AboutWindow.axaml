@@ -14,11 +14,11 @@
     </Design.DataContext>
 
     <StackPanel Margin="20" Spacing="{DynamicResource SpaceMd}" VerticalAlignment="Center">
-        <TextBlock Text="{Binding VersionText}" HorizontalAlignment="Center" FontWeight="Bold" />
+        <TextBlock Text="{Binding VersionText}" HorizontalAlignment="Center" Classes="retroLabel" />
         <TextBlock Text="A cross-platform ROM/art filename matcher for Windows and Linux."
                    TextWrapping="Wrap" TextAlignment="Center" />
         <TextBlock Text="Heavily inspired by FatMatch (v0.3, 2009) by Fatone85, originally built for the GameEx frontend community. This project reimagines that tool's fuzzy-matching workflow as a single cross-platform app."
-                   TextWrapping="Wrap" TextAlignment="Center" FontSize="{DynamicResource FontSizeSmall}" Foreground="{DynamicResource ForegroundMutedBrush}" />
+                   Classes="hint" TextAlignment="Center" />
         <Button Content="Close" HorizontalAlignment="Center" Click="OnCloseClick" />
     </StackPanel>
 </Window>

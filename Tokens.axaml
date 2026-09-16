@@ -5,63 +5,74 @@
   hardcode a color/size directly, so a future look-and-feel pass only ever touches
   this one file.
 
-  Color/brush tokens live under ThemeDictionaries (Light/Dark) since they're the
-  values expected to differ by theme variant. Spacing, corner radius, and font
+  Color/brush tokens live under ThemeDictionaries (Light/Dark) since that's where
+  Fluent expects theme-variant-dependent values. Spacing, corner radius, and font
   tokens are plain top-level entries since those don't vary by theme.
 
-  This first pass is deliberately behavior-preserving: every value here is seeded
-  from whatever the app already rendered before this refactor (see the reverse-
-  engineered originals in the comments below), so swapping hardcoded values for
-  DynamicResource lookups doesn't change how anything looks yet — only makes it
-  centrally editable.
+  SNES/NES-inspired retro pass, dark-only by design: App.axaml now pins
+  RequestedThemeVariant="Dark" explicitly (rather than following the OS), because
+  Fluent's own built-in control chrome — TextBox/ComboBox/ScrollBar/MenuFlyout
+  backgrounds, etc. — comes from FluentTheme's own Light/Dark dictionaries, not
+  from tokens here. Leaving RequestedThemeVariant="Default" would mean those
+  native pieces silently flip to Fluent's Light palette on a light-mode OS while
+  everything below stays dark, which would look broken rather than intentional.
+  The Light dictionary is kept identical to Dark (not deleted) purely so nothing
+  breaks if a variant toggle is ever added back later — it's not meant to be
+  reached today.
 -->
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <ResourceDictionary.ThemeDictionaries>
-        <ResourceDictionary x:Key="Light">
-            <!-- Aliases Fluent's own live SystemAccentColor rather than a guessed hex,
-                 so this token starts identical to Fluent's default and stays in sync
-                 with it — confirmed at runtime to resolve to Avalonia's standard
-                 Fluent blue (#ff0078d7) in this app. -->
-            <SolidColorBrush x:Key="AccentBrush" Color="{DynamicResource SystemAccentColor}" />
+        <ResourceDictionary x:Key="Dark">
+            <!-- Neutral warm-dark background, deliberately not a near-black/navy
+                 "CRT screen" — closer to Obsidian/Claude Desktop's dark canvas, so
+                 the SNES/NES-referencing accent colors below are what reads as
+                 "retro," not the background itself. -->
+            <SolidColorBrush x:Key="BackgroundBrush" Color="#FF1E1E1C" />
+            <!-- One step lighter than BackgroundBrush — panel/row surfaces (tree
+                 rows, preview pane) so they read as a distinct layer above the
+                 window background. -->
+            <SolidColorBrush x:Key="SurfaceBrush" Color="#FF262420" />
+            <SolidColorBrush x:Key="ForegroundBrush" Color="#FFE8E6E3" />
+            <SolidColorBrush x:Key="ForegroundMutedBrush" Color="#FF8C8A85" />
+            <SolidColorBrush x:Key="BorderBrush" Color="#FF3A3833" />
 
-            <!-- Not currently referenced by any view (nothing sets an explicit window
-                 background/foreground today — everything inherits Fluent's own), so
-                 these are seeded with plain Fluent-Light-ish defaults for future use
-                 rather than reverse-engineered from an existing literal. -->
-            <SolidColorBrush x:Key="BackgroundBrush" Color="#FFFFFFFF" />
-            <SolidColorBrush x:Key="ForegroundBrush" Color="#FF1B1B1B" />
+            <!-- SNES lavender-purple — primary accent (selection, exact-match
+                 marker's usual role). No longer aliasing Fluent's SystemAccentColor:
+                 that would follow the OS accent color, fighting the deliberate
+                 retro palette rather than being part of it. -->
+            <SolidColorBrush x:Key="AccentBrush" Color="#FFA78BFA" />
+            <!-- Secondary accent, currently unused by any view but established
+                 alongside AccentBrush for a future second highlight color (e.g. a
+                 distinct "info" marker) without picking a one-off hex ad hoc. -->
+            <SolidColorBrush x:Key="AccentSecondaryBrush" Color="#FF4FD8EB" />
 
-            <!-- These four ARE reverse-engineered from the app's existing hardcoded
-                 literals (Foreground="Gray", BorderBrush="Gray", Foreground="OrangeRed"
-                 on the preview error text, Foreground="Orange" on the duplicate-match
-                 highlight) — same value in both variants for now, matching how the app
-                 already looked identically regardless of system theme before this pass. -->
-            <SolidColorBrush x:Key="ForegroundMutedBrush" Color="Gray" />
-            <SolidColorBrush x:Key="BorderBrush" Color="Gray" />
-            <SolidColorBrush x:Key="ErrorBrush" Color="OrangeRed" />
-            <SolidColorBrush x:Key="WarningBrush" Color="Orange" />
+            <SolidColorBrush x:Key="ErrorBrush" Color="#FFFF5C7A" />
+            <SolidColorBrush x:Key="WarningBrush" Color="#FFFFC94D" />
 
             <!-- Alternating row-background tints for clustering byte-identical candidate
                  images (see MatchCandidate.IsContentShadeA/B) — low-alpha overlays rather
-                 than opaque colors, so the same value reads reasonably against either
-                 theme's row background instead of needing separate hand-tuned hex per
-                 variant. Deliberately distinct hues from AccentBrush (exact-match marker)
-                 and WarningBrush (cross-ROM duplicate marker) so this doesn't get read as
-                 either of those unrelated meanings. -->
+                 than opaque colors, so the same value reads reasonably against the panel
+                 surface without needing a separate hand-tuned hex. Kept as the existing
+                 blue/purple pair (distinct hues from AccentBrush and WarningBrush so this
+                 doesn't get read as either of those unrelated meanings) since they already
+                 fit the palette. -->
             <SolidColorBrush x:Key="ContentGroupShadeABrush" Color="#222E9BF0" />
             <SolidColorBrush x:Key="ContentGroupShadeBBrush" Color="#228E44AD" />
         </ResourceDictionary>
 
-        <ResourceDictionary x:Key="Dark">
-            <SolidColorBrush x:Key="AccentBrush" Color="{DynamicResource SystemAccentColor}" />
-            <SolidColorBrush x:Key="BackgroundBrush" Color="#FF202020" />
-            <SolidColorBrush x:Key="ForegroundBrush" Color="#FFFFFFFF" />
-            <SolidColorBrush x:Key="ForegroundMutedBrush" Color="Gray" />
-            <SolidColorBrush x:Key="BorderBrush" Color="Gray" />
-            <SolidColorBrush x:Key="ErrorBrush" Color="OrangeRed" />
-            <SolidColorBrush x:Key="WarningBrush" Color="Orange" />
+        <!-- Identical to Dark — see file-level comment above. -->
+        <ResourceDictionary x:Key="Light">
+            <SolidColorBrush x:Key="BackgroundBrush" Color="#FF1E1E1C" />
+            <SolidColorBrush x:Key="SurfaceBrush" Color="#FF262420" />
+            <SolidColorBrush x:Key="ForegroundBrush" Color="#FFE8E6E3" />
+            <SolidColorBrush x:Key="ForegroundMutedBrush" Color="#FF8C8A85" />
+            <SolidColorBrush x:Key="BorderBrush" Color="#FF3A3833" />
+            <SolidColorBrush x:Key="AccentBrush" Color="#FFA78BFA" />
+            <SolidColorBrush x:Key="AccentSecondaryBrush" Color="#FF4FD8EB" />
+            <SolidColorBrush x:Key="ErrorBrush" Color="#FFFF5C7A" />
+            <SolidColorBrush x:Key="WarningBrush" Color="#FFFFC94D" />
             <SolidColorBrush x:Key="ContentGroupShadeABrush" Color="#222E9BF0" />
             <SolidColorBrush x:Key="ContentGroupShadeBBrush" Color="#228E44AD" />
         </ResourceDictionary>
@@ -81,9 +92,19 @@
     <x:Double x:Key="SpaceMd">12</x:Double>
     <x:Double x:Key="SpaceLg">16</x:Double>
 
-    <!-- Matches what Avalonia.Fonts.Inter + WithInterFont() already renders by
-         default — declared explicitly so a future font change has one place to edit. -->
-    <FontFamily x:Key="FontFamilyBase">Inter</FontFamily>
+    <!-- Body/list font — bundled directly (Assets/Fonts) rather than via a NuGet
+         font package, so Program.cs's FontManagerOptions.DefaultFamilyName points
+         at this same avares:// URI and it becomes the app's implicit default,
+         matching how Avalonia.Fonts.Inter + WithInterFont() worked before. Share
+         Tech Mono over a pixel/display font here since ROM/image filenames need
+         to stay readable at small sizes, not just look retro. -->
+    <FontFamily x:Key="FontFamilyBase">avares://GameArtMatch/Assets/Fonts#Share Tech Mono</FontFamily>
+
+    <!-- Display/heading font — deliberately NOT the app-wide default. Used only
+         where text is short (column headers, buttons, one-line labels): Press
+         Start 2P's blocky glyphs get hard to read fast in longer strings, which
+         is exactly what ROM/image filenames are. -->
+    <FontFamily x:Key="FontFamilyDisplay">avares://GameArtMatch/Assets/Fonts#Press Start 2P</FontFamily>
 
     <!-- FontSizeSmall is reverse-engineered from every FontSize="12" literal in the
          app (all secondary/hint text). FontSizeDefault/Large aren't used by any
@@ -92,5 +113,11 @@
     <x:Double x:Key="FontSizeSmall">12</x:Double>
     <x:Double x:Key="FontSizeDefault">13</x:Double>
     <x:Double x:Key="FontSizeLarge">16</x:Double>
+
+    <!-- Smaller than FontSizeSmall on purpose: Press Start 2P's glyphs each fill a
+         full monospace cell and read noticeably larger than a normal font at the
+         same point size, so FontFamilyDisplay text needs a smaller size to sit
+         proportionately next to FontFamilyBase text around it. -->
+    <x:Double x:Key="FontSizeDisplay">11</x:Double>
 
 </ResourceDictionary>

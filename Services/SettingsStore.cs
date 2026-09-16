@@ -16,6 +16,8 @@ public sealed class SettingsStore : ISettingsStore
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
         "GameArtMatch", "settings.json");
 
+    public string FolderPath => Path.GetDirectoryName(FilePath)!;
+
     public PersistedSettings Load()
     {
         try

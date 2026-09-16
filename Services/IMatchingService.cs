@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using GameArtMatch.Models;
@@ -14,16 +13,9 @@ namespace GameArtMatch.Services;
 /// </summary>
 public interface IMatchingService
 {
-    Task<IReadOnlyList<MatchCandidate>> FindMatchesAsync(
+    Task<MatchScanResult> FindMatchesAsync(
         MatchSettings settings,
         IProgress<MatchProgress>? progress,
-        CancellationToken cancellationToken);
-
-    Task<IReadOnlyList<ReportEntry>> FindMissingAsync(
-        MatchSettings settings,
-        CancellationToken cancellationToken);
-
-    Task<IReadOnlyList<ReportEntry>> FindMatchedAsync(
-        MatchSettings settings,
+        IProgress<RomMatchResult>? romMatched,
         CancellationToken cancellationToken);
 }

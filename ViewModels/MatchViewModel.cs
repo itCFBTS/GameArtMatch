@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using GameArtMatch.Models;
@@ -23,15 +24,58 @@ public partial class MatchViewModel : ViewModelBase
     private CancellationTokenSource? _cts;
     private int _previewRequestId;
 
+    /// <summary>Final ROM count from the Listing phase's "ROMs" reports and the Listing
+    /// phase's "images" reports, held onto so StartAsync's progress handler can keep
+    /// showing both once they're no longer the phase actively being reported —
+    /// MatchProgress reports are stateless per-call, so something has to remember each
+    /// figure across the later reports that don't carry it anymore.</summary>
+    private int _lastRomsListed;
+    private int _lastImagesListed;
+
+    /// <summary>Drives the "ROMs •  images" bouncing-dot separator shown once both
+    /// figures above are final and Indexing/Matching are running — same DispatcherTimer-
+    /// driven "steadily changing string" technique as ActivityDotsText (see MatchView.
+    /// axaml.cs), just recomposing the whole StatusText each tick instead of a
+    /// standalone TextBlock, since the two numbers around it live here already.</summary>
+    private DispatcherTimer? _separatorTimer;
+    private int _separatorFrameIndex;
+
+    /// <summary>A dot bouncing back and forth between the two numbers it separates —
+    /// fixed-width so the surrounding text doesn't jitter as it moves. Purely decorative:
+    /// once both counts are final, there's nothing left to report a real number for
+    /// until Matching finishes (Indexing/Matching are typically fast enough that a
+    /// specific X/Y count would just flicker by unreadably anyway — see the
+    /// conversation this replaced).</summary>
+    private static readonly string[] SeparatorFrames =
+    [
+        "  •  ", " •   ", "•    ", " •   ", "  •  ", "   • ", "    •", "   • ",
+    ];
+
     /// <summary>Every ROM that has at least one candidate, from the most recent scan —
     /// unfiltered. Groups (below) is the filtered view actually bound to the TreeView.</summary>
     private readonly List<RomMatchGroup> _allGroups = [];
+
+    /// <summary>Looks up an existing group by RomFileName while a scan is streaming in —
+    /// needed because a same-named ROM in two different subfolders arrives as two
+    /// separate OnRomMatched calls (RomsIncludeSubfolders on), and those need to fold
+    /// into ONE displayed group (see RomMatchGroup.MergeCandidates) rather than showing
+    /// as two identically-named groups, matching what the old batch-built code did by
+    /// grouping over the complete candidate list up front.</summary>
+    private readonly Dictionary<string, RomMatchGroup> _groupsByRomFileName = new(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>The filtered view of _allGroups that ApplyFilters keeps in sync with the
     /// current file-type/region/100%-only filters — bound directly to the TreeView.
     /// Filtered-out ROMs are removed from this collection entirely (not just hidden),
     /// for the same reason VisibleCandidates removes filtered-out images — see there.</summary>
     public ObservableCollection<RomMatchGroup> Groups { get; } = [];
+
+    /// <summary>ROMs the last scan found zero candidates for above the accuracy
+    /// threshold — a side effect of the same StartAsync pass (see MatchingService.
+    /// FindMatchesAsync/MatchScanResult), read directly by ReportViewModel for the
+    /// Report window's Missing tab instead of that window running its own separate,
+    /// redundant re-scan just to reproduce the same list. Empty until the first scan
+    /// ever completes.</summary>
+    public IReadOnlyList<ReportEntry> MissingRoms { get; private set; } = [];
 
     [ObservableProperty] public partial string StatusText { get; set; } = "Press 'Start' when ready.";
 
@@ -44,10 +88,11 @@ public partial class MatchViewModel : ViewModelBase
     /// stale matching percentage during an unrelated rename operation.</summary>
     [ObservableProperty] public partial bool IsMatchRunning { get; set; }
 
-    /// <summary>True from the moment Start is clicked until MatchingService finishes
-    /// tokenizing every image (MatchPhase.Indexing) and starts scoring ROMs against them
-    /// (MatchPhase.Scanning) — that indexing pass has no per-item feedback of its own
-    /// otherwise, so the view shows a spinner over it instead of a bar that looks frozen.</summary>
+    /// <summary>True from the moment Start is clicked until MatchingService starts
+    /// scoring ROMs against the image index (MatchPhase.Matching) — covers both the
+    /// Listing phase (enumerating ROM/image files) and the Indexing phase (tokenizing
+    /// every image), neither of which has per-item feedback of its own, so the view
+    /// shows the activity-dots cue over them instead of a bar that looks frozen.</summary>
     [ObservableProperty] public partial bool IsIndexing { get; set; }
 
     /// <summary>Fraction of the single overall progress bar given to the Indexing phase
@@ -113,87 +158,96 @@ public partial class MatchViewModel : ViewModelBase
         Groups.Clear();
 
         foreach (var group in _allGroups)
-        {
-            var romTypeOk = SelectedFileType == FileTypeAll ||
-                             string.Equals(Path.GetExtension(group.RomFileName), SelectedFileType, StringComparison.OrdinalIgnoreCase);
-            var romRegionOk = RegionFilter.Matches(group.RomFileName, SelectedRegion, isImage: false);
-
-            group.VisibleCandidates.Clear();
-            if (romTypeOk && romRegionOk)
-            {
-                var candidatesPassingBasicFilters = new List<MatchCandidate>();
-                foreach (var candidate in group.Candidates)
-                {
-                    var regionOk = RegionFilter.Matches(candidate.ImageFileName, SelectedRegion, isImage: true);
-                    var scoreOk = !ShowOnlyExactScoreMatches || candidate.ScorePercent >= 100;
-                    if (regionOk && scoreOk)
-                        candidatesPassingBasicFilters.Add(candidate);
-                }
-
-                // HideSameImages collapses a run of identical-content candidates down to
-                // just the first (best-scoring, since RomMatchGroup already clusters them
-                // in best-match order) — comparing against the last KEPT hash, not just the
-                // previous candidate, so a whole run of 3+ duplicates collapses correctly
-                // rather than only dropping every other one.
-                var visible = new List<MatchCandidate>();
-                string? lastKeptHash = null;
-                foreach (var candidate in candidatesPassingBasicFilters)
-                {
-                    if (HideSameImages && candidate.ContentHash == lastKeptHash)
-                        continue;
-                    visible.Add(candidate);
-                    lastKeptHash = candidate.ContentHash;
-                }
-
-                // How many VISIBLE candidates share each content hash — a count of 1 means
-                // a singleton, which gets no "Same as above" label and no background shade
-                // at all. Counted against the final visible set (post-HideSameImages), for
-                // the same "depends on what's actually shown" reason as the label itself —
-                // when HideSameImages is on, every surviving candidate is unique-in-the-list
-                // by construction, so shading naturally turns itself off with no special case.
-                var hashCounts = visible
-                    .GroupBy(c => c.ContentHash)
-                    .ToDictionary(g => g.Key, g => g.Count());
-
-                string? lastHash = null;
-                var altShade = false;
-                foreach (var candidate in visible)
-                {
-                    var isMulti = hashCounts[candidate.ContentHash] > 1;
-
-                    // "Same as above" is relative to whatever's currently VISIBLE, not
-                    // fixed at scan time — so if a filter hides the representative of a
-                    // content-identical cluster, the next surviving member correctly
-                    // stops claiming to be "the same as" a row that isn't shown anymore.
-                    candidate.IsSameAsAbove = candidate.ContentHash == lastHash;
-
-                    if (candidate.ContentHash != lastHash)
-                    {
-                        // Flip only on entering a new MULTI-member cluster, so a singleton
-                        // sitting between two duplicate clusters doesn't consume a color
-                        // slot — RomMatchGroup already clusters identical content adjacent,
-                        // so this only ever toggles between genuinely distinct clusters.
-                        if (isMulti)
-                            altShade = !altShade;
-                        lastHash = candidate.ContentHash;
-                    }
-
-                    candidate.IsContentShadeA = isMulti && !altShade;
-                    candidate.IsContentShadeB = isMulti && altShade;
-
-                    group.VisibleCandidates.Add(candidate);
-                }
-            }
-
-            if (group.VisibleCandidates.Count > 0)
+            if (ApplyFiltersToGroup(group))
                 Groups.Add(group);
-        }
 
         // A filter can hide a previously-selected candidate (or reveal previously-hidden
         // ones) without any single candidate's own IsSelected value changing, so this
         // needs its own explicit re-check rather than relying solely on
         // OnCandidatePropertyChanged.
         RenameFilesCommand.NotifyCanExecuteChanged();
+    }
+
+    /// <summary>The per-group half of ApplyFilters' work, pulled out so a scan streaming
+    /// results in live (see OnRomMatched) can filter/shade just the one group that just
+    /// arrived instead of rebuilding the whole Groups collection from scratch every time
+    /// a new ROM's results come in. Returns whether the group has any visible candidate
+    /// left (i.e. whether it belongs in Groups at all) — same semantics ApplyFilters'
+    /// loop used to check inline.</summary>
+    private bool ApplyFiltersToGroup(RomMatchGroup group)
+    {
+        var romTypeOk = SelectedFileType == FileTypeAll ||
+                         string.Equals(Path.GetExtension(group.RomFileName), SelectedFileType, StringComparison.OrdinalIgnoreCase);
+        var romRegionOk = RegionFilter.Matches(group.RomFileName, SelectedRegion, isImage: false);
+
+        group.VisibleCandidates.Clear();
+        if (romTypeOk && romRegionOk)
+        {
+            var candidatesPassingBasicFilters = new List<MatchCandidate>();
+            foreach (var candidate in group.Candidates)
+            {
+                var regionOk = RegionFilter.Matches(candidate.ImageFileName, SelectedRegion, isImage: true);
+                var scoreOk = !ShowOnlyExactScoreMatches || candidate.ScorePercent >= 100;
+                if (regionOk && scoreOk)
+                    candidatesPassingBasicFilters.Add(candidate);
+            }
+
+            // HideSameImages collapses a run of identical-content candidates down to
+            // just the first (best-scoring, since RomMatchGroup already clusters them
+            // in best-match order) — comparing against the last KEPT hash, not just the
+            // previous candidate, so a whole run of 3+ duplicates collapses correctly
+            // rather than only dropping every other one.
+            var visible = new List<MatchCandidate>();
+            string? lastKeptHash = null;
+            foreach (var candidate in candidatesPassingBasicFilters)
+            {
+                if (HideSameImages && candidate.ContentHash == lastKeptHash)
+                    continue;
+                visible.Add(candidate);
+                lastKeptHash = candidate.ContentHash;
+            }
+
+            // How many VISIBLE candidates share each content hash — a count of 1 means
+            // a singleton, which gets no "Same as above" label and no background shade
+            // at all. Counted against the final visible set (post-HideSameImages), for
+            // the same "depends on what's actually shown" reason as the label itself —
+            // when HideSameImages is on, every surviving candidate is unique-in-the-list
+            // by construction, so shading naturally turns itself off with no special case.
+            var hashCounts = visible
+                .GroupBy(c => c.ContentHash)
+                .ToDictionary(g => g.Key, g => g.Count());
+
+            string? lastHash = null;
+            var altShade = false;
+            foreach (var candidate in visible)
+            {
+                var isMulti = hashCounts[candidate.ContentHash] > 1;
+
+                // "Same as above" is relative to whatever's currently VISIBLE, not
+                // fixed at scan time — so if a filter hides the representative of a
+                // content-identical cluster, the next surviving member correctly
+                // stops claiming to be "the same as" a row that isn't shown anymore.
+                candidate.IsSameAsAbove = candidate.ContentHash == lastHash;
+
+                if (candidate.ContentHash != lastHash)
+                {
+                    // Flip only on entering a new MULTI-member cluster, so a singleton
+                    // sitting between two duplicate clusters doesn't consume a color
+                    // slot — RomMatchGroup already clusters identical content adjacent,
+                    // so this only ever toggles between genuinely distinct clusters.
+                    if (isMulti)
+                        altShade = !altShade;
+                    lastHash = candidate.ContentHash;
+                }
+
+                candidate.IsContentShadeA = isMulti && !altShade;
+                candidate.IsContentShadeB = isMulti && altShade;
+
+                group.VisibleCandidates.Add(candidate);
+            }
+        }
+
+        return group.VisibleCandidates.Count > 0;
     }
 
     /// <summary>Whatever's currently highlighted in the tree — a RomMatchGroup or a
@@ -221,11 +275,13 @@ public partial class MatchViewModel : ViewModelBase
     /// HashSet directly).</summary>
     public event System.EventHandler? RomIgnored;
 
-    [NotifyCanExecuteChangedFor(nameof(StartCommand))]
-    [NotifyCanExecuteChangedFor(nameof(CancelCommand))]
     [NotifyCanExecuteChangedFor(nameof(RenameFilesCommand))]
     [ObservableProperty]
     public partial bool IsBusy { get; set; }
+
+    public string StartCancelButtonText => IsBusy ? "Cancel" : "Start";
+
+    partial void OnIsBusyChanged(bool value) => OnPropertyChanged(nameof(StartCancelButtonText));
 
     public MatchViewModel(MatchSettings settings, IMatchingService matchingService, IRenameService renameService)
     {
@@ -291,7 +347,20 @@ public partial class MatchViewModel : ViewModelBase
         PreviewImage = bitmap;
     }
 
-    [RelayCommand(CanExecute = nameof(CanStart))]
+    /// <summary>Single Start/Cancel button's command — dispatches on IsBusy rather than
+    /// exposing two separate commands, so there's only ever one button to disable/relabel
+    /// in sync with the other (see StartCancelButtonText). Fire-and-forget on the Start
+    /// branch is deliberate: StartAsync manages its own IsBusy try/finally and the button's
+    /// feedback comes from that property changing, not from awaiting this call.</summary>
+    [RelayCommand]
+    private void ToggleStartCancel()
+    {
+        if (IsBusy)
+            Cancel();
+        else
+            _ = StartAsync();
+    }
+
     private async Task StartAsync()
     {
         ScanStarting?.Invoke(this, EventArgs.Empty);
@@ -301,75 +370,90 @@ public partial class MatchViewModel : ViewModelBase
         IsIndexing = true;
         ProgressPercent = 0;
         StatusText = "Preparing scan";
+        _lastRomsListed = 0;
+        _lastImagesListed = 0;
+        _separatorFrameIndex = 0;
+        _separatorTimer?.Stop();
+        _separatorTimer = null;
         _allGroups.Clear();
+        _groupsByRomFileName.Clear();
         Groups.Clear();
         SelectedTreeItem = null;
+
+        // Reset up front rather than after the scan — results now stream into Groups
+        // live (see OnRomMatched), so the filter dropdowns/selections need to already be
+        // in their "fresh scan" state before the first result arrives, not after the last
+        // one does.
+        AvailableFileTypes.Clear();
+        AvailableFileTypes.Add(FileTypeAll);
+        AvailableRegions.Clear();
+        AvailableRegions.Add(RegionFilter.All);
+        SelectedFileType = FileTypeAll;
+        SelectedRegion = RegionFilter.All;
+        ShowOnlyExactScoreMatches = false;
+        HideSameImages = false;
+        AreGroupsExpanded = true; // matches RomMatchGroup's own default — see its doc comment for why expanding one group at a time as a scan streams in is cheap
+
         _cts = new CancellationTokenSource();
+
         var progress = new Progress<MatchProgress>(p =>
         {
-            if (p.Phase == MatchPhase.Indexing)
+            switch (p.Phase)
             {
-                StatusText = $"Indexing images: {p.CurrentName} ({p.Current}/{p.Total})";
-                ProgressPercent = p.PercentComplete * IndexingPhaseWeight;
-            }
-            else
-            {
-                IsIndexing = false;
-                StatusText = $"Scanning: {p.CurrentName} ({p.Current}/{p.Total})";
-                ProgressPercent = IndexingPhaseWeight * 100 + p.PercentComplete * (1 - IndexingPhaseWeight);
+                // Plain counts, no "found"/"scanned" labels — just the ROM figure,
+                // joined by the image figure once that listing starts. _lastRomsListed
+                // holds the ROM count so it stays on screen instead of being replaced
+                // once CurrentName switches to "images" — see that field's declaration.
+                case MatchPhase.Listing when p.CurrentName == "ROMs":
+                    _lastRomsListed = p.Current;
+                    StatusText = $"{_lastRomsListed:N0} ROMs";
+                    break;
+                case MatchPhase.Listing:
+                    _lastImagesListed = p.Current;
+                    StatusText = $"{_lastRomsListed:N0} ROMs, {_lastImagesListed:N0} images";
+                    break;
+                case MatchPhase.Indexing:
+                    // No more "(X/Y)" here — once both counts are final there's nothing
+                    // left worth reading a specific number for (Indexing/Matching are
+                    // typically fast enough that an X/Y would just flicker by
+                    // unreadably); StartSeparatorAnimation's bouncing dot is the "still
+                    // working" cue for both this phase and Matching below instead. The
+                    // bar itself still tracks real progress, just not narrated in text.
+                    StartSeparatorAnimation();
+                    ProgressPercent = p.PercentComplete * IndexingPhaseWeight;
+                    break;
+                case MatchPhase.Matching:
+                    IsIndexing = false;
+                    StartSeparatorAnimation();
+                    ProgressPercent = IndexingPhaseWeight * 100 + p.PercentComplete * (1 - IndexingPhaseWeight);
+                    break;
             }
         });
 
+        // Local, not a private method — captures StatusText updates against the two
+        // fields above via the same closure the "ROMs"/images cases already write to,
+        // and there's no reason for anything outside this one progress handler to ever
+        // start it.
+        void StartSeparatorAnimation()
+        {
+            if (_separatorTimer is not null)
+                return;
+
+            _separatorTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(150) };
+            _separatorTimer.Tick += (_, _) =>
+            {
+                _separatorFrameIndex = (_separatorFrameIndex + 1) % SeparatorFrames.Length;
+                StatusText = $"{_lastRomsListed:N0} ROMs{SeparatorFrames[_separatorFrameIndex]}{_lastImagesListed:N0} images";
+            };
+            _separatorTimer.Start();
+        }
+
+        var romMatched = new Progress<RomMatchResult>(OnRomMatched);
+
         try
         {
-            var matches = await _matchingService.FindMatchesAsync(_settings, progress, _cts.Token);
-
-            foreach (var group in matches
-                         .GroupBy(m => m.RomFileName, StringComparer.OrdinalIgnoreCase)
-                         .OrderBy(g => g.Key, StringComparer.OrdinalIgnoreCase))
-            {
-                var romGroup = new RomMatchGroup(group.Key, group.OrderByBestMatch());
-                // So RenameFilesCommand's enabled state can react to a checkbox toggle
-                // anywhere in the tree — see OnCandidatePropertyChanged.
-                foreach (var candidate in romGroup.Candidates)
-                    candidate.PropertyChanged += OnCandidatePropertyChanged;
-                _allGroups.Add(romGroup);
-            }
-
-            AvailableFileTypes.Clear();
-            AvailableFileTypes.Add(FileTypeAll);
-            foreach (var ext in _allGroups
-                         .Select(g => Path.GetExtension(g.RomFileName))
-                         .Where(ext => !string.IsNullOrEmpty(ext))
-                         .Distinct(StringComparer.OrdinalIgnoreCase)
-                         .OrderBy(ext => ext, StringComparer.OrdinalIgnoreCase))
-            {
-                AvailableFileTypes.Add(ext);
-            }
-
-            AvailableRegions.Clear();
-            AvailableRegions.Add(RegionFilter.All);
-            foreach (var region in RegionFilter.Options.Where(r => r != RegionFilter.All))
-            {
-                // English Translated only ever restricts ROMs (RegionFilter.Matches
-                // exempts images from it entirely, always returning true for them) — so
-                // checking image filenames here would make it look "found" even when no
-                // ROM actually carries the marker. Every other region legitimately shows
-                // up on either side.
-                var found = region == RegionFilter.EnglishTranslated
-                    ? _allGroups.Any(g => RegionFilter.Matches(g.RomFileName, region, isImage: false))
-                    : _allGroups.Any(g => RegionFilter.Matches(g.RomFileName, region, isImage: false)
-                                        || g.Candidates.Any(c => RegionFilter.Matches(c.ImageFileName, region, isImage: true)));
-                if (found)
-                    AvailableRegions.Add(region);
-            }
-
-            SelectedFileType = FileTypeAll;
-            SelectedRegion = RegionFilter.All;
-            ShowOnlyExactScoreMatches = false;
-            HideSameImages = false;
-            AreGroupsExpanded = true; // matches RomMatchGroup's own default expand state
-            ApplyFilters();
+            var scanResult = await _matchingService.FindMatchesAsync(_settings, progress, romMatched, _cts.Token);
+            MissingRoms = scanResult.Missing;
 
             var totalCandidates = Groups.Sum(g => g.Candidates.Count);
             StatusText = Groups.Count == 0
@@ -385,10 +469,102 @@ public partial class MatchViewModel : ViewModelBase
             IsBusy = false;
             IsMatchRunning = false;
             IsIndexing = false;
+            _separatorTimer?.Stop();
+            _separatorTimer = null;
         }
     }
 
-    private bool CanStart() => !IsBusy;
+    /// <summary>Consumes MatchingService's live per-ROM stream (see RomMatchResult) —
+    /// called once per ROM, well before the whole scan finishes, so results appear in
+    /// the tree as they're computed instead of arriving all at once in a single
+    /// multi-second UI freeze at the end. A same-named ROM in a different subfolder
+    /// (RomsIncludeSubfolders on) arrives as a second call for a RomFileName already
+    /// seen this scan — folded into the existing group via RomMatchGroup.MergeCandidates
+    /// rather than creating a second, wrongly-separate group, matching what the old
+    /// batch-built code did by grouping over the complete result up front.</summary>
+    private void OnRomMatched(RomMatchResult result)
+    {
+        if (_groupsByRomFileName.TryGetValue(result.RomFileName, out var existingGroup))
+        {
+            existingGroup.MergeCandidates(result.Candidates);
+            foreach (var candidate in result.Candidates)
+                candidate.PropertyChanged += OnCandidatePropertyChanged;
+            RegisterRegionsFrom(existingGroup, result.Candidates);
+
+            if (ApplyFiltersToGroup(existingGroup) && !Groups.Contains(existingGroup))
+                Groups.Add(existingGroup);
+            RenameFilesCommand.NotifyCanExecuteChanged();
+            return;
+        }
+
+        var romGroup = new RomMatchGroup(result.RomFileName, result.Candidates.OrderByBestMatch(), _settings.RomsPath);
+        romGroup.IsExpanded = AreGroupsExpanded; // matches the default (expanded) unless a mid-scan "Collapse All" click flipped it
+        // So RenameFilesCommand's enabled state can react to a checkbox toggle anywhere
+        // in the tree — see OnCandidatePropertyChanged.
+        foreach (var candidate in romGroup.Candidates)
+            candidate.PropertyChanged += OnCandidatePropertyChanged;
+
+        _allGroups.Add(romGroup);
+        _groupsByRomFileName.Add(result.RomFileName, romGroup);
+        RegisterFileType(romGroup.RomFileName);
+        RegisterRegionsFrom(romGroup, romGroup.Candidates);
+
+        if (ApplyFiltersToGroup(romGroup))
+            Groups.Add(romGroup); // no sorted-insert needed — MatchingService.ListRoms now hands out ROMs pre-sorted
+
+        RenameFilesCommand.NotifyCanExecuteChanged();
+    }
+
+    /// <summary>Grows AvailableFileTypes incrementally as each new extension is first
+    /// seen while a scan streams in, instead of discovering the whole set once at the
+    /// end — keeps the same alphabetical order the old one-shot .OrderBy(...) produced.</summary>
+    private void RegisterFileType(string romFileName)
+    {
+        var ext = Path.GetExtension(romFileName);
+        if (string.IsNullOrEmpty(ext) || AvailableFileTypes.Contains(ext, StringComparer.OrdinalIgnoreCase))
+            return;
+
+        var insertAt = 1; // index 0 is always FileTypeAll
+        while (insertAt < AvailableFileTypes.Count &&
+               string.Compare(AvailableFileTypes[insertAt], ext, StringComparison.OrdinalIgnoreCase) < 0)
+            insertAt++;
+        AvailableFileTypes.Insert(insertAt, ext);
+    }
+
+    /// <summary>Grows AvailableRegions incrementally as each new region is first found in
+    /// an arriving group's ROM/candidate filenames, instead of discovering the whole set
+    /// once at the end — inserts at each region's canonical rank in RegionFilter.Options
+    /// (not discovery order), matching the old one-shot result exactly.</summary>
+    private void RegisterRegionsFrom(RomMatchGroup group, IEnumerable<MatchCandidate> candidates)
+    {
+        foreach (var region in RegionFilter.Options)
+        {
+            if (region == RegionFilter.All || AvailableRegions.Contains(region))
+                continue;
+
+            // English Translated only ever restricts ROMs (RegionFilter.Matches exempts
+            // images from it entirely, always returning true for them) — so checking
+            // image filenames here would make it look "found" even when no ROM actually
+            // carries the marker. Every other region legitimately shows up on either side.
+            var found = region == RegionFilter.EnglishTranslated
+                ? RegionFilter.Matches(group.RomFileName, region, isImage: false)
+                : RegionFilter.Matches(group.RomFileName, region, isImage: false)
+                  || candidates.Any(c => RegionFilter.Matches(c.ImageFileName, region, isImage: true));
+            if (!found)
+                continue;
+
+            var insertAt = AvailableRegions.Count;
+            for (var i = 1; i < AvailableRegions.Count; i++)
+            {
+                if (Array.IndexOf(RegionFilter.Options, AvailableRegions[i]) > Array.IndexOf(RegionFilter.Options, region))
+                {
+                    insertAt = i;
+                    break;
+                }
+            }
+            AvailableRegions.Insert(insertAt, region);
+        }
+    }
 
     /// <summary>Mirrors exactly what RenameFilesAsync itself acts on — a VISIBLE and
     /// selected candidate — so the button disables itself the moment there's nothing to
@@ -405,10 +581,7 @@ public partial class MatchViewModel : ViewModelBase
             RenameFilesCommand.NotifyCanExecuteChanged();
     }
 
-    [RelayCommand(CanExecute = nameof(CanCancel))]
     private void Cancel() => _cts?.Cancel();
-
-    private bool CanCancel() => IsBusy;
 
     // Both of these — and the rename below — only act on Groups/VisibleCandidates, i.e.
     // whatever the current file-type/region filter actually shows. A row hidden by the
@@ -469,6 +642,7 @@ public partial class MatchViewModel : ViewModelBase
             if (_settings.IgnoredRomPaths.Add(group.RomFullPath))
             {
                 _allGroups.Remove(group);
+                _groupsByRomFileName.Remove(group.RomFileName);
                 anyIgnored = true;
             }
         }
@@ -478,6 +652,58 @@ public partial class MatchViewModel : ViewModelBase
 
         ApplyFilters();
         RomIgnored?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>Right-click "Ignore Folder" action (see MatchView.axaml's ROM row context
+    /// menu, populated from RomMatchGroup.IgnorableAncestorFolders) — adds the folder to
+    /// MatchSettings.IgnoredRomFolders (everything under it gets excluded from every
+    /// future scan too, see MatchingService.ListRoms), and drops any currently-shown
+    /// group whose ROM lives under it so it disappears from this scan immediately,
+    /// same as IgnoreRoms above.</summary>
+    [RelayCommand]
+    private void IgnoreFolder(string? folderPath)
+    {
+        if (string.IsNullOrEmpty(folderPath) || !_settings.IgnoredRomFolders.Add(folderPath))
+            return;
+
+        var removed = _allGroups.Where(g => FolderAncestry.IsUnderFolder(g.RomFullPath, folderPath)).ToList();
+        foreach (var group in removed)
+        {
+            _allGroups.Remove(group);
+            _groupsByRomFileName.Remove(group.RomFileName);
+        }
+
+        // Keeps the Report window's Missing tab in sync — otherwise a folder ignored
+        // here could still hide an already-cached "missing" entry for a ROM that
+        // happened to sit under it, until the next full scan naturally excludes it.
+        RemoveFromMissingCacheUnderFolder(folderPath);
+
+        ApplyFilters();
+        RomIgnored?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>Called by ReportViewModel when a ROM gets individually ignored from the
+    /// Report window's Missing list — MissingRoms is a snapshot from whenever the last
+    /// scan ran, so simply mutating IgnoredRomPaths elsewhere wouldn't otherwise remove
+    /// it from this cache until the next full scan happens to exclude it.</summary>
+    public void RemoveFromMissingCache(IReadOnlyCollection<string> romFullPaths)
+    {
+        if (MissingRoms.Count == 0 || romFullPaths.Count == 0)
+            return;
+
+        var set = new HashSet<string>(romFullPaths, StringComparer.OrdinalIgnoreCase);
+        MissingRoms = MissingRoms.Where(m => !set.Contains(m.RomFullPath)).ToList();
+    }
+
+    /// <summary>Same idea as RemoveFromMissingCache above, but for ReportViewModel's own
+    /// "Ignore Folder" action (see ReportEntry.IgnorableAncestorFolders) rather than an
+    /// exact-path ignore.</summary>
+    public void RemoveFromMissingCacheUnderFolder(string folderPath)
+    {
+        if (MissingRoms.Count == 0)
+            return;
+
+        MissingRoms = MissingRoms.Where(m => !FolderAncestry.IsUnderFolder(m.RomFullPath, folderPath)).ToList();
     }
 
     /// <summary>Tracks which action the toggle button performs next, independent of any
@@ -490,13 +716,46 @@ public partial class MatchViewModel : ViewModelBase
 
     partial void OnAreGroupsExpandedChanged(bool value) => OnPropertyChanged(nameof(ExpandCollapseButtonText));
 
+    /// <summary>Cancels an in-flight ToggleExpandCollapseAsync batch when a second click
+    /// arrives before the first finishes — the newer click's desired end state wins
+    /// rather than the two racing to set IsExpanded out of order.</summary>
+    private CancellationTokenSource? _expandCollapseCts;
+
+    /// <summary>Expanding (or collapsing) every group at once means the TreeView has to
+    /// realize/lay out every candidate row across the whole tree in one synchronous
+    /// burst — exactly the multi-second stall a live-streamed scan avoids by having
+    /// groups arrive collapsed and one at a time (see OnRomMatched). Setting IsExpanded
+    /// on all of them in a single foreach reintroduces that same stall at this button
+    /// instead. Batching the assignment with a yield every BatchSize groups spreads that
+    /// same realization cost across several render frames instead of one, the same
+    /// "don't do it all in one uninterrupted burst" fix, just applied here since the
+    /// data (unlike a scan's results) is already fully in memory — there's nothing to
+    /// stream, only the UI-side realization cost to spread out.</summary>
+    private const int ExpandCollapseBatchSize = 40;
+
     [RelayCommand]
-    private void ToggleExpandCollapse()
+    private async Task ToggleExpandCollapseAsync()
     {
+        _expandCollapseCts?.Cancel();
+        var cts = _expandCollapseCts = new CancellationTokenSource();
+        var token = cts.Token;
+
         var expand = !AreGroupsExpanded;
+        AreGroupsExpanded = expand; // flips the button's label immediately, before the batch below even starts
+
+        var sinceYield = 0;
         foreach (var group in Groups)
+        {
             group.IsExpanded = expand;
-        AreGroupsExpanded = expand;
+
+            if (++sinceYield >= ExpandCollapseBatchSize)
+            {
+                sinceYield = 0;
+                await Dispatcher.UIThread.InvokeAsync(() => { }, DispatcherPriority.Render);
+                if (token.IsCancellationRequested)
+                    return;
+            }
+        }
     }
 
     [RelayCommand(CanExecute = nameof(CanRenameFiles))]

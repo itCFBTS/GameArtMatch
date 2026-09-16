@@ -91,4 +91,13 @@ public partial class MatchSettings : ObservableObject
     /// MainViewModel — the sole ISettingsStore owner — can persist the same instance
     /// after the fact rather than needing a round-trip.</summary>
     public HashSet<string> IgnoredRomPaths { get; } = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>Full folder paths to always skip during scanning, along with everything
+    /// under them (see MatchingService.ListRoms) — for excluding a whole junk subfolder
+    /// (e.g. a "Palettes" folder that isn't actually ROMs) in one shot, rather than
+    /// ignoring each file it contains one at a time. Same persistence/mutation pattern
+    /// as IgnoredRomPaths, and deliberately a separate set rather than folding into it —
+    /// keeping "this exact file" and "this whole folder" apart avoids the two mismatched
+    /// matching rules (exact-path vs. prefix) ever needing to share one collection.</summary>
+    public HashSet<string> IgnoredRomFolders { get; } = new(StringComparer.OrdinalIgnoreCase);
 }

@@ -2,8 +2,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="GameArtMatch.App"
              xmlns:local="using:GameArtMatch"
-             RequestedThemeVariant="Default">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+             RequestedThemeVariant="Dark">
+             <!-- Pinned to Dark for the retro theme (see Tokens.axaml) rather than "Default"
+                  (follow OS theme) — Fluent's own built-in control chrome (TextBox/ComboBox/
+                  ScrollBar/MenuFlyout backgrounds, etc.) comes from FluentTheme's own Light/Dark
+                  dictionaries, not from our tokens, so this app is dark-only right now, not
+                  theme-variant-aware. -->
 
     <Application.DataTemplates>
         <local:ViewLocator />
@@ -11,6 +15,9 @@
 
     <Application.Styles>
         <FluentTheme />
+        <!-- Shared style classes (see Styles.axaml) — after FluentTheme so they
+             can override its defaults where a class sets a property. -->
+        <StyleInclude Source="avares://GameArtMatch/Styles.axaml" />
     </Application.Styles>
 
     <!-- Merged after FluentTheme (above) so our design tokens take precedence over

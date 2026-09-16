@@ -1,0 +1,200 @@
+<!--
+  Shared style classes — the one place to add a reusable visual pattern once it
+  shows up more than once across views. Companion to Tokens.axaml: this file
+  bundles combinations of token-driven setters that were previously repeated
+  inline in each view; it doesn't introduce any new colors/sizes of its own.
+
+  Merged into Application.Styles (see App.axaml) after FluentTheme, so these
+  classes are available to every view without each one needing its own
+  Window.Styles/UserControl.Styles copy.
+
+  Kept deliberately small: only patterns that actually repeated across two or
+  more views were promoted here. View-specific state styles (e.g. MatchView's
+  .duplicate/.exactMatch/.shadeA/.shadeB match-result markers) stay local to
+  that view since they're semantically specific to it, not shared vocabulary.
+-->
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Styles.Resources>
+        <!-- Scoped variant of Fluent's own MenuItem ControlTheme (ControlThemes belong in
+             Resources, not Styles — see avalonia-styling skill), used only by the
+             "Ignore Folder" MenuItem in MatchView/ReportView's context menus
+             (Theme="{StaticResource BottomSubmenuMenuItemTheme}"). Fluent's own theme
+             hardcodes its submenu Popup to Placement="RightEdgeAlignedTop" — there's no
+             plain property to redirect that, the popup is only reachable by re-supplying
+             the whole ControlTemplate. BasedOn the real theme so every other Setter/Style
+             (colors, pointer-over, disabled, chevron, etc.) still applies unchanged; only
+             the Template itself (and, within it, only the Popup's Placement/
+             HorizontalOffset) actually differs from Fluent's original — see
+             https://github.com/AvaloniaUI/Avalonia src/Avalonia.Themes.Fluent/Controls/MenuItem.xaml
+             for the upstream source this was copied from. -->
+        <ControlTheme x:Key="BottomSubmenuMenuItemTheme" TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Panel>
+                        <Border Name="PART_LayoutRoot"
+                                Padding="{TemplateBinding Padding}"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{TemplateBinding CornerRadius}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleIcon" />
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="MenuItemIcon" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="MenuItemIGT" />
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="MenuItemChevron" />
+                                </Grid.ColumnDefinitions>
+
+                                <ContentControl Grid.Column="0"
+                                                x:Name="PART_ToggleIconPresenter"
+                                                IsVisible="False"
+                                                Theme="{StaticResource FluentMenuItemIconTheme}"
+                                                Margin="{DynamicResource MenuIconPresenterMargin}" />
+
+                                <ContentControl Grid.Column="1"
+                                                x:Name="PART_IconPresenter"
+                                                IsVisible="False"
+                                                Theme="{StaticResource FluentMenuItemIconTheme}"
+                                                Content="{TemplateBinding Icon}"
+                                                Margin="{DynamicResource MenuIconPresenterMargin}" />
+
+                                <ContentPresenter Name="PART_HeaderPresenter"
+                                                  Content="{TemplateBinding Header}"
+                                                  ContentTemplate="{TemplateBinding HeaderTemplate}"
+                                                  VerticalAlignment="Center"
+                                                  HorizontalAlignment="Stretch"
+                                                  Grid.Column="2" />
+                                <TextBlock x:Name="PART_InputGestureText"
+                                           Grid.Column="3"
+                                           Margin="{DynamicResource MenuInputGestureTextMargin}"
+                                           Text="{TemplateBinding InputGesture, Converter={StaticResource KeyGestureConverter}}"
+                                           HorizontalAlignment="Right"
+                                           VerticalAlignment="Center"
+                                           Foreground="{DynamicResource MenuFlyoutItemKeyboardAcceleratorTextForeground}" />
+                                <Path Name="PART_ChevronPath"
+                                      Stretch="Uniform"
+                                      Width="8"
+                                      Height="16"
+                                      Data="{StaticResource MenuItemChevronPathData}"
+                                      Fill="{DynamicResource MenuFlyoutSubItemChevron}"
+                                      Margin="{DynamicResource MenuFlyoutItemChevronMargin}"
+                                      VerticalAlignment="Center"
+                                      Grid.Column="4" />
+                            </Grid>
+                        </Border>
+                        <!-- The only real change from Fluent's original: Placement="Bottom"
+                             (centers the submenu horizontally under this item and grows it
+                             downward) instead of "RightEdgeAlignedTop", and no
+                             HorizontalOffset — that -4px nudge existed to tuck a
+                             side-opening submenu snugly against its parent, which doesn't
+                             apply once it's centered underneath instead. -->
+                        <Popup Name="PART_Popup"
+                               WindowManagerAddShadowHint="False"
+                               Placement="Bottom"
+                               IsLightDismissEnabled="False"
+                               IsOpen="{TemplateBinding IsSubMenuOpen, Mode=TwoWay}">
+                            <!-- No MaxWidth here (Fluent's original binds
+                                 FlyoutThemeMaxWidth, a fixed cap around ~450px) — a deep
+                                 folder path easily exceeds that, and the user explicitly
+                                 wants this sized to the full text, not truncated/wrapped
+                                 at a fixed width. -->
+                            <Border Background="{DynamicResource MenuFlyoutPresenterBackground}"
+                                    BorderBrush="{DynamicResource MenuFlyoutPresenterBorderBrush}"
+                                    BorderThickness="{DynamicResource MenuFlyoutPresenterBorderThemeThickness}"
+                                    Padding="{DynamicResource MenuFlyoutPresenterThemePadding}"
+                                    MinHeight="{DynamicResource MenuFlyoutThemeMinHeight}"
+                                    HorizontalAlignment="Stretch"
+                                    CornerRadius="{DynamicResource OverlayCornerRadius}">
+                                <ScrollViewer Theme="{StaticResource FluentMenuScrollViewer}">
+                                    <ItemsPresenter Name="PART_ItemsPresenter"
+                                                    ItemsPanel="{TemplateBinding ItemsPanel}"
+                                                    Margin="{DynamicResource MenuFlyoutScrollerMargin}"
+                                                    Grid.IsSharedSizeScope="True" />
+                                </ScrollViewer>
+                            </Border>
+                        </Popup>
+                    </Panel>
+                </ControlTemplate>
+            </Setter>
+        </ControlTheme>
+    </Styles.Resources>
+
+    <!-- Explicit Window background/foreground rather than relying on Fluent's own
+         Dark-variant defaults, so the exact retro palette in Tokens.axaml (not
+         Fluent's approximation of "dark") is what actually renders. Foreground is
+         an inherited property, so this also covers every TextBlock/label that
+         doesn't set its own — which is most of them. -->
+    <Style Selector="Window">
+        <Setter Property="Background" Value="{DynamicResource BackgroundBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}" />
+    </Style>
+
+    <!-- Every button gets the pixel display font — buttons only ever hold short
+         labels ("Start", "Close", "..."), so Press Start 2P's readability limits
+         don't bite here the way they would on filenames. MenuItem gets the same
+         treatment (File/Help menu bar, DropDownButton flyouts, context-menu
+         entries) so a flyout opened from a button doesn't suddenly switch fonts. -->
+    <Style Selector="Button, MenuItem">
+        <Setter Property="FontFamily" Value="{DynamicResource FontFamilyDisplay}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeDisplay}" />
+    </Style>
+    <!-- DropDownButton (the "Selection" split button) doesn't pick up the Button
+         rule above on its own — Fluent's DropDownButton template sets FontFamily
+         directly on its internal ContentPresenter rather than inheriting the
+         outer control's value, so it needs its own /template/ override to match. -->
+    <Style Selector="DropDownButton /template/ ContentPresenter">
+        <Setter Property="FontFamily" Value="{DynamicResource FontFamilyDisplay}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeDisplay}" />
+    </Style>
+
+    <!-- Fixed (not Min) height — DropDownButton's own template reserves extra
+         internal room for its chevron/split-button chrome, so it's naturally
+         taller than a plain Button even at the same MinHeight; only an explicit
+         Height forces every toolbar button (MatchView's Start/Cancel/Selection/
+         Collapse All/Rename Selected row, ReportView's Refresh/Export) to match.
+         Padding drops its vertical component (Fluent's own default is a slightly
+         asymmetric 12,5,12,6, which reads fine at a natural height but visibly
+         off-center once Height is fixed) so VerticalContentAlignment="Center" is
+         what actually centers the label within the fixed 32px, the same way
+         DropDownButton's own template already centers its content+chevron. -->
+    <Style Selector="Button">
+        <Setter Property="Height" Value="32" />
+        <Setter Property="Padding" Value="12,0" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+
+    <!-- Muted secondary text, no size change — e.g. a candidate count, a
+         "same as above" aside, a "→" separator between two values. -->
+    <Style Selector="TextBlock.muted">
+        <Setter Property="Foreground" Value="{DynamicResource ForegroundMutedBrush}" />
+    </Style>
+
+    <!-- Muted, small, wrapping explanatory caption underneath a control —
+         e.g. OptionsWindow's per-field help text, the About window's blurb. -->
+    <Style Selector="TextBlock.hint">
+        <Setter Property="Foreground" Value="{DynamicResource ForegroundMutedBrush}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeSmall}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <!-- Column header label, e.g. MatchView's results-tree header row. Display
+         font instead of FontWeight="Bold" — Press Start 2P only ships one weight,
+         and the font itself already reads as "loud" without needing faux-bold. -->
+    <Style Selector="TextBlock.columnHeader">
+        <Setter Property="FontFamily" Value="{DynamicResource FontFamilyDisplay}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeDisplay}" />
+    </Style>
+
+    <!-- Short, single-line emphasis label in the display font — e.g. the About
+         window's version text, OptionsWindow's "Console Mode" section heading.
+         Same reasoning as .columnHeader: length-limited by design, so the pixel
+         font's readability cost doesn't apply. -->
+    <Style Selector="TextBlock.retroLabel">
+        <Setter Property="FontFamily" Value="{DynamicResource FontFamilyDisplay}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeDisplay}" />
+    </Style>
+
+</Styles>
