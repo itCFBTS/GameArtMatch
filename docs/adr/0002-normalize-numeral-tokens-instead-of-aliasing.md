@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted
+Implemented
 
 ## Context
 
@@ -49,5 +49,32 @@ found from — two otherwise-unrelated titles that are both, say, "X 2" will
 still share one real token (the numeral) out of a very small set, which can
 still clear a lenient accuracy threshold. See ADR-0003 for the broader fix to
 that remaining problem. The same duplication shape exists in
-`AddYearAbbreviationVariant` ("1994" also adds "94") and should be reviewed
-for the same fix when this is implemented.
+`AddYearAbbreviationVariant` ("1994" also adds "94") — reviewed as this ADR
+asked, but *not* fixed the same way: that variant is one-directional (no
+reverse "94 → assume 1994" case), so canonicalizing it would either break the
+"NBA Jam '94" ↔ "NBA Jam 1994" cross-match it exists for, or require guessing
+which bare 2-digit tokens are actually years — a different, riskier problem
+than this one. Left as-is; would be its own ADR if it turns out to matter in
+practice.
+
+## Validation
+
+Verified two ways before merging:
+
+- **Hand-traced**: with the fix, `NameNormalizer.ToTokens` on "Rockman 2" and
+  "Rockman II" both produce `{rockman, 2}` (previously "Rockman 2" alone
+  produced `{rockman, 2, ii}`). `SimilarityScorer.ScorePercent("Rockman 2",
+  "DuckTales 2")` dropped from ~66.7% to a clean 50.0% — the shared real
+  token (the numeral) still counts, just once instead of twice. Confirmed via
+  a temporary self-test in `Program.cs` (`--selftest`), removed after
+  confirming.
+- **Real scan, before/after**: same NES ROM set (Console Mode, Skip Existing
+  Art on) scanned before and after the fix. Total candidates dropped from
+  2,270 across 375 ROMs to 1,693 across 363 ROMs. Concretely, the "Rockman 2
+  (Japan) (Capcom Town).nes" group previously included "DuckTales 2
+  (Japan).jpg", "RoboCop 2 (Japan).jpg", "Kyonshiizu 2 (Japan).jpg",
+  "Sangokushi II (Japan).jpg", "Shanghai II (Japan).jpg", and "Terminator 2
+  (Japan).jpg" as candidates (all sharing nothing with Rockman but a sequel
+  number) — after the fix, every one of those is gone, and the group's
+  remaining candidates are exclusively genuine Rockman box art across its
+  several regional/release variants.
