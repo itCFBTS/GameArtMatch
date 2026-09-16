@@ -2,7 +2,8 @@
 
 ## Status
 
-Design finalized — implementation and cross-library-size validation pending
+Implemented — validated against a synthetic corpus; real-library-size
+validation (the "Small-corpus behavior" section below) still pending
 
 ## Context
 
@@ -182,3 +183,37 @@ session before being treated as final, per the "Small-corpus behavior"
 section above. Implementation happens on `experiment/tfidf-weighting` (see
 ADR-0001) so it can be compared against real scans before merging into
 `main`.
+
+## Validation
+
+Verified two ways before merging:
+
+- **Formula check, in isolation**: `SimilarityScorer.ScorePercent(a, a,
+  weight)` for a non-trivial `weight` function still returns exactly 100%,
+  confirming the both-sides-weighted derivation holds in code, not just on
+  paper. A hand-picked weight (a common token down-weighted to 0.1) dropped
+  `{rockman, 2}` vs. `{ducktales, 2}` from the unweighted 50.0% to 9.1%,
+  confirming the mechanism suppresses a shared generic token as expected.
+- **Full pipeline, synthetic corpus**: a temporary self-test (removed after
+  confirming) built a small on-disk library reproducing the original false
+  positive — "Rockman 2" alongside several unrelated "X 2"/"X II" titles
+  (DuckTales 2, RoboCop 2, Sangokushi II, Shanghai II, Terminator 2,
+  Kyonshiizu 2, Zelda II) whose art also kept its sequel number, plus enough
+  single-copy unrelated titles that a franchise name is genuinely rare. With
+  `DisregardRomTags` off (so the one computation IS the weighted candidacy
+  score, not the separate unweighted display score), the true match
+  ("Rockman" art) scored 96.1% while every numeral-only collision scored a
+  flat 14.1% — a clear, wide separation, up from what would have been a much
+  narrower 75%-vs-50% gap without this ADR. With `DisregardRomTags` on (the
+  realistic default) and a real threshold of 25 between those two clusters,
+  the scan's results for "Rockman 2" contained exactly one candidate — the
+  true match — confirming the weighted candidacy gate actually excludes the
+  false positives outright, even though the number displayed to the user
+  (the deliberately-unweighted tag-inclusive score) doesn't itself change.
+
+Not yet done: running this against the real ROM libraries already profiled
+this session (8, 44, 80, 2,526 ROMs — see the "Small-corpus behavior"
+section) to check for the small-N sensitivity that section anticipates. The
+synthetic corpus above (30 documents total) is itself on the smaller end,
+and didn't show obviously erratic behavior, but a synthetic corpus can't
+substitute for the real thing.
