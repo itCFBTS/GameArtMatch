@@ -10,3 +10,7 @@ publish/
 # OS cruft
 .DS_Store
 Thumbs.db
+
+# Local library provenance for docs/catalog (see its README) — embeds this machine's
+# absolute ROMs/Images root paths, unlike raw-tags.txt/raw-tags-counts.tsv which don't.
+docs/catalog/scan-info.txt
