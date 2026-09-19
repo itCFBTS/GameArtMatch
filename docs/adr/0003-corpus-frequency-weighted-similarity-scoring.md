@@ -2,8 +2,30 @@
 
 ## Status
 
-Implemented — validated against a synthetic corpus; real-library-size
-validation (the "Small-corpus behavior" section below) still pending
+Implemented and merged to `main`. Validated against a synthetic corpus (see
+"Validation" below) and, since then, against the real 2,526-ROM NES library
+(see "Real-library validation (NES, 2,526 ROMs)" below). The real-library
+run confirms the formula does fix real instances of the motivating
+false-positive problem, but it is **not a strict improvement**: of the 53
+ROMs that lost their only candidate when switching from unweighted to
+weighted scoring, 16 are genuine regressions (a real match scored below
+threshold, not a false positive removed), 24 are correct exclusions (the
+false positive this ADR targets), and 13 are too ambiguous to call either
+way without playing the ROM. Real-world corpora — where the "same real
+game" can legitimately recur many times as region/revision/pirate-cart
+duplicates — violate the implicit assumption that a common token is common
+*because* it's uninformative; sometimes it's common because the one true
+match has a lot of near-duplicate copies.
+
+**Decision to merge as-is**: weighed as net progress rather than a strict
+improvement — 24 real false positives fixed clearly outweighs 16 real
+regressions (plus 13 unresolved either way) — so this merges to `main`
+without waiting on a mitigation for the "same game, many corpus copies"
+gap. That gap remains open: a "title cluster" concept (grouping
+region/revision/hack/pirate variants of the same underlying game before
+counting document frequency, so N copies of one game count once rather than
+N times) is the leading candidate fix, discussed but **not yet scoped or
+decided** — a future ADR's job if pursued.
 
 ## Context
 
@@ -211,9 +233,163 @@ Verified two ways before merging:
   false positives outright, even though the number displayed to the user
   (the deliberately-unweighted tag-inclusive score) doesn't itself change.
 
-Not yet done: running this against the real ROM libraries already profiled
-this session (8, 44, 80, 2,526 ROMs — see the "Small-corpus behavior"
-section) to check for the small-N sensitivity that section anticipates. The
-synthetic corpus above (30 documents total) is itself on the smaller end,
-and didn't show obviously erratic behavior, but a synthetic corpus can't
-substitute for the real thing.
+Running this against the real ROM libraries already profiled this session
+(8, 44, 80, 2,526 ROMs — see the "Small-corpus behavior" section), to check
+for the small-N sensitivity that section anticipates, was deferred at the
+time this was written. It has since been done for the 2,526-ROM case — see
+"Real-library validation (NES, 2,526 ROMs)" below. The synthetic corpus
+above (30 documents total) is itself on the smaller end, and didn't show
+obviously erratic behavior, but as suspected, it didn't substitute for the
+real thing: the real run surfaced a failure mode the synthetic corpus never
+could have (see below).
+
+## Real-library validation (NES, 2,526 ROMs)
+
+Ran the real user's NES library (2,526 ROMs after existing-art filtering,
+against the real `~/.config/GameArtMatch/settings.json` paths, `Disregard
+RomTags=true`, `AccuracyThreshold=65` — both compiled `MatchSettings`
+defaults, not persisted) through `FindMatchesAsync` on both `main`
+(unweighted) and `experiment/tfidf-weighting` (weighted), via a temporary
+headless CLI mode and a temporary candidate-score trace hook (both
+reverted after this validation — see this ADR's git history for the exact
+diff if needed).
+
+Moving from unweighted to weighted scoring:
+
+- **53 ROMs newly lost their only candidate** (≥1 candidate at threshold 65
+  on `main`, 0 on `experiment/tfidf-weighting`).
+- **5 ROMs newly gained a candidate** (0 on `main`, ≥1 on
+  `experiment/tfidf-weighting`).
+
+### The 5 newly-gained ROMs
+
+Spot-checked, not deeply verified (lower risk — a new candidate appearing
+can't silently break an existing correct match the way a lost one can).
+All 5 look like plausible, correct matches — no new false positive found:
+
+| ROM | New top candidate | Score |
+|---|---|---|
+| Eggerland (English Translated by Necrosaro) | Eggerland - Meikyuu no Fukkatsu (Japan) | 66.2 |
+| Chip & Dale 3 (Asia) (En) (C-D3) (Pirate) | Chip to Dale no Daisakusen (Japan) | 68.0 |
+| Mortal Kombat V Pro (Asia) (En) (Pirate) | Mortal Kombat II (Asia) (En) (Hummer Team) (Blue Version) (Pirate) | 65.1 |
+| Ultimate Mortal Kombat 4 (Asia) (En) (Pirate) | Mortal Kombat II (Asia) (En) (Hummer Team) (Blue Version) (Pirate) | 65.9 |
+| Gremlins (World) (Aftermarket) (Pirate) | Gremlins 2 - The New Batch (Europe) (Beta) | 65.3 |
+
+The Mortal Kombat and Chip & Dale cases can't be pinned to one exact
+numbered entry (common with mislabeled pirate carts — many NES "Mortal
+Kombat" pirate carts of any claimed number are actually MK II or MK3
+underneath), but the franchise match itself is solid, and "Gremlins" has no
+NES release of its own for the pack to be matching against — "Gremlins 2"
+is the only game in the corpus it could correctly land on.
+
+### The 53 newly-missing ROMs
+
+Every one individually checked: old top candidate (`main`, unweighted,
+uncapped) vs. new top candidates (`experiment/tfidf-weighting`, weighted,
+uncapped), judging title identity the way a human spot-checking box art
+would. Tally:
+
+| Verdict | Count | Meaning |
+|---|---|---|
+| REGRESSION | 16 | Old top candidate was the real match; weighting incorrectly pushed it below threshold. |
+| CORRECT EXCLUSION | 24 | Old top candidate was a false positive (the ADR's motivating problem); weighting correctly excluded it. |
+| AMBIGUOUS | 13 | Genuinely can't call it without playing the ROM — noted explicitly rather than forced. |
+
+**REGRESSION (16) — the ones that matter most:**
+
+| ROM | Old top (main) | New top (experiment) | Why this looks like a real match |
+|---|---|---|---|
+| Arumana no Kiseki (English Translated, Rev A, by DvD Translations) | Armana no Kiseki (Asia) (Ja) (Co Tung) (Pirate) — 66.7 | same, 55.0 | Same title, alt. romanization (Arumana/Armana); no closer candidate exists. |
+| Golf - Japan Course (JP) | Golf (Europe) (Animal Crossing) / other Golf variants — 66.7 | same, 62.3 | FDS add-on disk to the same "Golf" game; no dedicated art exists for the add-on, so the base game's art is the correct fallback. |
+| Golf - Special Course (JP) | Golf variants — 66.7 | same, 64.1 | Same as above. |
+| The Golf - Bishoujo Classic (JP) | Golf variants — 66.7 | same, 64.9 | Reskin hack of the same base "Golf" game. |
+| VS. Super Mario Bros. Home Edition (Hack) v1.1 BMF54123 | Super Mario Bros. (Europe/World/Asia) — 66.7 | same, 62.6 | Literally an arcade-VS.-System hack of Super Mario Bros. |
+| Vs. Mighty Bomb Jack 2C03 & Credit Hack - Power cycle to menu | Mighty Bomb Jack (all regions) — 65.0 | same, 63.4 | Arcade VS. hack of the same game. |
+| Vs. Super Xevious - GAMP no Nazo | Super Xevious - Gump no Nazo (Japan) — 73.3 | same, 63.3 | Same game (arcade VS. version); "GAMP"/"Gump" is a romanization variant. This is the ADR's own "Super Xevious/Xevious is still basically correct" example. |
+| Super Child Bros. 3 (World) (Aftermarket) (Unl) | Super Mario Bros. 3 (all regions) — 75.0 | same, 64.1 | "Child" swapped for "Mario" — reads as a themed hack of SMB3. |
+| Super Beta Bros. 3 (World) (Demo) (Aftermarket) (Unl) | Super Mario Bros. 3 (all regions) — 75.0 | same, 64.1 | Same pattern as above; likely a beta-build hack of SMB3. |
+| Track + Feel II (World) (Aftermarket) (Unl) | Track & Field II (all regions) — 66.7 | same, 54.1 | "&"→"+", "Field"→"Feel" reads as a pun-title hack of the real game. |
+| Super Mario & Sonic 2 (Asia) (Ja) (v1.0) (Pirate) | Super Mario Bros. 2 (all regions) — 75.0 | same, 62.6 | Shares "Super Mario ... 2"; "Sonic" is cosmetic branding on what looks like a Mario-based pirate cart. |
+| Super Mario & Sonic 2 (Asia) (Ja) (v1.1) (Pirate) | Super Mario Bros. 2 (all regions) — 75.0 | same, 62.6 | Same as above. |
+| Chaoji Zhan Hun - Super Contra 7 (China) (960418) (Pirate) | Super Contra (Japan) — 66.7 | same, 62.4 | Title itself advertises "Super Contra 7" — a common Chinese-pirate-cart pattern of naming the real franchise it's built on. |
+| Chaoji Zhan Hun - Super Contra 7 (China) (Pirate) | Super Contra (Japan) — 66.7 | same, 62.4 | Same as above. |
+| Yongzhe Dou Elong II - Dragon Quest (China) (980342) (Pirate) | Dragon Quest (Japan) — 66.7 | same, 64.7 | Same pattern — title names "Dragon Quest" directly. |
+| Yongzhe Dou Elong V - Dragon Quest (China) (0100382) (Pirate) | Dragon Quest (Japan) — 66.7 | same, 63.4 | Same as above. |
+
+Notice the common thread in most of these: `weight(t)` is low not because
+`t` is semantically generic, but because the *same real game* ("Golf",
+"Super Mario Bros. 3", "Contra") legitimately recurs many times in the
+corpus as region dumps, VS.-arcade hacks, or pirate-cart relabels — each
+occurrence adds to `df(t)`, and the formula can't distinguish that from a
+token that's common because it's uninformative (a bare "2", "(Japan)").
+This is a real gap in the "rare = informative" assumption the whole ADR
+rests on, not a small-N artifact — most of these titles are near the
+2,526-document end of the corpus, not the small-library end the "Small-
+corpus behavior" section worried about.
+
+**CORRECT EXCLUSION (24)** — the old top candidate shared only a generic
+token (a bare number, a common connector word, a structural naming pattern
+like "N-in-1") with an unrelated title, confirming the weighting worked as
+intended:
+
+Zhong Guo Mahjong (Asia) (Unl); 1996 Yingyu CAI 3-in-1 (China) (Unl); LIKO -
+Study Cartridge 3-in-1 (Russia) (Subor Keyboard) (Unl); Famimaga Disk Vol. 3
+- All 1 (JP); Bishoujo Mahjong Club (JP); Disk Hacker - Version 1.3 (JP);
+Professional Mahjong Gokuu (JP); Wardner no Mori (JP) (unrelated game
+sharing only the generic "no Mori" = "'s forest" suffix with "Wario no
+Mori"); KHAN Games 4-in-1 Retro Gamepak (World) (Aftermarket) (Unl); Nin Nin
+(World) (v1.3) (Aftermarket) (Unl); Retro Puzzle Maker (World) (v1.1)
+(Program) (Aftermarket) (Unl); Super City Mayor (World) (Global Game Jam
+2020) (Aftermarket) (Unl); Xin Yingxiong Zhuan (China) (Aftermarket) (Unl);
+Nin Nin (World) (Beta) (Aftermarket) (Unl); Basu The Demon Hunter (World)
+(v0.12) (Demo) (Aftermarket) (Unl); Basu The Demon Hunter (World) (v0.13)
+(Demo) (Aftermarket) (Unl); Super NeSnake 2 (USA) (Demo) (Aftermarket)
+(Unl); Tapeworm - Disco Puzzle (World) (Demo) (Aftermarket) (Unl); Nin Nin
+(World) (v1.1) (NESDev Compo 2019) (Aftermarket) (Unl); Nin Nin (World)
+(v1.2) (Aftermarket) (Unl); Super City Mayor (World) (NESDev Compo 2019)
+(Aftermarket) (Unl); Power Rangers 2 (Asia) (Ja) (Pirate); Wario Land 2
+(Asia) (Ja) (JY039) (Pirate) (a Game Boy title unofficially ported — the
+old "match", Wagyan Land 2, is an unrelated franchise that only shares
+"Land 2"; the correct art doesn't exist in this NES-only corpus); Game Paks
+- 4 Games in 1 (Asia) (En) (NC-80) (Pirate).
+
+**AMBIGUOUS (13)** — flagged explicitly rather than forced, per instructions
+not to paper over genuine uncertainty:
+
+- **Tantei Jinguuji Saburou - Shinjuku Chuuou Kouen Satsujin Jiken (JP, Rev
+  1)** (old top: ...Yokohamakou Renzoku Satsujin Jiken (Japan), 67.0 → 62.0):
+  same detective-series franchise name shared, but a different specific
+  entry in the series — unclear whether the sibling entry's art is an
+  intentional "closest available" fallback or a genuine mismatch.
+- **Adventures of Panzer 2, The (World) (v0.6) (Beta) (Aftermarket) (Unl)**
+  (old top: Adventures of Lolo 2, 66.7 → 52.1): shares "Adventures of ... 2"
+  structure, but "Panzer" (tank) vs. "Lolo" (puzzle-egg character) suggests
+  unrelated content behind a similarly-structured title — leaning correct
+  exclusion, not confident enough to call it that outright.
+- **Power Rangers (Asia) (En) (Pirate)** (old top: Mighty Morphin - Power
+  Rangers IV - The Movie, 66.7 → 64.9): full "Power Rangers" phrase shared
+  (not a generic word), but the candidate is a different numbered/subtitled
+  entry — pirate-cart relabeling makes this plausible either way.
+- **Street Fighter II Pro (Asia) (En) (Pirate)** (old top: Street Fighter
+  Zero 2 '97, 67.5 → new top Street Fighter V, 59.1): NES "Street Fighter"
+  pirate carts are known to frequently reuse identical content under
+  different numbered/lettered titles, so any of the top candidates could be
+  the same underlying cart.
+- **Super Bros. 5 / 6 / 8 (v1.0) / 8 (v1.1) / 9 (Asia) (Pirate)** and
+  **Super Mario 15 / 6 / IV / Sister (Asia) (Pirate)** (8 ROMs; old top:
+  various Super Mario Bros./World/USA entries, 66.7 → 58–64): these read as
+  Mario-adjacent pirate carts (some explicitly keep "Mario," others drop it
+  to just "Bros."), but which specific real Mario game (if any single one)
+  underlies each pirated, arbitrarily-numbered cart isn't verifiable from
+  the filename alone — would need to actually run each ROM.
+
+### Implication
+
+The weighted formula does what ADR-0003 set out to do — 24 of the 53 losses
+are exactly the false-positive pattern this ADR exists to fix, and the 5
+gains are clean. But 16 real regressions (30% of the losses), concentrated
+in exactly the "same real game, many corpus copies" pattern described
+above, mean this shouldn't be merged to `main` as a strict drop-in without
+first deciding how to handle that pattern — it's a second, real gap
+alongside the already-known small-corpus sensitivity, not a small-N-only
+concern.
