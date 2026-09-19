@@ -54,6 +54,18 @@ public sealed class MatchingService : IMatchingService
             var (index, entries) = BuildImageIndex(images, settings, progress, cancellationToken);
             Console.WriteLine($"[Timing] Indexing: {indexStopwatch.ElapsedMilliseconds}ms");
 
+            // See docs/adr/0003-corpus-frequency-weighted-similarity-scoring.md — a
+            // ROM-side counterpart to the image index above, but a plain frequency count
+            // rather than a full inverted index (nothing ever needs "which ROMs contain
+            // this token" the way candidacy lookup needs "which images do"). Also caches
+            // each ROM's own tokenized set, keyed by its position in `roms`, so the main
+            // loop below doesn't tokenize the same ROM a second time.
+            var romWeightStopwatch = Stopwatch.StartNew();
+            var (romTokenFrequencies, romTokensByIndex) = BuildRomTokenFrequencies(roms, settings, cancellationToken);
+            var tokenWeights = ComputeTokenWeights(index, romTokenFrequencies, images.Count, roms.Count, settings);
+            double TokenWeight(string token) => tokenWeights.GetValueOrDefault(token, 1.0);
+            Console.WriteLine($"[Timing] Token weighting: {romWeightStopwatch.ElapsedMilliseconds}ms, {tokenWeights.Count} distinct tokens");
+
             var results = new List<MatchCandidate>();
             // A ROM that scores zero candidates above the threshold — tracked as a side
             // effect of this same pass rather than via a separate FindMissingAsync scan,
@@ -89,7 +101,7 @@ public sealed class MatchingService : IMatchingService
 
                 var romFileName = Path.GetFileName(rom);
                 var romBaseName = Path.GetFileNameWithoutExtension(rom) ?? "";
-                var romTokens = NameNormalizer.ToTokens(romBaseName, settings);
+                var romTokens = romTokensByIndex[i]; // tokenized once already, by BuildRomTokenFrequencies above
 
                 // When DisregardRomTags is off, StripPerSettings already includes tags,
                 // so a second "full" tokenization would just recompute the same set —
@@ -98,7 +110,7 @@ public sealed class MatchingService : IMatchingService
                     ? NameNormalizer.ToTokens(romBaseName, settings, NameNormalizer.TagHandling.ForceInclude)
                     : null;
 
-                var candidates = FindCandidates(romFileName, romTokens, romFullTokens, index, entries, fullTokenCache, contentHashCache, settings.AccuracyThreshold, settings);
+                var candidates = FindCandidates(romFileName, romTokens, romFullTokens, index, entries, fullTokenCache, contentHashCache, settings.AccuracyThreshold, settings, TokenWeight);
 
                 if (candidates.Count == 0)
                 {
@@ -181,25 +193,93 @@ public sealed class MatchingService : IMatchingService
         return (index, entries);
     }
 
+    /// <summary>ROM-side counterpart to BuildImageIndex's document-frequency data, for
+    /// corpus-frequency-weighted scoring (see docs/adr/0003-corpus-frequency-weighted-
+    /// similarity-scoring.md). Unlike the image index, this only needs a plain count per
+    /// token, not a full inverted index — nothing does a reverse candidacy lookup "which
+    /// ROMs contain this token" the way image candidacy needs "which images do". Also
+    /// returns each ROM's own tokenized set, keyed by its position in `roms`, so the
+    /// caller (the main matching loop) doesn't tokenize the same ROM a second time.</summary>
+    private static (Dictionary<string, int> Frequencies, List<HashSet<string>> RomTokens) BuildRomTokenFrequencies(
+        List<string> roms, MatchSettings settings, CancellationToken cancellationToken)
+    {
+        var frequencies = new Dictionary<string, int>(
+            settings.MatchCase ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase);
+        var romTokens = new List<HashSet<string>>(roms.Count);
+
+        for (var i = 0; i < roms.Count; i++)
+        {
+            if (i % 250 == 0)
+                cancellationToken.ThrowIfCancellationRequested();
+
+            var tokens = NameNormalizer.ToTokens(Path.GetFileNameWithoutExtension(roms[i]) ?? "", settings);
+            romTokens.Add(tokens);
+
+            foreach (var token in tokens)
+                frequencies[token] = frequencies.GetValueOrDefault(token) + 1;
+        }
+
+        return (frequencies, romTokens);
+    }
+
+    /// <summary>Precomputes every token's weight once, up front — see docs/adr/0003.
+    /// Document frequency is measured over ROM titles and image titles TOGETHER as one
+    /// combined corpus (not two separate tables), so a token shared between a ROM and an
+    /// image has exactly one weight, not an ambiguous choice between two. weight(t) = 1 -
+    /// log(df(t)) / log(N), normalized to [0, 1]: df(t) = 1 (as rare as possible) -> 1
+    /// (full weight); df(t) = N (in every document) -> 0 (no weight at all). Guarded for
+    /// N &lt;= 1 — rarity isn't a meaningful concept with zero or one document to measure
+    /// against, and the raw formula would divide by log(N) = 0 in that case.</summary>
+    private static Dictionary<string, double> ComputeTokenWeights(
+        Dictionary<string, List<int>> imageIndex, Dictionary<string, int> romFrequencies,
+        int imageCount, int romCount, MatchSettings settings)
+    {
+        var comparer = settings.MatchCase ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
+        var weights = new Dictionary<string, double>(comparer);
+        var n = imageCount + romCount;
+
+        foreach (var token in imageIndex.Keys.Concat(romFrequencies.Keys).Distinct(comparer))
+        {
+            if (n <= 1)
+            {
+                weights[token] = 1.0;
+                continue;
+            }
+
+            var imageDf = imageIndex.TryGetValue(token, out var images) ? images.Count : 0;
+            var romDf = romFrequencies.GetValueOrDefault(token);
+            var df = imageDf + romDf;
+
+            weights[token] = 1.0 - Math.Log(df) / Math.Log(n);
+        }
+
+        return weights;
+    }
+
     private readonly record struct CandidateResult(ImageEntry Entry, double DisplayScore, bool IsExactMatch, string ContentHash);
 
     /// <summary>Finds every image scoring at or above thresholdPercent against romTokens
-    /// (the tag-stripped title score — unchanged, this is what gates candidacy/recall).
-    /// For each survivor, also computes the DISPLAYED score: when romFullTokens is
-    /// non-null (DisregardRomTags is on), that's a second, tag-inclusive comparison
-    /// against the image's own full tokens (computed lazily and cached in
-    /// fullTokenCache, since the same image can be a candidate for multiple ROMs) — so
-    /// identical filenames still score 100 while differently-tagged siblings score
-    /// lower. When romFullTokens is null, the tag-stripped score IS the full score
-    /// (nothing was stripped to begin with), so it's reused with no extra work.
-    /// contentHashCache works the same lazy-per-image way for the file's content hash;
-    /// pass null to skip that work entirely for callers that don't need it (see the
-    /// Report-tab call sites).</summary>
+    /// (the tag-stripped title score — this is what gates candidacy/recall, and the one
+    /// that's corpus-frequency-weighted via tokenWeight — see docs/adr/0003). For each
+    /// survivor, also computes the DISPLAYED score: when romFullTokens is non-null
+    /// (DisregardRomTags is on), that's a second, tag-inclusive comparison against the
+    /// image's own full tokens (computed lazily and cached in fullTokenCache, since the
+    /// same image can be a candidate for multiple ROMs) — so identical filenames still
+    /// score 100 while differently-tagged siblings score lower. Deliberately left
+    /// UNWEIGHTED (no tokenWeight passed) — see ADR-0003's "Scope" section: it doesn't
+    /// gate candidacy, and weighting it would need an eager, corpus-wide tag-inclusive
+    /// tokenization pass that undermines fullTokenCache's whole reason to exist (lazily
+    /// tokenizing only images that already survived the stripped-token threshold). When
+    /// romFullTokens is null, the tag-stripped score IS the full score (nothing was
+    /// stripped to begin with), so it's reused with no extra work. contentHashCache
+    /// works the same lazy-per-image way for the file's content hash; pass null to skip
+    /// that work entirely for callers that don't need it (see the Report-tab call
+    /// sites).</summary>
     private static List<CandidateResult> FindCandidates(
         string romFileName, HashSet<string> romTokens, HashSet<string>? romFullTokens,
         Dictionary<string, List<int>> index, List<ImageEntry> entries,
         Dictionary<int, HashSet<string>?> fullTokenCache, Dictionary<int, string>? contentHashCache,
-        double thresholdPercent, MatchSettings settings)
+        double thresholdPercent, MatchSettings settings, Func<string, double> tokenWeight)
     {
         if (romTokens.Count == 0)
             return [];
@@ -215,7 +295,7 @@ public sealed class MatchingService : IMatchingService
         foreach (var idx in candidateIndices)
         {
             var entry = entries[idx];
-            var score = SimilarityScorer.ScorePercent(romTokens, entry.Tokens);
+            var score = SimilarityScorer.ScorePercent(romTokens, entry.Tokens, tokenWeight);
             if (score < thresholdPercent)
                 continue;
 

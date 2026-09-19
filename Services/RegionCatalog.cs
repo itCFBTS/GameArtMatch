@@ -21,17 +21,28 @@ public static partial class RegionCatalog
         "USA", "Europe", "Japan", "World", "Asia", "Australia",
         "Korea", "China", "Brazil", "Canada", "Spain", "France",
         "Germany", "Italy", "Netherlands", "Sweden",
+        // Added from docs/catalog's NeedsReview triage (see docs/adr/README) — real
+        // region tags found in the actual library, not yet covered above. UK and
+        // Scandinavia are genuinely distinct release regions (a UK-specific release
+        // isn't the same as a generic Europe one, same reasoning USA stays separate
+        // from World), not synonyms of an existing entry.
+        "UK", "Scandinavia", "Taiwan", "Russia", "Denmark", "Norway", "Finland",
+        "Argentina", "Hong Kong", "Portugal", "Greece", "Belgium", "Ireland",
+        "Israel", "India", "Mexico", "Peru",
     ];
 
     private static readonly Dictionary<string, string[]> Synonyms = new(StringComparer.OrdinalIgnoreCase)
     {
         ["USA"] = ["USA", "US", "NA", "NTSC-U"],
         ["Europe"] = ["Europe", "EU", "PAL"],
-        ["Japan"] = ["Japan", "JP", "JPN", "NTSC-J"],
+        ["Japan"] = ["Japan", "JP", "JPN", "NTSC-J", "Ja"],
         ["World"] = ["World", "W"],
         ["Asia"] = ["Asia"],
         ["Australia"] = ["Australia", "AUS", "AU"],
-        ["Korea"] = ["Korea", "KOR", "KR"],
+        // "Korean" (adjective) appears in the real corpus as a stand-in for a Korea
+        // release, the same "region word vs. language word" overlap "Ja" already has
+        // for Japan above.
+        ["Korea"] = ["Korea", "KOR", "KR", "Korean"],
         ["China"] = ["China", "CHN", "CN"],
         ["Brazil"] = ["Brazil", "BRA", "BR"],
         ["Canada"] = ["Canada", "CAN", "CA"],
@@ -41,6 +52,27 @@ public static partial class RegionCatalog
         ["Italy"] = ["Italy", "ITA", "IT"],
         ["Netherlands"] = ["Netherlands", "NL", "Holland"],
         ["Sweden"] = ["Sweden", "SW", "SE"],
+        // Below: only the spelled-out name each one actually appears as in the real
+        // library (see docs/catalog) — no invented abbreviations (e.g. "TWN", "RUS")
+        // that haven't actually turned up, same "extend as evidence appears, don't
+        // guess ahead of it" discipline as the rest of this catalog.
+        ["UK"] = ["UK"],
+        ["Scandinavia"] = ["Scandinavia"],
+        ["Taiwan"] = ["Taiwan"],
+        ["Russia"] = ["Russia"],
+        ["Denmark"] = ["Denmark"],
+        ["Norway"] = ["Norway"],
+        ["Finland"] = ["Finland"],
+        ["Argentina"] = ["Argentina"],
+        ["Hong Kong"] = ["Hong Kong"],
+        ["Portugal"] = ["Portugal"],
+        ["Greece"] = ["Greece"],
+        ["Belgium"] = ["Belgium"],
+        ["Ireland"] = ["Ireland"],
+        ["Israel"] = ["Israel"],
+        ["India"] = ["India"],
+        ["Mexico"] = ["Mexico"],
+        ["Peru"] = ["Peru"],
     };
 
     /// <summary>Reverse of Synonyms, built via an explicit loop (not a collection

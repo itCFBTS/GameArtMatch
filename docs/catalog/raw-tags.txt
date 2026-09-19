@@ -1,0 +1,4195 @@
+'94.9.1 Version 1.0
+'95.8.1 Version 1.0 R2.0
+'96 Tokyo Omocha Show
++1 Tasu Ichi
+0.10b
+0.26
+0100382
+0100396
+0100551
+0100703
+0100705
+0100725
+047
+05838962
+09-034A PCB
+1 EPROM
+1-A
+1-B
+1-G
+10.11-10.13 Incl.
+10.13-10.15 Incl.
+10M
+10M, 11M
+10M, 11M, 12M, 13M
+10M, 12M
+10S
+11M
+12M
+12S
+13M
+150-in-1 Real Game
+15M
+15S
+16 Fighters
+16 People
+18 Fighter
+1978-08-07
+1982
+1982 Version
+1982-04-04
+1982-08-12
+1982-08-18
+1982-08-26
+1982-11-05
+1982-11-19
+1982-12-05
+1982-12-08
+1982-12-15
+1982-12-17
+1982-12-22
+1983
+1983-01-05
+1983-01-20
+1983-02-01
+1983-02-04
+1983-02-11
+1983-02-17
+1983-02-23
+1983-02-25
+1983-03-09
+1983-03-21
+1983-03-28
+1983-04-07
+1983-04-11
+1983-04-14
+1983-05-02
+1983-05-03
+1983-05-06
+1983-05-10
+1983-05-12
+1983-05-17
+1983-05-18
+1983-05-27
+1983-06-01
+1983-06-02
+1983-06-03
+1983-06-12
+1983-06-15
+1983-06-18
+1983-06-20
+1983-06-24
+1983-07-04
+1983-07-06
+1983-07-16
+1983-07-19
+1983-07-27
+1983-07-31
+1983-08-02
+1983-08-03
+1983-08-10
+1983-08-12
+1983-08-15
+1983-08-25
+1983-08-30
+1983-08-31
+1983-08-xx
+1983-09-02
+1983-09-14
+1983-09-15
+1983-09-19
+1983-09-20
+1983-09-30
+1983-10-12
+1983-10-13
+1983-10-31
+1983-11-03
+1983-11-15
+1983-11-16
+1983-11-21
+1983-11-23
+1983-12-16
+1983-12-20
+1983-12-29
+1983-xx-xx
+1984-01-04
+1984-01-05
+1984-01-13
+1984-01-18
+1984-01-20
+1984-01-26
+1984-01-31
+1984-02-29
+1984-03-15
+1984-04-12
+1984-04-13
+1984-04-18
+1984-04-20
+1984-04-23
+1984-05-02
+1984-05-08
+1984-05-10
+1984-05-15
+1984-05-21
+1984-06-15
+1984-06-22
+1984-09-13
+1986-06-30
+1987-02-23
+1987-03-09
+1987-03-25
+1987-05-01
+1987-12-16
+1988-04-29
+1988-05-20
+1988-06-04
+1988-10-13
+1988-11-xx
+1989-02-05
+1989-02-23
+1989-03-03
+1989-05-25
+1989-05-29
+1989-06-01
+1989-06-02
+1989-10-20
+1989-12-22
+1989-12-24
+1989-12-xx
+1989-xx-xx
+1990-01-12
+1990-01-18
+1990-02-02
+1990-03-02
+1990-03-07
+1990-03-30
+1990-04-27
+1990-04-28
+1990-05-08
+1990-05-15
+1990-05-22
+1990-06-04
+1990-07-03
+1990-07-04
+1990-07-09
+1990-08-02
+1990-08-20
+1990-08-23
+1990-08-30
+1990-09-10
+1990-09-26
+1990-11-07
+1990-11-12
+1990-12-28
+1991
+1991-01-23
+1991-01-30
+1991-01-31
+1991-03-18
+1991-04-22
+1991-05-02
+1991-05-03
+1991-05-06
+1991-05-15
+1991-05-16
+1991-05-20
+1991-07-03
+1991-07-16
+1991-08-02
+1991-09-06
+1991-10-01
+1991-11-02
+1991-11-15
+1991-11-20
+1991-12-19
+1992-04-03
+1992-05-08
+1992-05-26
+1992-05-29
+1992-06-22
+1992-07-02
+1992-08-11
+1992-08-21
+1992-08-24
+1992-08-27
+1992-08-28
+1992-09-02
+1992-09-16
+1992-09-29
+1992-10-06
+1992-10-13
+1992-10-28
+1992-11-05
+1992-11-10
+1992-11-26
+1992-12-04
+1992-12-10
+1992-12-11
+1992-12-15
+1993
+1993-01-10
+1993-01-19
+1993-02-15
+1993-02-17
+1993-03-03
+1993-03-19
+1993-04-01
+1993-04-11
+1993-04-12
+1993-04-21
+1993-04-22
+1993-05-07
+1993-05-11
+1993-05-13
+1993-05-19
+1993-05-28
+1993-06-16
+1993-06-21
+1993-06-22
+1993-06-30
+1993-07-09
+1993-07-12
+1993-07-20
+1993-07-22
+1993-08-01
+1993-08-02
+1993-08-06
+1993-08-18
+1993-08-19
+1993-08-23
+1993-09-13
+1993-09-24
+1993-09-27
+1993-10-01
+1993-10-04
+1993-10-06
+1993-10-11
+1993-10-12
+1993-10-13
+1993-10-19
+1993-10-21
+1993-10-26
+1993-11-10
+1993-11-12
+1993-11-23
+1993-12-03
+1993-12-09
+1993-12-17
+1993-12-24
+1994-01-18
+1994-02-04
+1994-02-22
+1994-03-07
+1994-03-21
+1994-04-08
+1994-04-14
+1994-05-24
+1994-05-30
+1994-06-14
+1994-06-21
+1994-07-04
+1994-07-13
+1994-07-22
+1994-07-27
+1994-08-02
+1994-08-08
+1994-08-09
+1994-08-25
+1994-09-04
+1994-09-05
+1994-09-06
+1994-09-14
+1994-09-15
+1994-09-23
+1994-09-26
+1994-10-06
+1994-10-07
+1994-10-12
+1994-10-14
+1994-10-28
+1994-11-14
+1994-11-23
+1994-12-08
+1994-12-21
+1995
+1995-01-13
+1995-01-16
+1995-02-14
+1995-02-22
+1995-02-23
+1995-03-20
+1995-03-22
+1995-03-23
+1995-03-28
+1995-04-24
+1995-05-11
+1995-05-15
+1995-06-01
+1995-06-08
+1995-06-09
+1995-06-11
+1995-06-12
+1995-07-05
+1995-08-01
+1995-08-11
+1995-08-21
+1995-08-24
+1995-08-30
+1995-09-02
+1995-09-06
+1995-09-07
+1995-09-11
+1995-09-12
+1995-09-21
+1995-09-22
+1995-09-25
+1995-09-29
+1995-10-03
+1995-10-05
+1995-10-17
+1995-10-18
+1995-10-19
+1995-10-20
+1995-10-21
+1995-10-24
+1995-10-25
+1995-10-26
+1995-11-07
+1995-11-18
+1995-11-23
+1995-12-15
+1995-12-21
+1995-12-22
+1996
+1996-01-11
+1996-01-31
+1996-02-02
+1996-02-05
+1996-02-14
+1996-02-16
+1996-02-19
+1996-03-05
+1996-03-25
+1996-04-09
+1996-04-11
+1996-04-16
+1996-05-13
+1996-05-14
+1996-05-22
+1996-05-28
+1996-05-29
+1996-05-31
+1996-06-08
+1996-07-05
+1996-07-12
+1996-07-15
+1996-07-16
+1996-07-22
+1996-07-23
+1996-08-08
+1996-08-30
+1996-09-06
+1996-09-18
+1996-09-24
+1996-09-25
+1996-09-30
+1996-10-11
+1996-10-15
+1996-10-29
+1996-11-02
+1996-11-06
+1996-11-08
+1996-11-21
+1996-11-30
+1996-12-10
+1996-12-24
+1997-01-11
+1997-01-26
+1997-01-30
+1997-02-05
+1997-02-16
+1997-04-01
+1997-04-07
+1997-04-29
+1997-05-19
+1997-05-26
+1997-06-19
+1997-07-11
+1997-08-01
+1997-08-07
+1997-08-11
+1997-08-12
+1997-08-15
+1997-08-20
+1997-08-25
+1997-09-02
+1997-09-07
+1997-09-12
+1997-09-16
+1997-09-17
+1997-09-18
+1997-09-29
+1997-09-30
+1997-10-01
+1997-10-07
+1997-10-31
+1997-11-01
+1997-11-17
+1997-11-26
+1997-12-01
+1997-12-12
+1997-12-15
+1998-01-09
+1998-01-23
+1998-01-29
+1998-02-03
+1998-02-05
+1998-02-12
+1998-02-20
+1998-02-24
+1998-03-02
+1998-03-10
+1998-03-30
+1998-03-31
+1998-04-03
+1998-04-09
+1998-04-21
+1998-04-22
+1998-04-23
+1998-05-05
+1998-05-07
+1998-05-11
+1998-05-25
+1998-05-27
+1998-06-06
+1998-06-11
+1998-06-15
+1998-06-19
+1998-06-22
+1998-06-23
+1998-06-28
+1998-06-29
+1998-06-30
+1998-07-01
+1998-07-04
+1998-07-05T180056
+1998-07-05T215532
+1998-07-07
+1998-07-09
+1998-07-14
+1998-07-14T022124
+1998-07-14T181500
+1998-07-16
+1998-07-17
+1998-07-19
+1998-07-22
+1998-07-24
+1998-07-28
+1998-07-30
+1998-07-31
+1998-08-05
+1998-08-10
+1998-08-19
+1998-08-25
+1998-08-26
+1998-09-03
+1998-09-04
+1998-09-06
+1998-09-16
+1998-09-25
+1998-09-30
+1998-10-01
+1998-10-03
+1998-10-08
+1998-10-19
+1998-11-02
+1998-11-09
+1998-11-16
+1998-12-11
+1998-12-15
+1998-12-18
+1999-02-03
+1999-02-10
+1999-02-15
+1999-02-16
+1999-02-17
+1999-02-18
+1999-02-22
+1999-03-01
+1999-03-09
+1999-03-24
+1999-04-02
+1999-04-14
+1999-05-05
+1999-05-10
+1999-05-25
+1999-06-15
+1999-08-02
+1999-08-03
+1999-08-04
+1999-08-05
+1999-08-07
+1999-08-14
+1999-08-17
+1999-08-19
+1999-08-20
+1999-08-25
+1999-08-30
+1999-08-31
+1999-09-03
+1999-09-04
+1999-09-07
+1999-09-09
+1999-09-13
+1999-09-18
+1999-09-19
+1999-09-21
+1999-09-22
+1999-09-23
+1999-09-29
+1999-10-07
+1999-10-12
+1999-10-20
+1999-10-22
+1999-10-26
+1999-10-28
+1999-10-29
+1999-11-02
+1999-11-09
+1999-11-11
+1999-11-17
+1999-11-18
+1999-11-27
+1999-12-17
+1999-12-22
+1A
+1B-004, EB-004, Sachen
+1JAM-Loop
+1M
+1M, 2M
+1M, 2M, 3M
+1M, 2M, 4M
+1M, 2MB2
+1M, 3M
+1M, 3M, 4M
+1M, 4M
+1M, 5M
+1S
+2 EPROMs
+2 Games
+2 Types
+2000-01-06
+2000-01-08
+2000-01-10
+2000-01-11
+2000-01-14
+2000-01-15
+2000-01-17
+2000-01-21
+2000-01-27
+2000-02-04
+2000-02-07
+2000-02-10
+2000-02-14
+2000-02-16
+2000-02-18
+2000-02-22
+2000-03-01
+2000-03-07
+2000-03-22
+2000-03-24
+2000-03-27
+2000-04-02
+2000-04-05
+2000-04-13
+2000-04-26
+2000-04-27
+2000-05-01
+2000-05-03
+2000-05-05
+2000-05-09
+2000-05-11
+2000-05-15
+2000-05-28
+2000-05-30
+2000-05-31
+2000-06-06
+2000-06-09
+2000-06-13
+2000-06-14
+2000-06-16
+2000-06-26
+2000-06-29
+2000-06-xx
+2000-07-10
+2000-07-16
+2000-07-16T211412
+2000-07-16T220245
+2000-07-18
+2000-07-19
+2000-07-21
+2000-07-24
+2000-07-25
+2000-07-31
+2000-08-01
+2000-08-07
+2000-08-10
+2000-08-17
+2000-08-21
+2000-08-26
+2000-08-xx
+2000-09-01
+2000-09-04
+2000-09-05
+2000-09-09
+2000-09-11
+2000-09-26
+2000-10-10
+2000-10-16
+2000-10-25
+2000-10-26
+2000-11-03
+2000-11-09
+2000-11-21
+2000-12-01
+2000-12-05
+2000-12-20
+2001-01-10
+2001-02-09
+2001-02-21
+2001-02-26
+2001-03-02
+2001-03-13
+2001-03-21
+2001-03-22
+2001-04-10
+2001-04-20
+2001-05-15
+2001-05-19
+2001-06-04
+2001-08-02
+2001-08-24
+2001-09-03
+2001-09-11
+2001-09-25
+2001-09-27
+2001-10-16
+2001-11-14
+2001-11-20
+2001-12-03
+2001-12-09
+2002 Version - EU
+2002-01-20
+2002-02-07
+2002-04-09
+2002-04-27
+2002-08-01
+2002-08-07
+2002-11-11
+2002-12-12
+2003-02-11
+2003-02-13
+2003-02-21
+2003-04-02
+2003-07-29
+200314121
+2003SR7416
+2004-02-15
+2004SR01259
+2004SR05368
+2005-01-09
+2006-08-15
+2006SR04301
+2006SR04303
+2006SR04307
+2006SR04308
+2007, November
+2007-01-23
+2009-06-26
+2009-11-12
+2009-12-16
+2010-05-29
+2011
+2011-06-07
+2011-07-23
+2011-09-24
+2011-09-30
+2011-10-06
+2011-10-31
+2011-11-24
+2011-12-16
+2012-01-03
+2012-02-08
+2012-03-17
+2012-03-21
+2012-04-03
+2012-04-25
+2012-09-06
+2012-10-26
+2013-03-04
+2013-07-31
+2013-10-17
+2014
+2014-01-08
+2014-02-04
+2014-04-01
+2014-04-02
+2014-04-17
+2014-05-25
+2014-06-17
+2014-10-28
+2014-11-25
+2014-12-19
+2014-12-20
+2015-01-17
+2015-02-14
+2015-04-16
+2015-04-22
+2015-05-10
+2015-06-15
+2016
+2016-05-04
+2016-06-01
+2016-07-31
+2016-11-24
+2016-12-08
+2017-01-02
+2017-01-31
+2017-02-03
+2017-02-17
+2017-03-04
+2017-03-15
+2017-04-21
+2017-04-24
+2017-04-27
+2017-05-17
+2017-06-29
+2017-07-01
+2017-07-06
+2017-07-11
+2017-09-17
+2017-12-03
+2018-05-01
+2018-06-16
+2018-08-14
+2018-09-17
+2018-10-25
+2018-11-01
+2018-11-05
+2018-11-08
+2018-11-21
+2019
+2019-03-01
+2019-03-10
+2019-03-11
+2019-07-19
+2019-10-22
+2019-xx-xx
+2020
+2020-02-23
+2020-09-08
+2020-09-19
+2020-09-20
+2020-12-01
+2020-12-21
+2020bb
+2020bba
+2020bbh
+2021
+2021 Jam Version
+2021-02-19
+2021-02-22
+2021-03-10
+2021-03-30
+2021-05-05
+2021-05-25
+2021-07-08
+2021-08-21
+2021-09-13
+2021-10-28
+2021-10-31
+2022-04-22
+2022-04-23
+2022-05-09
+2022-06-05
+2022-06-06
+2022-06-26
+2022-06-30
+2022-08-07
+2022-08-26
+2022-08-27
+2022-09-01
+2022-09-16
+2022-09-17
+2022-09-19
+2022-09-21
+2022-09-29
+2022-10-09
+2022-10-26
+2022-10-28
+2022-10-31
+2022-11-01
+2022-11-03
+2022-12-18
+2022-12-25
+2022-12-26
+2023-01-07
+2023-01-09
+2023-01-10
+2023-01-11
+2023-01-13
+2023-01-16
+2023-02-11
+2023-02-18
+2023-03-12
+2023-03-13
+2023-03-18
+2023-03-23
+2023-03-24
+2023-03-31
+2023-04-03
+2023-04-04
+2023-04-12
+2023-04-18
+2023-04-23
+2023-04-25
+2023-04-30
+2023-05-04
+2023-05-17
+2023-05-20
+2023-05-23
+2023-06-03
+2023-06-05
+2023-06-09
+2023-06-23
+2023-07-09
+2023-07-10
+2023-07-16
+2023-07-23
+2023-07-26
+2023-08-05
+2023-08-09
+2023-09-03
+2023-09-05
+2023-09-07
+2023-09-08
+2023-09-28
+2023-09-30
+2023-10-12
+2023-10-19
+2023-10-23
+2023-10-24
+2023-10-26
+2023-11-17
+2023-11-18
+20M
+21M
+22M
+23M
+245-in-1 Real Game
+256KiB
+2A
+2A, 2B
+2B
+2M
+2M, 3M
+2M, 4M
+2M, 5M
+2M1, 2MB1
+2M2
+2MB3
+2S
+2nd Print Edition
+30C
+31B, 34C
+31B-001, Sachen
+320×240 Video Output Patch by Fluvian - JP
+32B, 37A, 37M
+32M
+32X CD
+35B, 35C
+36B, 36C
+39B
+3A
+3A, 3B
+3A, 3C
+3DO Action Pak
+3DO Magazine - Issue 10
+3DO Training Educational System
+3DS Virtual Console
+3M
+3M, 4M, 5M, 6M
+3R
+3S
+3countb
+4 Player Co-Op Patch by Gallaux - EU
+4 Player Patch by Gallaux - NA
+4 characters
+4-G
+4-in-1
+40M
+41M
+42M
+4A, 4B
+4B-001, 4B-009, 8B-001, Sachen
+4B-002, 4B-004, 8B-002, Sachen
+4B-005, 4B-006, 8B-003, Sachen
+4B-007, 4B-008, 8B-004, Sachen
+4M
+4M, 5M
+4S
+5-in-1
+5-in-1 - NA
+512KiB
+5A
+5M
+5R, 6R
+5S
+5S, 6S
+60 Hz
+60 pin cart
+64'er
+6M
+6S
+72 pin cart
+761214 PCB
+7M
+7M, 10M
+7M, 9M, 10M
+7S
+8 Fighters
+8 People
+8 characters
+8-bit Adventure Anthology - Volume I
+879cbea
+8M, 13M
+8M, 9M
+8S, 12S
+8S, 9S, 17S
+8d96be2
+9 Fighter
+960100549
+960100577
+960268
+960270
+960415
+960418
+970100587
+970100588
+970100681
+970100684
+970158
+970260
+970266
+970307
+970487
+970489
+970493
+970498
+980005
+980100026
+980100029
+980100295
+980100461
+980185
+980186
+980332
+980334
+980337
+980340
+980342
+980584
+980816
+981208
+990031
+A
+A-N2
+A-N7
+A-N8
+A-Q3
+A8FE
+A8FP
+AA1201
+AB CARD-15
+AES
+AES Ori
+AFMJ
+AI - EU
+ALT
+AP009
+AS300
+ASN 0097
+AZTP
+AZTX
+Acclaim
+Accolade
+Action 53
+Action 53 Version
+Activision
+Activision Anthology - Remix Edition
+Add-on
+Addition
+Adventure Kid, Power Block, Twin Mouse, and Cave Dude - AU
+Adventurer and Code Cracker - EU
+Aftermarket
+Age of Empires
+Airwalk Studios
+Akai - Ichimonji - Yae
+Aladdin Compact Cartridge
+Aladdin Compact Cartridge, Plug-Thru
+Aleste Collection
+All Characters Unlocked and Easier Difficulty Patch, Rev 2, by BillyTime! Games - NA
+All Extras and Megatron X Unlocked Patch by Astolfo2001 - JP
+All Unlocked
+All Unlocks Patch by Gallaux - NA, Rev 2
+Allies
+Alligata
+Alt
+Alt 1
+Alt 2
+Alt A
+Alt B
+Alt C
+Alt2
+Alt3
+Alternative Software
+Android, Quiz, Logic, and R-Type - EU
+Andy Noble - 2017
+Angelique History
+Animal Crossing
+Anirog
+Anirog Software
+Anniversary Pack
+Announcement Version
+Anthony Stiller - 2015
+Antonio Inoki Intai Kinen Genteiban
+Antonio Savona - 2019
+Antonio Savona - 2020
+Append
+Aquasphere
+Arcade
+Arcade Audio
+Arcade CD-ROM
+Arcade Colors and 9 Lives Patch, Rev 2, by SCD - JP
+Arcade Disc
+Arcade Mode
+Archery, Reversi, and Card Games - EU
+ArchiMENdes Hen
+Argentina
+Argus Press Software
+Aris-Soft - 2021
+Arlasoft - 2020
+Arlasoft - 2021
+Arlasoft - 2022
+Artdink Best Choice
+Artworx
+Asder
+Asia
+Astrovision
+Atari
+Atari Anthology
+Atari Flashback
+Atari Lynx Collection 1
+AtariAge
+Atarisoft
+Atarisoft - Unreleased
+Atoms, Retros, and Annoyance - EU
+Audio Fix Patch by Justin Gibbins - JP
+Audio Fix Patch by Justin Gibbins - NA
+Audio Fix Patch, Rev 20201702, by Riggles - NA
+Audio Remaster Patch by Dark City Productions - JP
+Audio Remaster and Music Mashup Patch by Dark City Productions - JP
+Australia
+Australia, Greece
+Auto Demo
+Autumn
+Avatar - 2013
+B
+B-S2
+BA058
+BFWJ
+BG2
+BIOS
+BJ-56
+BJJP
+BJJX
+BNROM
+BPS the Choice
+BPTP
+BPTX
+BPV
+BR
+BR, Rev 1
+BUG Fixed
+Background Scrolling Patch by Diogo Ribeiro - NA
+Badgerpunch Games - 2020
+Bally
+Bandai the Best
+Bandit Fruit Machine and Mazemaker - EU
+Bang! - EU
+Baton Controller Doukonban
+Battery Save Version
+Battle.net
+Bearmix, Cebi, M&Ms, Meteors, Cyber Mouse, Sitting Duck, and Spheres - EU
+Beeble - EU
+Behind Closed Doors - EU
+Behind Closed Doors - The Sequel - EU
+Behind Closed Doors III - EU
+Belgium
+Bensheng
+Best Wing 2800
+Best of the Best
+Beta
+Beta 1
+Beta 10
+Beta 11
+Beta 12
+Beta 13
+Beta 14
+Beta 15
+Beta 16
+Beta 17
+Beta 18
+Beta 19
+Beta 2
+Beta 20
+Beta 21
+Beta 22
+Beta 23
+Beta 24
+Beta 25
+Beta 26
+Beta 27
+Beta 28
+Beta 29
+Beta 3
+Beta 30
+Beta 31
+Beta 32
+Beta 4
+Beta 5
+Beta 6
+Beta 7
+Beta 8
+Beta 9
+Beyond Belief
+Beyond Reproach - 2009
+Big Gunz and Epicentre - EU
+Bingo, Shinkei Suijaku, and Cockroach - JP
+Bit Corp.
+Bit Corporation
+Black & White
+Blast! and Miall - EU
+Blast-a-Mac and Dark Vortex - EU
+Blazing Guns
+Blockbuster Flash ROM
+Blue Version
+Body Bits, Pacdemo, and Viking Raiders - EU
+Boggle, Megabert, Monopoly, and Pontoon Deluxe - EU
+Bomb!, Saucer Strike, Deflection, and Colourcode - EU
+Bombardment and Os and Xs - EU
+Bombed Out, Nuclear Waste, Magic Caves, and Blockade - EU
+Bomber - EU
+Bomberman Collection
+Bonus Disc
+Bonus Disc Part 1
+Bonus Disc Part 2
+Bonus Disk
+Bonus Levels Patch by Gallaux - NA
+Bonus PlayStation Disc
+Boony - 2023
+Boot Disk
+Booze Design - 2021
+Boxset
+Brave Charge Box
+Brazil
+Brazil, Portugal
+Brazil, Spain
+Bright Version
+Brightness Patch by Linkuei - NA, Rev 1
+Broke Studio
+Bub, Turbo Worm, Invaders, Chemistry Test, Dan's Diamonds, and Asteroids - EU
+Bug Fix Patch, Rev 1.2, by Ozidual - NA, Rev 1
+Build 03854
+Build 03945
+Build 132
+Build 141
+Build 143
+Build 157
+Build 158
+Build 167
+Build 186
+Build 190
+Build 194
+Build 208
+Build 209
+Build 211
+Build 221
+Build 231
+Build 235
+Build 239
+Build 243
+Build 249
+Build 252
+Build 4
+Build 47
+Build 486
+Build 487
+Build 5
+Build 53
+Build 65
+Build 9b
+Bulletproof
+Butsubutsu Koukan no Maki
+Byakko
+Byte-Off 2019
+Byte-Off 2020
+Byte-Off 2022
+Byte-Off III
+C
+C&E
+C-D2
+C-D3
+C64CD - 2018
+C64Mark - 2020
+CAFe DEMOPARTY 2019
+CCS
+CD Gioco
+CD Help e Backstage
+CES 1993
+CGB+SGB Enhanced
+CK-001
+CK-008
+CM
+CNROM
+COMPUTE!'s Gazette
+CRL
+CSAW CTF 2015
+CTC-15
+CTC-31
+Calpis Water Version
+Caltron
+Camera Control Patch by AnimaC13 - NA, Rev 2
+Can Bani Himekuri Calendar
+Canada
+Capcom Classics Mini Mix
+Capcom Town
+Car-Relative Steering
+Carleton Handley - 2020
+Carleton Handley - 2021
+Carrion - 2022
+Casino Game
+Castle, Escape from the Planet of the Robot Monsters, and Cosmo-Cruiser - Mission One - EU
+Castle, Konext, and Bully Embassy - EU
+Castlevania Advance Collection
+Castlevania Anniversary Collection
+Cat-1 and Gunner - EU
+Ceilings and Editor
+Centaurus
+Champion Boxing and Safari Race - KR
+Channel 8 Software
+Character Disk
+Character Tkool
+Character Unlock Patch by Gallaux - NA
+Character Unlock Patch by Gallaux - NA, Rev 2
+Character Unlock Patch, Rev 1.1, by Gallaux - NA
+Character Unlock and Extra Options Patch by Gallaux - EU
+Chiki-Chiki Dog
+China
+Chronicles of Arthur
+Chuugakusei Jidai
+Chuukan
+Claire-hen
+Classic Mini, Switch Online
+Cloud 99, Agatha's Folly, and The Jade Stone - EU
+Club Nintendo
+Clue Crossword - EU
+Co Tung
+Coca-Cola Kenshouhin
+Codemasters - Fast Food, Pro Skateboard, Pro Tennis
+Colin's Time Trousers, Crossword, Faller, Line Game, and Tile Game - EU
+Collection of Mana
+Collection of SaGa
+Color Dreams
+Colossus Chess, International Football & Silicon Syborgs
+Colour
+Colour Clash - EU
+Columbia Version
+Columbus Circle
+Commodore
+Commodore Plus - 2023
+Competition Cart
+Competition Cart, 10k points
+Competition Cart, 1m points
+Competition Cart, Nintendo Power mail-order
+Compilation Pack Patch, Rev 1.1, by Wreck - NA
+Compilation by Meduza Team, Rev 2.51
+Complete Edition Patch, Unstripped Version, by Sylandro - NA
+Conector
+Contra '93
+Contra Anniversary Collection
+Controller Doukon Set
+Controller Set
+Cony Soft
+Coolboy
+Cosine Systems - 2001
+Cosine Systems - 2003
+Cosine Systems - 2006
+Cosine Systems - 2007
+Cosine Systems - 2009
+Cosine Systems - 2011
+Cosine Systems - 2012
+Cosine Systems - 2014
+Cosine Systems - 2020
+Cosmos Cruiser, Castle, and Humphrey - EU
+Covert Bitops - 2002
+Cowabunga Collection, The
+Creative Software
+Creative Sparks
+Crossword Bonanza, Rock 'n' Roll, and King-Albert - EU
+Crossword Edition 1 - EU
+Crossword Edition 2 - EU
+Crossword and Tray Game - EU
+Culture Publishers
+CyberTennis, Mr. Slidey, and Infection - EU
+Cyclone's Best
+Cymbal Software
+D
+D-N3
+D-T2
+D42
+DA1AC0DB
+DEFCON 26 Indie Badge
+DERF, Invaders, Xs & Os, and Tron - EU
+DFJN5015ZAZ
+DG
+DH-08
+DH-64
+DS Cheat Cartridge
+DS-H352
+DS-H353
+DS-H354
+DS-H355
+DSI
+DX
+DX Pack
+Da,Fi
+Daigakusei Jidai & Koukou kara Daigaku ni Agaru ma no Haruyasumi
+Damian Yerrick
+Darius Cozmic Collection
+Darius Cozmic Revelation
+Dark Version
+Darren Foulds - 2019
+Darro99 & Erazzking - 2021
+Das Spiel
+Datach
+Davey Jones Locker, The Jade Necklace, Witch Hunt, The Challenge, The Cup, Realm of Darkness, The Hammer of Grimmold, Mutant, Matchmaker, Jack and the Beanstalk, The Enchanted Cottage, and Lifeboat - EU
+De
+De+En,Fr,De,Es,It,Nl,Sv,Da
+De+Fr,De,Nl
+De,Es,It
+De,Es,It,Pt
+De,Nl
+Deathshadow  - 2012
+Debug
+Debug Version
+Defiance Studios - 2017
+Deluxe Pack
+Demo
+Demo - EU
+Demo 1
+Demo 2
+Demo 3
+Demo 4
+Demo 5c
+Demo 5d9
+Demo Movie
+Demo-Add-On Disc
+Denmark
+Derek - 2019
+Deutsch
+Dev
+Die Alliierten
+Die Sowjets
+Digest-ban
+DigiCube Best Selection
+Digital
+Digital Edition
+Digital Monastery - 2014
+Digital Monastery - 2016
+Digital Monastery - 2018
+Digital Monastery - 2019
+Digital Monastery - 2022
+Digital Release
+Digital Version
+Digital Video
+Dino Sorcerer, The Adventures of Captain Comic, Blob, Missile Base, and Crossword - EU
+Disc
+Disc 0
+Disc 1
+Disc 1 - English Translated by A Murder of Crows and Shadowmask, Rev 0.2j RC
+Disc 1 - English Translated by Aishsha, Paul_met, and Pennywise, Rev 1.1
+Disc 1 - English Translated by Arjak and MossstarMoon
+Disc 1 - English Translated by Delta-Islands Team, Rev 1.5 Final
+Disc 1 - English Translated by Hilltop
+Disc 1 - English Translated by In the Rose Garden, Rev 1.04
+Disc 1 - English Translated by John Osborne, Rev 2 - Subbed Version
+Disc 1 - English Translated by JunkerHQ
+Disc 1 - English Translated by JunkerHQ, Rev 1.0.1
+Disc 1 - English Translated by NoOneee
+Disc 1 - English Translated by Orihara Saki - Beta
+Disc 1 - English Translated by Sakura Wars Translation Project, Rev 1.1
+Disc 1 - English Translated by Sakura Wars Translation Project, Rev 2.1.1
+Disc 1 - English Translated by SnowyAria
+Disc 1 - English Translated by TrekkiesUnite118, Rev 1.1.1
+Disc 1 - English Translated by Zenksren and LostOkina, Rev 1.33
+Disc 1 - Prototype
+Disc 1 - Tower of Doom - English Translated by Lirinica
+Disc 1 - What's Going On - English Translated by SnowyAria
+Disc 2
+Disc 2 - English Translated by A Murder of Crows and Shadowmask, Rev 0.2j RC
+Disc 2 - English Translated by Aishsha, Paul_met, and Pennywise, Rev 1.1
+Disc 2 - English Translated by Arjak and MossstarMoon
+Disc 2 - English Translated by Delta-Islands Team, Rev 1.5 Final
+Disc 2 - English Translated by Hilltop
+Disc 2 - English Translated by In the Rose Garden, Rev 1.04
+Disc 2 - English Translated by John Osborne, Rev 2 - Subbed Version
+Disc 2 - English Translated by JunkerHQ
+Disc 2 - English Translated by JunkerHQ, Rev 1.0.1
+Disc 2 - English Translated by NoOneee
+Disc 2 - English Translated by Orihara Saki - Beta
+Disc 2 - English Translated by Sakura Wars Translation Project, Rev 1.1
+Disc 2 - English Translated by Sakura Wars Translation Project, Rev 2.1.1
+Disc 2 - English Translated by SnowyAria
+Disc 2 - English Translated by TrekkiesUnite118, Rev 1.1.1
+Disc 2 - English Translated by Zenksren and LostOkina, Rev 1.33
+Disc 2 - Fears Behind - English Translated by SnowyAria
+Disc 2 - Prototype
+Disc 3
+Disc 3 - English Translated by A Murder of Crows and Shadowmask, Rev 0.2j RC
+Disc 3 - English Translated by Delta-Islands Team, Rev 1.5 Final
+Disc 3 - English Translated by JunkerHQ, Rev 1.0.1
+Disc 3 - English Translated by Sakura Wars Translation Project, Rev 1.1
+Disc 3 - English Translated by Zenksren and LostOkina, Rev 1.33
+Disc 4
+Disc 4 - English Translated by Delta-Islands Team, Rev 1.5 Final
+Disc 5
+Disc 5 - English Translated by Delta-Islands Team, Rev 1.5 Final
+Disc 6
+Disc 6 - English Translated by Delta-Islands Team, Rev 1.5 Final
+Disc 7
+Disc 7 - English Translated by Delta-Islands Team, Rev 1.5 Final
+Disc 8
+Disc 8 - English Translated by Delta-Islands Team, Rev 1.5 Final
+Disc A
+Disc B
+Disc C
+Disc-B
+Disc-F
+Disk 1
+Disk 1 - Bishoujo Connection - JP
+Disk 1 - EU
+Disk 1 - JP
+Disk 1 - Mahjong Game Hontai - JP
+Disk 1 - Tokimeki Gals - JP
+Disk 1 - Yonin no Tenshi Tachi - JP
+Disk 2
+Disk 2 - Dai H Taikai - JP
+Disk 2 - Daitan H na Hirusagari - JP
+Disk 2 - EU
+Disk 2 - JP
+Disk 2 - Tottemo H na Gogo - JP
+Disk 2 - Yonin to Dai H Taikai - JP
+Disk 3
+Disk 4
+Disk 5
+Disk 6
+Disk 7
+Disk 8
+Disk 9
+Disney Classic Games
+Donnie Russell II - 2022
+Double Action 53 - Volume 2
+Double Density - 1990
+Double case
+Doukon Pack
+Doukonban
+Dr. Mortal Wombat - 2021
+Dr. TerrorZ - 2021
+Dr. Terrorz - 2018
+Dr. Wuro Industries - 2016
+Dr. Wuro Industries - 2018
+Dr. Wuro Industries - 2021
+Drachenberg Studios - 2022
+Dracula Detective
+Dragon Co.
+Dragon Quest IV
+Dragon Quest VI
+Dragon Quest VII
+Dragon Quest VIII
+Draughts and Batz 'n Ballz - EU
+Dreamcast Version
+Driver Mines, Chaos, and L.O.T.I.S.B. - EU
+Dual Shock Edition
+Dungeon 1 Disk
+Dungeon 2 Disk
+Durell
+Dutch Patience, Music Trivia, and Kids Stuff 1 - EU
+Dynavision
+E
+E3 1997
+EB4-3 E
+EB4-3 X
+EB4-4 A
+ECP
+ECTS 2000
+EDC
+EGS
+EJ-4003
+EPROM
+EU
+EU - 4-in-1 Hack Patch by Meduza Team, Rev 1.5
+EU - 4-in-1 Hack Patch by Meduza Team, Rev 1.5 - NDS Style Version
+EU - 60Hz Hack Patch by NoelleAmelie, Rev 1.0a
+EU - Disc 1
+EU - Disc 1 - Magical Drop III
+EU - Disc 1 - Wings of Destiny
+EU - Disc 2
+EU - Disc 2 - Chronicles of Arthur
+EU - Disc 2 - Magical Drop Plus 1
+EU - Disc 3
+EU - Disc 3 - The First Generation
+EU - Disc 4
+EU - Disc 4 - Blazing Guns
+EU - Flash Removal Patch by Privateye
+EU - Power Source Demo Disc
+EU, Rev 1
+EU, Rev 1 - Disc 1
+EU, Rev 1 - Disc 2
+Earlier
+Early Days Collection
+Earth Federation Disc
+Easier
+Easy
+Easy Version
+Easy Zapping
+EasyFlash
+EayFlash
+Ecco the Dolphin
+Ecco the Dolphin II
+El Juego
+Electronica
+Elite
+Elysium - 2022
+En
+En+En+En,Fr,De
+En+En,Es,It,Sv,Da
+En+En,Fr,De
+En+En,Fr,De,Es,It,Nl,Sv,Da
+En+En,Ja,Fr,De,Es
+En,Ar
+En,Da,Pl
+En,De
+En,De,Es
+En,De,Es,It
+En,De,Es,Nl
+En,De,Es,Nl,Sv
+En,De,It
+En,De,It,Nl
+En,De,Nl
+En,De,Sv
+En,De,Sv,Fi
+En,Es
+En,Es,Fi
+En,Es,It
+En,Es,It,Sv
+En,Es,It,Sv,Da
+En,Es,Nl
+En,Es,Nl+Es,It
+En,Es,Nl+Fr,Nl
+En,Es,Nl,Sv
+En,Es,Pt
+En,Es,Pt,Sv,Da
+En,Es,Sv
+En,Es,Sv,Da,Fi
+En,Es,Sv,Fi
+En,Fi
+En,Fr
+En,Fr,De
+En,Fr,De+De
+En,Fr,De+En
+En,Fr,De+En,Fr,De,Es
+En,Fr,De+En,Fr,De,Es,It
+En,Fr,De+Fr
+En,Fr,De,Da
+En,Fr,De,Da+En,De
+En,Fr,De,Es
+En,Fr,De,Es+En,Fr,De,Es,It,Nl
+En,Fr,De,Es,Fi
+En,Fr,De,Es,It
+En,Fr,De,Es,It+En
+En,Fr,De,Es,It,Ar
+En,Fr,De,Es,It,Da
+En,Fr,De,Es,It,Fi
+En,Fr,De,Es,It,Nl
+En,Fr,De,Es,It,Nl+En,Fr,De,Es,It
+En,Fr,De,Es,It,Nl+En,Fr,De,Es,It,Nl,Sv,No,Da,Fi
+En,Fr,De,Es,It,Nl,Ca
+En,Fr,De,Es,It,Nl,Da
+En,Fr,De,Es,It,Nl,Pt
+En,Fr,De,Es,It,Nl,Pt,Da
+En,Fr,De,Es,It,Nl,Pt,Sv
+En,Fr,De,Es,It,Nl,Pt,Sv,Da
+En,Fr,De,Es,It,Nl,Pt,Sv,No,Da
+En,Fr,De,Es,It,Nl,Pt,Sv,No,Da,Fi
+En,Fr,De,Es,It,Nl,Pt,Sv,No,Da,Fi,Pl
+En,Fr,De,Es,It,Nl,Sv
+En,Fr,De,Es,It,Nl,Sv,Da
+En,Fr,De,Es,It,Nl,Sv,Da+En
+En,Fr,De,Es,It,Nl,Sv,Fi
+En,Fr,De,Es,It,Nl,Sv,No,Da
+En,Fr,De,Es,It,Nl,Sv,No,Da,Fi
+En,Fr,De,Es,It,Pt
+En,Fr,De,Es,It,Pt,Sv,No
+En,Fr,De,Es,It,Pt,Sv,No,Da,Fi
+En,Fr,De,Es,It,Sv
+En,Fr,De,Es,It,Sv+En,Fr,De,Es,It
+En,Fr,De,Es,It,Sv,Da
+En,Fr,De,Es,It,Sv,No
+En,Fr,De,Es,It,Sv,No,Da,Fi
+En,Fr,De,Es,Nl
+En,Fr,De,Es,Nl,Sv
+En,Fr,De,Es,Nl,Sv,Da
+En,Fr,De,Es,Pt
+En,Fr,De,Es,Sv
+En,Fr,De,It
+En,Fr,De,It,Nl
+En,Fr,De,It,Nl,Sv
+En,Fr,De,It,Nl,Sv,Da
+En,Fr,De,It,Sv,No,Da,Fi
+En,Fr,De,Nl
+En,Fr,De,Sv
+En,Fr,De,Sv,Fi
+En,Fr,Es
+En,Fr,Es,It
+En,Fr,Es,It,Nl,Pt,Da
+En,Fr,Es,It,Sv
+En,Fr,Es,Nl
+En,Fr,Es,Nl,Pt,Pl
+En,Fr,Es,Pt
+En,Fr,It
+En,Fr,It+Es,It
+En,Fr,It+Fr,Nl
+En,Fr,Nl
+En,Fr,Nl,Sv
+En,Fr,Sv,Fi
+En,It
+En,It,Sv,No,Da
+En,Ja
+En,Ja+En,Ja,Fr,De,Es,It
+En,Ja,Es
+En,Ja,Es,Pt
+En,Ja,Fr
+En,Ja,Fr,De
+En,Ja,Fr,De,Es
+En,Ja,Fr,De,Es+En,Ja
+En,Ja,Fr,De,Es+En,Ja,Fr,De,Es,It
+En,Ja,Fr,De,Es,It
+En,Ja,Fr,De,Es,It+En
+En,Ja,Fr,De,Es,It+En,Ja,Fr,De,Es
+En,Ja,Fr,De,Es,It,Nl
+En,Ja,Fr,De,Es,It,Nl,Pt
+En,Ja,Fr,De,Es,It,Pt,Ko,Ru,Ar
+En,Ja,Fr,De,Es,It,Zh
+En,Ja,Fr,De,Es,Zh
+En,Ja,Fr,De,It
+En,Ja,Fr,De,It,Nl
+En,Ja,Fr,Es,Pt
+En,Ja,Fr,It
+En,Ja,Zh
+En,Ja,Zh-Hant
+En,Ko
+En,Nl
+En,Nl,Da
+En,Nl,Sv
+En,Nl,Sv,No,Da
+En,Nl,Sv,No,Da,Fi
+En,No,Da
+En,Pl
+En,Pt,Pl
+En,Pt-BR
+En,Ru
+En,Sv
+En,Sv,Da,Fi
+En,Sv,Fi
+En,Sv,No
+En,Sv,No,Da,Fi
+En,Zh
+En,Zh-Hant
+En-US,En-GB,Fr,De,Es,It
+En-US,Es-MX,Pt-BR
+Ending Credits Program
+Ending Fix Patch - EU
+Endurance Course
+Endurion - 2015
+Endurion - 2018
+Engagement Edition
+English Translated
+English Translated With Arabic Numerals by Psyklax
+English Translated With Corrected Ending by BlackPaladin
+English Translated With Honorifics Patch, Rev 1.1, by Lipemco! Translations
+English Translated With PSP Audio Patch, Rev 1.01, by Shortfilms.tk and Burnt Lasagna
+English Translated by Acediez
+English Translated by Acediez, Rev 1.3
+English Translated by Adventurous Translations, Rev 0.96
+English Translated by Aeon Genesis, Rev 0.95b
+English Translated by Aethin, Rev 1.04
+English Translated by AfroJackX, Rev 0.3
+English Translated by AgentOrange and MrRichard999
+English Translated by Aishsha
+English Translated by Aishsha, Paul_met, and Pennywise, Rev 1.0.1
+English Translated by Aishsha, Paul_met, and Stardust Crusaders, Rev 1.3.1
+English Translated by Aishsha, Rev 1.1b
+English Translated by AlanMidas Cant.hack With Fixes by Jordiway73, Rev 1.1
+English Translated by Alex Kid, Darkfalzx, and Simon Fang, Rev 2022-01-20b
+English Translated by Arcraith, Rev 1.1
+English Translated by Bankbank
+English Translated by Ben128
+English Translated by BlackPaladin
+English Translated by Bulk Slash English Localization Team, Rev 1.001
+English Translated by CF
+English Translated by Cabbage
+English Translated by Cabbage and Shawn Cox
+English Translated by Campanella999
+English Translated by Cargodin, EsperKnight, Gwendolyn, and PSXCraver
+English Translated by Cargodin, Rev 1.3
+English Translated by Chapu
+English Translated by Chapu, Miniomegaking, PSXCraver, and Vervalkon
+English Translated by Chapu, Rev 1.1
+English Translated by Chris M. Covell
+English Translated by ChristopheF, Rev 2
+English Translated by Cirosan
+English Translated by Dave Shadoff
+English Translated by Dave Shadoff and Diogo Ribeiro
+English Translated by Dave Shadoff, Filler, MooZ, and Diogo Ribeiro
+English Translated by Dave Shadoff, Filler, and Diogo Ribeiro
+English Translated by Dave Shadoff, Filler, and Tomaitheous
+English Translated by Dave Shadoff, MooZ, and Diogo Ribeiro
+English Translated by Demiforce
+English Translated by Denim
+English Translated by Derek Pascarella
+English Translated by Diogo Ribeiro
+English Translated by Django
+English Translated by DrGoldfire
+English Translated by DvD Translations
+English Translated by Eight Mansions, Rev 0.95.9
+English Translated by EsperKnight
+English Translated by Esperknight, CJ_Iwakura, and Others
+English Translated by Exxistance
+English Translated by FCandChill
+English Translated by FCandChill, Filler, TheMajinZenki, and Graphicus
+English Translated by Filler and Cabbage
+English Translated by Filler, Tomaitheous, EsperKnight, and Grant Laughlin
+English Translated by FlashPV
+English Translated by Fothsid, Rev 1.1
+English Translated by GameHacking.org and Victini378, Rev 1.03
+English Translated by GammaTrove
+English Translated by Gemini and Tom, Rev 1a
+English Translated by Gertius
+English Translated by Gertius, Rev 1.2
+English Translated by Gideon Zhi and Matatabi
+English Translated by Gil Galad
+English Translated by Grundo1561, Rev 1.2
+English Translated by Gungriffon II Localization Team, Rev 0.97.5
+English Translated by Hemulen
+English Translated by Hilltop
+English Translated by Hilltop, Cargodin, Blametherobots, Gwendolyn, and SnowyAria, Rev 1.1
+English Translated by Hilltop, Rev 1.1
+English Translated by Infinite Lupine Translations With Addendum by R4dius, Rev 1.01b
+English Translated by Infinite Lupine Translations, Rev 1.01
+English Translated by Jink640
+English Translated by John Osborne
+English Translated by John Osborne, Rev 1.1
+English Translated by KBLO, Rev 20251010
+English Translated by KingMike's Translations
+English Translated by Kitchen34, Rev 1.1
+English Translated by Kitchen34, Rev 1.10
+English Translated by Knight0fDragon, Rev 1.021 With Hotfix
+English Translated by KoolFiller, Rev 2025-06-14
+English Translated by Lady Jessica, Rev 0.8
+English Translated by LaytonLoztew
+English Translated by Lipemco! Translations
+English Translated by MZ, Rev 0.01
+English Translated by Malenko
+English Translated by Malenko, Rev 0.91
+English Translated by Malenko, Rev 1.02 Final
+English Translated by Malenko, Rev 1.2 Final
+English Translated by Malenko, Rev 2024.02.04-01
+English Translated by Matizhill
+English Translated by Meduza Team, Rev 1.04a
+English Translated by Mentil
+English Translated by Mr.Nobody
+English Translated by Mr.Nobody, Arcanearia, and NintendoComplete, Rev 1.1
+English Translated by Mute
+English Translated by Nanashi, Rev 0.9
+English Translated by Nebulous Translations
+English Translated by Necrosaro
+English Translated by Nick, Paul, and Akimaru
+English Translated by Nikita600, Rev 05FEB2023
+English Translated by Onionzoo and Cabbage
+English Translated by Paul_Met, Aishsha, and Pennywise, Rev 1.3
+English Translated by Paul_met
+English Translated by Paul_met and Stardust Crusaders, Rev 1.5
+English Translated by Paul_met, Aishsha, Pennywise, Ryusui, TheMajinZenki, and CCCmar
+English Translated by Pennywise
+English Translated by PentarouZero
+English Translated by PentarouZero, Rev 1d
+English Translated by Phantasian Productions, Rev Pre-1.1 ToP Test Fix With Addendum by FlamePurge and Mziab, Rev 1.1b
+English Translated by Plissken
+English Translated by Plissken, Rev 1.0.1
+English Translated by Plissken, Rev 1.02
+English Translated by Pokeytax, Rev 1.1
+English Translated by Psyklax
+English Translated by RIP Translations
+English Translated by RIP Translations, Rev 1.1
+English Translated by Ralf Guth, Rev 0.6.1
+English Translated by Rari_teh, Rev 1.1
+English Translated by Rasputin3000, Rev 0.999
+English Translated by Raw Le Klueze
+English Translated by Retrodadandmodernlad, Rev 0.9
+English Translated by Riderr3, Rev 1.1
+English Translated by Robertmvsa, Rev 1.2
+English Translated by Ryu
+English Translated by Shadowmask and SoloNerfherder
+English Translated by Shining Force III Translation Project, Rev 25.1
+English Translated by ShivaSaturn
+English Translated by Shubibiman and Cabbage
+English Translated by SnowyAria
+English Translated by SnowyAria, Rev 1.1
+English Translated by Someitalian123
+English Translated by Specialagentape
+English Translated by Spinner 8 and Friends
+English Translated by Star Trinket
+English Translated by Star Trinket - Beta
+English Translated by Stardust Crusaders
+English Translated by Stellar Assault SS Localization Team
+English Translated by Stephwag, Rev 0.2
+English Translated by Supper
+English Translated by Supper and Mafoo343
+English Translated by The Spoony Bard
+English Translated by TiCo
+English Translated by TransGen
+English Translated by TrekkiesUnite118
+English Translated by TrekkiesUnite118, Rev 0.9.1
+English Translated by TrekkiesUnite118, Rev 1.5.1a - Dubbed Version
+English Translated by Unknown
+English Translated by Vermillion Desserts
+English Translated by Verve Fanworks, Rev 1.04
+English Translated by Vice Translations
+English Translated by Walxer, Rev 0.81
+English Translated by Walxer, Rev 0.85
+English Translated by Wonder-inc, Rev 1.01 - NTSC Version
+English Translated by Zander3312, Rev 0.9
+English Translated by Zoinkity
+English Translated, Prototype
+English Translated, Rev 0.95 With English Dub Patch, Rev 1.1, by Burnt Lasagna
+English Translated, Rev 0.98
+English Translated, Rev 0.98, by Nebulous Translations
+English Translated, Rev 0.99, by AgentOrange and Jink640
+English Translated, Rev 0.99, by Dave Shadoff
+English Translated, Rev 0.99, by Gaijin Productions
+English Translated, Rev 0.99, by Spinner 8 and Friends
+English Translated, Rev 0.99b, by Gaijin Productions and Zatos Hacks
+English Translated, Rev 021210, by Zoinkity
+English Translated, Rev 1
+English Translated, Rev 1.01, by Dave Shadoff and Filler
+English Translated, Rev 1.01, by Gil Galad
+English Translated, Rev 1.01, by MrRichard999
+English Translated, Rev 1.01, by Onionzoo and Cabbage
+English Translated, Rev 1.01, by Ozidual
+English Translated, Rev 1.01, by Stardust Crusaders
+English Translated, Rev 1.01, by Zoinkity
+English Translated, Rev 1.02, by Ozidual
+English Translated, Rev 1.1, by Filler and Cabbage
+English Translated, Rev 1.1, by Jordiway73
+English Translated, Rev 1.1, by MooZ and Shubibiman
+English Translated, Rev 1.1, by Nebulous Translations
+English Translated, Rev 1.1, by Procyon
+English Translated, Rev 1.1, by Spinner 8 and Friends
+English Translated, Rev 1.1, by Vice Translations
+English Translated, Rev 1.1, by Zoinkity
+English Translated, Rev 1.2
+English Translated, Rev 1.2, by Lipemco! Translations
+English Translated, Rev 1.2, by Super Roboprotector
+English Translated, Rev 1.2, by tAz-07
+English Translated, Rev 1.3, by D
+English Translated, Rev 1.3, by Zoinkity
+English Translated, Rev 1.31, by Spinner 8 and Friends
+English Translated, Rev 1.77, by Star Trinket
+English Translated, Rev 1E, by Dave Shadoff
+English Translated, Rev 2, by Psyklax
+English Translated, Rev 2.33, by Columbo
+English Translated, Rev 3, by VPW
+English Translated, Rev A, by DvD Translations
+English Translated, Rev v1.1, by Supper
+English Translated, Rev v1.3, by Supper
+English Translation by Brandnewscooby
+English Translation by Puppy
+English Translation by Ripper, Rev 0.19
+Enhanced
+Enhanced Soundtrack Disc
+Enhancement Chip
+Enterbrain Collection
+Ep-MyCard
+Episode 1 - Tsuki no Shinden
+Episode 1 Tsuki no Shinden
+Episode 2 - Shitou! Wily Numbers
+Episode 2 Shitou! Wily Numbers
+Episode 23
+Episode 24
+Episode 25
+Episode 26
+Episode 3 - Saigo no Tatakai!!
+Episode 3 Saigo no Tatakai!!
+Equinoxe - 2017
+Es
+Es+En,Fr,De,Es,It
+Es+En,Fr,De,Es,It,Nl,Sv,Da
+Es,Ca
+Es,It
+Es,It+En,Es,It,Sv,Da
+Es,It+Es
+Es,It+It
+Es,It,Nl
+Es,It,Pt
+Es,Nl
+Es,Pt
+Es,Sv,No
+Escape, Triple Peaks, and Numbers - EU
+Europe
+Europe, Asia
+Europe, Australia
+Europe, Brazil
+Europe, Germany
+Europe, Hong Kong
+Europe, Korea
+Europe-ban
+Evasive+, Satellite, Bombs Away, and Farewell... - EU
+EverQuest
+Evercade
+Evercade, GOG
+Everything Unlocked Patch by Triclon - NA
+Evolution Disc
+Expert - Desert
+Expert - Dirt
+Extendo UnCut Edition
+Extra Box
+Extra Disc
+Extract
+F
+F-202
+F-4001
+F-4002
+F-4003
+F-4004
+F-4005
+F-4006
+F-4007
+F-4008
+F-4009
+F-4010
+F-Y2
+FAAT
+FAAT, FABT, FACT
+FAAT, FACT
+FABT
+FABT, FACT, FAET, FAFT
+FACT
+FACT, FADT
+FAFT
+FBX
+FC-28 5027
+FC999
+FK-8004
+FK-8006
+FK-8379
+FK-8380
+FK-C4-33
+FL-4466A
+FL-58
+FM Music Patch - NA
+FM Sound Patch, Rev 1.2 - NA
+FS005
+FS006
+FS303
+FS305
+FS308
+Famicom 3D System
+FamicomBox
+Family BASIC
+Famitsuu Version
+Fast Tanks
+Fast Version
+Faster Walking Speed Patch by Diogo Ribeiro - NA
+Fears Behind
+Field Hunter
+Fiendish Freddy's Big Top o' Fun, Flimbo’s Quest, Klax & International Soccer
+Final
+Final Cut
+Final Version
+Fine Studio
+Fingers
+Fingers - NA, Rev 1 - Disc 1
+Finland
+Fire & Earth
+Fire and Earth - NA - Disc 1
+Firebird
+Fivers and Telly Trivia - EU
+Fixed
+Fixed E-F Color Bug
+Flashback Entertainment
+Flight of Fantasy, Occult Connection, The Last Battle, and Matt Lucas - EU
+Fortress, Solitaire, T 'n' T, and Shoot-em-Up - EU
+Forward Entry
+Fourteen-Out and D.O.E. P.S.A. Skittles - EU
+Fr
+Fr+En
+Fr+En,Fr,De,Es,It
+Fr+En,Fr,De,Es,It,Nl,Sv,Da
+Fr,Cs
+Fr,De
+Fr,De,Es
+Fr,De,Es,It
+Fr,De,Es,It,Nl
+Fr,De,Es,It,Nl,Pt
+Fr,De,Es,It,Nl,Sv,Da
+Fr,De,Es,It,Sv
+Fr,De,Es,Nl
+Fr,De,It
+Fr,De,It,Nl
+Fr,De,Nl
+Fr,De,Pt
+Fr,Es
+Fr,Es,It
+Fr,Es,It,Pt
+Fr,It
+Fr,Nl
+Fr,Nl+Fr,De,Nl
+Fr,Nl,Pl
+Fr,Nl,Sv,No,Da
+Frame Rate Improvement and 6 Button Patch by Ti - NA
+France
+France, Spain
+Freem Edition Patch, Rev 2023-07-30, by Freem and Friends - JP
+Freetime, Strategy, Cash-Flow, Solitaire, and Defusion! - EU
+Frisbee Ken John - JP
+From Seiya Monogatari Taikenban - JP
+From Tokimeki Memorial - JP
+Front Mission History
+Fruit Machine, Laser Dodge, Yahtzee, Drac Attack, Worms World, Dead Ducks, Dan's Diamonds, Solitaire, Simon, Annoyance, and Spec Tiles - EU
+Fruity, Bug2, and Gardner - EU
+Fukkokuban
+Fukyuuban
+Fukyuuban 1500
+Future was 8bit, The - 2020
+GB Compatible
+GB Showdown
+GBA Enhanced
+GDI
+GDI Disc
+GF3 B
+GF4-2 F
+GF4-2 X
+GMod2
+GOG
+GTROM
+Gallop
+Galvinator - EU
+Game Disc
+Game Honpen
+Game no Kanzume Otokuyou
+Game no Kanzume Vol. 1
+Game no Kanzume Vol. 2
+GameCube
+GameCube Edition
+GameCube Preview
+GameCube, Zelda Collection
+GameVillage The Best
+Gamecube
+Gamtec
+Ge
+Ge De
+Geir Straume - 2022
+Gekan
+Gem-X, Sports Game, Immortal Combat, and Universe - EU
+Genbu
+General Instrument
+General Knowledge Quiz, Toad Shot, and City Bomber - EU
+Genghis Khan
+Gensokigou Master
+Gentei Box
+Gentei Set
+Genteiban
+Genteiban!
+Germany
+Ghost Sweeper
+Glitchcore Version
+Global Game Jam 2016
+Global Game Jam 2020
+Global Game Selection 2000
+Go! Go! Casino
+Go!, Adventurer, Santa Goes Psycho, A Nightmare on Sesame Street, and Banzai! Solitaire - EU
+Goatscrote - 2022
+Gold Mine - Rev 4, Pontoon, and Two-in-a-Bed - EU
+Goliath
+Gouder
+Graffiti - EU
+Gran Turismo
+Gran Turismo Mode
+Grand Trial Onnanoco
+Grandslam
+Greece
+Green Disc
+Gridlock, The Roman Empire, and Eater - EU
+Gridwords and Tap Trouble - EU
+Grue Knapped! - EU
+Guessagram, Japanese Patience, and Snake Mania - EU
+Guesshue and A Day at the Races - EU
+GunBullet + GunCon
+HAL Laboratory
+HES
+HMNK-143
+HOT B
+Hack
+Hacker
+Hacker International
+Hanafuda de Koi!
+Hangman and Patience - EU
+Haplo - 2022
+Hard
+HeartBeat Catalyst
+Hengge
+HesWare
+Hey Sung
+Hi-Tec - Unreleased
+HiCom
+Hibaihin
+Hilarious AI English Dub by Sideside
+Hindsbosoft - 2014
+History of Super Robot Wars
+Home World and Stom - EU
+Homeworld, Light Cycles, and Sum Game - EU
+Hong Kong
+Honkakuha de 1300
+Honpen Disc Ichi
+Honpen Disc Ni
+Honpen Game Sen'you
+Hoshi no Kirby - 20 Shuunen Special Collection
+Hot Mario Campaign
+Hot Pursuit and Solitaire - EU
+Houkai-hen
+Hudson
+Hudson Soft
+Hulten Brothers - 2014
+Hummer Team
+Hunchy - EU
+Hwang Shinwei
+IC4-4 B-1
+IC4-4 X
+IE Institute
+INTV
+INTV Corp.
+Ice Team - 2013
+Ichi
+Ichigo Disc
+Idea-Tek
+Il Gioco
+Imagic
+Imagineer
+Impossamole - EU
+Improved Version
+In
+Incube8 Games
+India
+Indoor
+Infinite Games
+Infinite R.E. - EU
+Infinite lives
+Input 64
+Intellivision
+Intellivision Lives!
+Interactive Sampler CD
+Interceptor
+Intermission Disc
+International Version
+Interplay 1988
+Intro
+Introes
+Invaders from Planet X - EU
+Invasion, SAM Mines, and Bats - EU
+Invasion, TankZap, and Green's Games - EU
+Invincibility
+Ireland
+Israel
+It
+It+En,Fr,De,Es,It,Nl,Sv,Da
+It,Nl
+It,Sv
+Italy
+J-C5
+J-Cart
+J-D1
+J.Y. Company
+J1
+JAL Kinai Hanbai Gentei
+JF-002
+JJ-01
+JK
+JMHWANG
+JP
+JP - 4MB Hack Patch by YZB, Rev 2020-05-31
+JP - 4MB Hack Patch by YZB, Rev 2020-06-07
+JP - 4MB Hack Patch by YZB, Rev 2020-08-24
+JP - 4MB Hack Patch by YZB, Rev 2022-08-01
+JP - Disc 1
+JP - Disc 1 - Arcade
+JP - Disc 1 - Disc-B
+JP - Disc 1 - Disc-F
+JP - Disc 1 - Ichigo
+JP - Disc 1 - Kamen Rider
+JP - Disc 1 - Langrisser IV - English Translated by Kil, Rev 1.3
+JP - Disc 1 - Thunder Storm
+JP - Disc 1 - Thunder Storm LX-3
+JP - Disc 1 - Time Gal
+JP - Disc 1 - Vol. 1 - Toki no Maigo
+JP - Disc 2
+JP - Disc 2 - Addition
+JP - Disc 2 - Append
+JP - Disc 2 - Gallop
+JP - Disc 2 - Momo
+JP - Disc 2 - Ninja Hayate
+JP - Disc 2 - Omake Disc
+JP - Disc 2 - Portrait CD
+JP - Disc 2 - Premium CD
+JP - Disc 2 - Road Blaster
+JP - Disc 2 - Sengoku Kawaraban - Digital Edition
+JP - Disc 2 - Shadow Over Mystara
+JP - Disc 2 - Vol. 2 - Inochigake no Tabi
+JP - Disc 3
+JP - Disc 3 - Vol. 3 - Watashi ni Sayonara wo
+JP - Disc 4
+JP - English Translated by Bulk Slash English Localization Team, Rev 1.001 - Dubbed Version
+JP - English Translated by Exxistance - Dubbed Version
+JP - English Translated by Hemulen
+JP - English Translated by KoolFiller, Rev 2025-06-14 - Dubbed Version
+JP - English Translated by Malenko, Rev 2024.02.04-01 - Revised Version
+JP - English Translated by Meduza Team, Rev 1.1 - Ultimate Fork PSX Script Version
+JP - English Translated by Meduza Team, Rev 1.1 - Ultimate PSP Script Version
+JP - English Translated by Mentil With EX Patch by Paul_met
+JP - English Translated by Shining Force III Translation Project, Rev 25.1
+JP - Eurobeat Mix Patch by Mr357
+JP - Flash Removal Patch by Privateye
+JP - Hybrid Version
+JP - Kisekae Disc Kanzenban
+JP - Limit Over Hack by CafeBreak Project, Rev 2.1 - English Translated by Ms. Tea
+JP - Quality of Life Improvements Patch by Privateye
+JP - Wizardry VI - Bane of the Cosmic Forge - English Translated by Remisse, Rev 0.51 - Enhanced Version
+JP, Rev 1
+JP, Rev 2
+JP, Rev 3
+JP, Rev 4
+JP, Rev 5
+JP, Rev A
+JP, Rev B
+JP, Rev B - Quality of Life Improvements Patch by Privateye
+JP, Rev C
+JR Nishi-Nihon Presents
+JY-011
+JY-035
+JY-074
+JY-076
+JY-120A
+JY-227
+JY-609
+JY010
+JY039
+Ja
+Ja,Ko
+Ja,Zh
+Jaleco
+Janky Multiplayer
+Japan
+Japan, Asia
+Japan, Australia
+Japan, Brazil
+Japan, Europe
+Japan, Europe, Australia
+Japan, Europe, Brazil
+Japan, Europe, Korea
+Japan, Korea
+Japan, USA
+Japan, USA, Brazil
+Japan, USA, Korea
+Japanese
+Japanese Original Version - English Translated With Save Fix by John Osborne
+Japanese Version
+Java Tea Original
+Jeffrey Wittenhagen's
+Jet Set SAM, Bee Bopping, Addiction, and Last Stand II - EU
+Jeu
+Jim Roof
+Jncota
+John Christian Lønningdal and Saul Cross - 2016
+Jon Wells - 2001
+Jou
+Joukan
+Joypad
+Juice
+Juice - NA, Rev 1 - Disc 2
+Jumper and Snake! - EU
+Just-in-Case
+Just-in-Caser
+Just-in-Casest
+K
+K-E3
+K-F1
+K-Tel
+K-W3
+K-tel
+K1023
+K23-001
+K4022
+K4033
+KG-410
+KG-448
+KG-449
+KG-450
+KG-457
+KG-458
+KG-459
+KG-460
+KG-461
+KG-462
+KG-481
+KG-483
+KG-495
+KG-496
+KG-497
+KR
+KS-7010
+KS-7012
+KS-7013
+KS-7016
+KS-7016B
+KS-7017
+KS-7021A
+KS-7030
+KS-7031
+KS-7032
+KS-7037
+KS-7047
+KS-7050
+KS-7057
+KT 2136
+KT-2128
+KT-2214
+KY-2001
+Ka Sheng
+Kabuto - 2012
+Kaiser
+Kamen Rider
+Kari
+Karmic - 2021
+Karsten Senkel - 2020
+Kayou-ban
+Keihin Ban
+Kellogg Original Waku Waku Doki Doki Ninki Game Chara Daishuugou! - JP
+Kemco
+Key Disc
+Kickstarter
+Kickstarter Version
+Kids Station Controller Set
+Kiosk
+Kiosk, E3 1997
+Kiosk, GameCube
+Kirby's Dream Collection - Special Edition
+Kisekae Disc
+Kisekae Disc Kanzenban
+Kitmaker
+Knock-Out, SAM Coupé Derby, and Guess the Number - EU
+Knockout Whist, Bug Fever, Ludo, and Mastermind - EU
+Ko
+Kobyashi Ag'Kwo, Crack City, Diablo, and The Darkest Road - EU
+Koei the Best
+Kojiroh Disc
+Konami
+Konami Collector's Series
+Kor
+Kor,A
+Kor2
+Korea
+Korean
+Korean,Alt
+Kou Yuukan Hen
+Koudansha Rengou Kikaku Tokubetsu Disc
+Koukousei Jidai
+Kyoko Disc
+Kyouchou-hen
+Kyugo
+LA01
+LA02
+LA03
+LA04
+LA05
+LA06
+LA07
+LA10
+LA16
+LA17
+LA20
+LA21
+LA22
+LA25
+LA34
+LA40
+LA42
+LA59
+LB16
+LB30
+LB31
+LB33
+LB35
+LC Games - 2022
+LC-Games - 2022
+LC10
+LD12
+LD28
+LE05
+LE08
+LE10
+LEE05040
+LEE08072
+LF11
+LF36
+LG06
+LG25
+LG4 E
+LG4 X
+LH09
+LH10
+LH12
+LH15
+LH28
+LH29
+LH30
+LH31
+LH32
+LH42
+LH51
+LH53
+LH54
+LH57
+LH89
+LH90
+La Documentation
+Labyrinth and 9D Noughts and Crosses - EU
+Landsphere
+Langrisser IV Disc
+Langrisser V Disc
+Laser Squad, Black Jack, and Circuitry - EU
+Later
+Launch Cart
+Lawson Station
+Lazycow - 2019
+Le Jeu
+Lemming Attack - EU
+Lemmings, Bong!, Worms World, Jaws, Dice Game, and Ore Warz Extra levels - EU
+Leon-hen
+Let's Sugoroku
+Let's Surogoku
+Level 1
+Level 11-G
+Level 2
+Level 3
+Levels 000
+Levels 1 and 2
+Levels 3 and 4
+Levels 5 and 6
+Levels-B
+Li Cheng
+Library
+Light Cycles and Sum Game - EU
+Light Phaser
+Lightcycles Trundle, Battleships, Snooker, Lazer Maze, Hi-Lo, Alf the Apple Eater, Pontoon, Blitz-Kreig, Shanghai, Lovehearts, Squiggle, OXO, Goalie, Explode, and Rescue - EU
+Lightcycles Trundle, Hi-Lo, and SAM Crossword - EU
+Limited Box
+Limited Edition
+Limited Run Games
+Line Games - EU
+Lines Mode Unlock Patch by Gallaux - NA
+Link! and Bouncing Things - EU
+Lock-on
+Lock-on Combination
+LodgeNet
+Long Yu Tianxia
+Lost & Found Volume 2
+Lost One Disc
+Ludum Dare 38
+Ludum Dare 44
+Ludum Dare 47
+Ludum Dare 49
+Ludum Dare 50
+Ludum Dare 52
+Luna Software
+Lycanthrope Fix by Zoinkity - NA
+M-16
+M-D2
+M-I6
+M-O9
+M-U1
+MAX
+MAX - v01
+MAX - v02
+MAX v01
+MAX v02
+MAX v02 - Alt
+MB-91
+MD102
+MDST17FF
+MDST6636
+MDSTEE13
+MR4-1 A
+Macbeth and Tetris - EU
+Maciej Malecki - 2022
+Mad Dog
+Mad Dog - NA, Rev 1 - Disc 3
+Mad Productions - 2010
+Made in E.U.
+Made in EU
+Made in EU, Made in Japan
+Made in Japan
+Made in U.S.A.
+Made in USA
+Magfest 2023
+Magic - EU
+Magical Drop +1
+Magical Drop III
+Magicalpha - EU
+Mahjong de Pon!
+Majesco
+Major Wave
+Making Disc
+Manic Remix, Triple Peaks, The Thief, Tron, and Ant Farm - EU
+Mariano Kalafatovich - v1.1 - 2021
+Marina Disc
+Mario Builder 64 Patch by Arthurtilly and Rovertronic - NA
+Mars Production
+Marvel MaXimum Collection
+Master System Evolution
+Mastermind - EU
+Mastermind, Fruit Machine, and Santa! The Adventure - EU
+Mastertronic
+Mattack - EU
+Maze, The Witching Hour, Invaders, Pontoon, and Higher or Lower - EU
+Mega 6
+Mega Drive 4
+Mega Drive Mini
+Mega Drive Mini 2, Genesis Mini 2
+Mega Drive Mini 2, Genesis Mini 2, Toaplan Arcade Garage
+Mega Drive Mini, Genesis Mini
+Mega Drive PlayTV
+Mega Man Legacy Collection
+Mega Man X Collection
+Mega Man X Legacy Collection
+Mega Power
+Mega Power, Sega Pro
+Mega Sega
+Mega Soft
+Mega-CD 32X
+Megastyle - 2019
+Megastyle - 2020
+Megastyle - 2021
+Megastyle - 2022
+Megastyle 2019
+Meinu Quan
+Melbourne House
+Memory Bank Disc
+Menu
+Metal Gear Solid Collection
+Metal Slug 3 boot
+Meteor Mania, Jetpac, Omahf, Haunted House, and Universe Sim - EU
+Method
+Mexico
+Micro Genius
+Microprose Soccer, Rick Dangerous & Stunt Car Racer
+Midway Classics
+Minadzuki - Kotobuki - Sakura
+Mindscape
+Mine, Reversal, Hide 'n' Seek, and React - EU
+Minesweeper - EU
+MiniGame Compo 2004
+Mirrorsoft
+Mission 1 - Mine Menace
+Mission 2 - Sub Crash
+Mission 3 - The Bank Job
+Mission 4 - Countdown to Terror
+Mission Briefing
+Mix 'n Match, Colour Clash, and Patience - EU
+Mix 'n' Match, Tiler, and The Quest for the Green Frog - EU
+Mix256 - 2011
+Moai-ui Bomul - KR
+Mod
+ModRetro Chromatic
+Momo Disc
+Mondo21 Version
+Mono
+Monster Game
+Moonlander and Othello - EU
+Mouse Controller Set
+Mr Micro
+Mr. NOP - 2016
+Mr. NOP - 2017
+Mr. Pac and Bumpy - EU
+Mr. Pilot and Pegs - EU
+Mr. SID - 2014
+Multicart Rip
+Mummy
+Mune Kyun
+Museum
+Mushies!, Fade, and Fine Line - EU
+Music
+Music Program
+Music v1
+Music v2
+Myth Struggle
+N-32
+NA
+NA - Audio Improvements Patch by Riggles, Rev 2
+NA - Disc 0
+NA - Disc 1
+NA - Disc 1 - Allies
+NA - Disc 1 - Arcade Disc
+NA - Disc 1 - GDI
+NA - Disc 1 - Shockwave - Invasion Earth
+NA - Disc 2
+NA - Disc 2 - Evolution Disc
+NA - Disc 2 - NOD
+NA - Disc 2 - Shockwave - Operation Jumpgate
+NA - Disc 2 - Soviet
+NA - Disc 2 - Turbo Mode Disc
+NA - Disc 3
+NA - Disc 4
+NA - Disc 5
+NA - Disc A
+NA - Disc B
+NA - Fix Patch by Authorfafling, Rev 0.3
+NA - Flash Removal Patch by Privateye
+NA - QoL Patch, Rev 1.1 With Music Pitch Fix by Paul_met
+NA - Quality of Life Improvements Patch by Privateye
+NA - Quality of Life Improvements Patch by Privateye, Rev 1.1
+NA - Sound Canvas Patch by Shadowmask
+NA - Un-Working Designs Patch by Supper, Rev 0
+NA, Rev 1
+NA, Rev 1 - Arcade Mode
+NA, Rev 1 - Disc 1
+NA, Rev 1 - Disc 2
+NA, Rev 1 - Disc 3
+NA, Rev 1 - Disc 4
+NA, Rev 125
+NA, Rev 2
+NA, Rev 2 - Simulation Mode
+NA, Rev 2.10
+NA, Rev 3
+NA, Rev 5R, 6R
+NA, Rev 6
+NA, Rev A
+NC-80
+NCN-21
+NES Classic Edition
+NES Mini Version
+NES-BK
+NES-N7
+NESDev 2011
+NESDev 2014
+NESDev 2016
+NESDev 2017
+NESDev 2018
+NESDev 2020
+NESDev 2022
+NESDev Compo 2011
+NESDev Compo 2014
+NESDev Compo 2016
+NESDev Compo 2017
+NESDev Compo 2018
+NESDev Compo 2019
+NESDev Compo 2022
+NESDev22 Compo Final
+NESWORLD Edition
+NESWorld
+NESdev Compo 2020-21
+NGen
+NHL 06
+NINA-03
+NINA-06
+NOD
+NOD Disc
+NP
+NR8QV1 PCB
+NR8QV2 PCB
+NROM
+NT Fixed
+NT-328
+NT-6031
+NT-6079
+NT-6088
+NT-6089
+NT-6098
+NT-616
+NT-622
+NT-656
+NT-672
+NT-851
+NT-865
+NT-881
+NTDEC
+NTSC
+NTSC Conversion, Debug Menu, and Retranslation Patch by MikeeB84
+NTSC Decoder
+NTSC Full
+NTSC Version
+Namco
+Namco Anthology 1
+Namco Museum Archives Vol 1
+Namco Museum Archives Vol 2
+Namcot Collection
+Namcot Collection, Namco Museum Archives Vol 1
+Namcot Collection, Namco Museum Archives Vol 2
+Nanjin
+Nanjing
+Nantong
+Nearly Final
+Nei-Hu
+Neo Organic Bioform
+Nescafe-ban
+Netcard
+Netherlands
+Neunzehn - English Translated by MrRichard999
+New Generation Software
+New Version
+Ni
+Nickelodeon Movies
+Nicktoons
+Nine Man's Morris and Clock Patience - EU
+Ninja Hayate
+Ninja JaJaMaru Retro Collection
+Nintendo Gateway System
+NintendoAge
+Nioreh
+Nl,Pt
+No EXP chip
+No Mercy Plus Patch, Rev 2.1, by Retro Randy Price - NA, Rev 1
+No Sound
+No Way Back - EU
+Noah, Escape, and Midnight Special - EU
+Non-working
+Norbert Kehrer - 2013
+Normalized
+Norway
+Not For Resale
+Not For Sale
+Not for Resale
+Noughts and Crosses - EU
+Noughts and Crosses 3, Quizzard 2, 4.Square, The Shrink, and Shut the Box - EU
+November 1996 - NA
+November, 1988
+OXO, Pontoon, and Caterpillar - EU
+Object
+Ocean
+October Version
+Old
+Older
+Omake Books Version
+Omake CD
+Omake Disc
+Omake Disk
+One Level Demo Disc
+Opening Disc
+Ordernum and Bert Ball - EU
+Ore Warz and Dracula - EU
+Original Translation
+Orochi
+Otameshi Disc
+Otameshi-ban
+Otanoshimi Data Disc
+Othello Multivision
+Outdoor
+Oxyron - 2016
+Oxyron - 2022
+Oziphantom - 2017
+P's Club Genteiban
+P's Club Special Edition
+P-C5
+P-H3
+P1022
+P1X3L-net - 2013
+P4H
+P5H
+PAL
+PAL Full
+PAL-MA-0
+PAL-MC-0, Classic Series
+PAL-NTSC
+PAQA, PokeTan, Pocket Jiman
+PC Engine Mini
+PC10
+PCB
+PCB,alt
+PD
+PL-0002
+PL-0006
+PN3 B
+PN4 E-1
+PROPER 12K
+PSone Books
+Pacnsacdave Reproductions
+Pairs, Mem-Ex, and Lines - EU
+Paltry July Update
+Papposoft - 2007
+Part 1
+Part 2
+Part 3
+Part A
+Part B
+Part One
+Part Two
+Password Version
+Patreon
+Patreon Demo 0320
+Pearl
+Perfect Guide
+Personal Computing Whirled! - EU
+Peru
+Pet Evolve
+Pet Family
+Pharaoh
+Phoenix, The Violator of Voodoo, and Aztec Assault - EU
+Photo Album
+PiMania II - PiMan's Progress and Annoyance - EU
+Piepacker
+Piko Interactive
+Pirate
+Pixel Heart
+Pl
+PlayMag Demo
+PlayStation Taiou
+PlayStation the Best
+PlayStation the Best for Family
+Playable Game Preview
+Players
+PocketStation Doukon
+Pokemon Box
+Pokemon Channel
+Poker for One, Blaster, and Noah - EU
+Pond Software - 2016
+Pond Software - 2018
+Pond Software - 2019
+Pond Software - v1.1 - 2016
+Portrait CD
+Portugal
+Possible Proto
+Power House
+Preliminary Speed Version
+Premium Box
+Premium CD
+Premium CD-ROM
+Premium Disc
+Premium Edition
+Premium Fan Disc
+Premium Package
+Presence of Mind '98 Prototype
+Press Down, Circle, Down, Right, Circle to Set to English
+Press Start Immediately at Clip 1, Clip 2, and Clip 3 and It Will Eventually Load
+Preview
+Preview Edition by Namco
+Princess Clara
+Princess Kurara
+Printable Crossword 2 and Spyship - EU
+Printable Crossword and QQQ Logic - EU
+Pro ni Kike!
+Profile Disc
+Program
+Project EGG
+Promo
+Proper
+Proto
+Proto 1
+Proto 10
+Proto 11
+Proto 12
+Proto 13
+Proto 2
+Proto 3
+Proto 4
+Proto 5
+Proto 6
+Proto 7
+Proto 8
+Proto 9
+Prototype
+Prototype - Bug Fix Patch by Zoinkity
+Prototype - Cliff Level
+Prototype - Dinomod Enhanced Patch, Rev 05-02-2023, by Ren Fuchsfein
+Prototype - Disc 1
+Prototype - Disc 2
+Prototype - Disc 3
+Prototype - Downtown, Tuna Factory, FHZ, and AI Test Level
+Prototype - Dragon Layout
+Prototype - English Translated by Zoinkity
+Prototype - Gremlin Demo Disk
+Prototype - Improvements Patch by lancuster
+Prototype - Ninja Mucky Level
+Prototype - Plane Level
+Prototype - Prison, Sewer, Observatory, and Nakatomi Tower
+Prototype - Scorpion Layout
+Prototype - Test Level
+Prototype - Warehouse, Hospital, King Pin's Pad, and Police Department
+Prototype 1
+Prototype 2
+Prototype 3
+Prototype, Rev 1.0a
+Prototype, Rev 1.0f
+Prototype, Rev 1.2
+Prototype, Rev 2
+Prototype, Rev 2000-05-28 Fixed
+Protovision - 2002
+Protovison - 2022
+Psytronik - 2009
+Psytronik - 2010
+Psytronik - 2012
+Psytronik - 2013
+Psytronik - 2016
+Psytronik - 2017
+Pt-BR
+Putative Proto
+Puzzy
+QUByte Classics
+Quelle
+Quintet, Line Up, Pixsaw, and Flip-It - EU
+Quix, Quix II, Manic Mazes, Math, and Le Box - EU
+Quizzard, Antimaze, and Trail Racer - EU
+R
+R-B1
+R-Type Plus Patch by Justin Gibbins - NA
+R2
+R4 + JogCon
+RC.1
+RC.2
+RC.3
+RC.4a
+RC58
+RCB
+RCG Translation
+RCM Group
+RE
+RE-1
+RE1
+RE125
+RE2
+RE3
+RGCD - 2011
+RT-01
+RT-04
+RU
+Rabbit Software
+Racing
+Radarsoft
+Rain, Gravitoid 2350, Duck Hunt, and Space Junk - EU
+Ratalaika Games
+Re-Hashed by Jon Wells
+Recalbox
+Recalled
+Red Art Games
+Red Disc
+Red Door - EU
+Reduced Lag Patch by Nintendo 64 Wizard - NA
+Redux Patch, Rev 2, by Maroc - NA
+Redux Patch, Rev 2.2, by Maroc
+Reflect, Heavier Than Metal, Reverse, GFX, M Driver, and Fishinvaders - EU
+Reinhart Version
+Remastered
+Renkaban
+Rental
+Reprint
+Rerelease
+Retream - 2022
+Retro Achievements Version
+Retro Collection
+Retro Rewind Collection
+Retro-Bit
+Retro-Bit Generations
+RetroZone
+Retroad
+Retrosouls - 2020
+Rev 1
+Rev 1 - English Translated by Gemini, Rev 1a
+Rev 1 - English Translated by LostOkina, Rev 1.1
+Rev 1 - English Translated by Stardust Crusaders, Aishsha, Paul_met, and Others, Rev 1.4
+Rev 1, English Translated by MonstermanMFR
+Rev 1.2
+Rev 1.4
+Rev 10
+Rev 2
+Rev 2 - EU
+Rev 3
+Rev 4
+Rev 4 - EU
+Rev 4321
+Rev 5
+Rev 5C21
+Rev 6
+Rev 7
+Rev 8
+Rev A
+Rev B
+Rev C
+Rev D
+Rev E
+Rev F
+Rev H
+Reverse Entry
+Reversi, Clue Crossword, and Tank Chase - EU
+Revised
+Revision
+Ricky's Quiz Show, Underwater Adventure, and Lunar Buggy - EU
+Riff Sampler Test
+Road Blaster
+Robert A. Tokar
+Robert L Bryant
+Robot War IV
+Rocket Shuts the Hell Up Patch, Rev 420.69a, by Logan Derbin - NA
+Rockman 123
+Rod & Emu - 2017
+Rod & Emu - 2018
+Rod & Emu - 2019
+Route A
+Route B
+Route C
+Route D
+Route E
+Ru
+Rumble Version
+RunStop64 - 2022
+Russia
+Ryuu Hangan Hen
+S-F6
+S-M6
+S-P1
+S-P6
+S-R2
+SA-002 3011 PCB
+SA-016 PCB
+SAAS
+SABS
+SACS
+SADS, SAES
+SAM Fruit and SAMSnake - EU
+SAM Mines, EggBum, Surface Raider, and Hang-SAM! - EU
+SC-3000
+SC4-2 A
+SC4-3 X
+SCADS Demo MK II, Space Worm 2, Snail Race, and Hang Man - EU
+SCADS Demo, Spaceball, Bug, Space Worm, and Chemical Test - EU
+SCES-00064
+SCES-00121
+SCUS-94177
+SCUS-94224
+SCUS-94290
+SCUS-94295
+SCUS-94439
+SCUS-94470
+SCUS-94489
+SCUS-94956
+SDK 3.0
+SEGA Classic Collection
+SG Enhanced
+SGB Enhanced
+SGB Enhanced, GB Compatible
+SGROM
+SLPM-87153
+SLUS-00612
+SM4-4 E
+SN 406
+SNK 40th Anniversary Collection
+SNS-NA
+SNS-XM
+SPC009
+Sachen
+Samar Productions
+Samar Productions - 2007
+Sample
+Sample-ban
+Samsung
+Santa '96, Space Invaders, Word Search, and Squiggly - EU
+Santa Goes Psycho 2 and Xmas Blokit - EU
+Satakore
+Scandinavia
+Scene World Magazine - 2022
+Scientific Atlanta
+Scott Holder
+Screen 7
+Screen-Relative Steering
+Sea Wolf - EU
+Second Dimension
+Second Window
+Secret Characters and 60 FPS Patches by Gallaux - NA
+Sega
+Sega 3D Classics
+Sega 3D Fukkoku Akaibusu
+Sega Ages
+Sega CD
+Sega CD 32X
+Sega Channel
+Sega Classic
+Sega Game Toshokan
+Sega Gopher
+Sega Pro
+Sega Reactor
+Sega Smash Pack
+Sega Smash Pack 2
+Sega-Galaga and Monaco GP - KR
+SegaNet
+Seiken Densetsu Collection
+Seiryuu
+Seiyuu Interview Hi CD
+Sengoku Kawaraban - Digital Edition
+Service Price-ban
+Set 2
+Shadow over Mystara
+Shadows of the Past - EU
+Shallan - 2019
+Shanghai Tycoon
+Shanghai, Highway, and Bomb! - EU
+ShareData
+Shindou Edition
+Shirayuki - Ijuin - Nozaki
+Shockwave - Invasion Earth
+Shockwave - Operation Jumpgate
+Shokai Gentei Box
+Shokai Gentei Deluxe Pack
+Shokai Gentei Seisanban
+Shokai Gentei Special Box
+Shokai Gentei Special Package
+Shokai Gentei Yobikake-kun
+Shokai Genteiban
+Shokai Seisan Gentei Shiyou
+Shokai Seisan Genteiban
+Shokai Seisanban
+Shokai Suuryou Genteiban
+Shokai Tokuten Reinhart Genteiban
+Shokai Tokuten Yan Genteiban
+Shokai Tokutenban
+Shot Yousei Kouza Vol. 1
+Shot Yousei Kouza Vol. 2
+Shotenban
+Shougakusei Jidai
+Shouhin Golf Tournament US Course
+Showdown
+Side 1
+Side 2
+Sierra Online
+Simplified
+Simulation Mode
+Simultaneous 2 Player Game
+Sink the Sub, SAM Coupé Derby, Quizmaster! Question Game, Football, Go-Kart, Count, Guess the Number, and Snake - Vertical - EU
+Sintax
+Sky, G-Tennis, and Meiro Game - JP
+Slider Puzzle - EU
+Slider and Three - EU
+Sliding Puzzle - EU
+Slow Tanks
+Slow Version
+Sly Dog Studios
+Slydeeo and Computer Patience - EU
+Small Maze
+Smash
+Smash - NA, Rev 1 - Disc 4
+Smash Remix Patch, Rev 1.5, by The_Smashfather - NA
+Snake
+Snake Disc
+Snake Mania, Mr. Pac, and Bottles - EU
+Sniper Fire, Repel, and Chase & Slidy - EU
+Soccer
+Solitaire, Snake - Large Playfield, and Crossword Edition 3 - EU
+Songbird
+Sonic Classic Collection
+Sonic Compilation ~ Sonic Classics
+Sonic Mega Collection
+Sony Computer Entertainment Special
+Sony Style - No Rounding
+Sorbas - 2021
+Sos - 2014
+Soukan Junbigou Hibaihin
+Soul Magician, Patience, and Dotty - EU
+Sound Data
+Soviet
+Sovietiques
+Space General
+Space Invaders! - EU
+Space Moguls - 2019
+Spaceworld '97 Beta Experience Patch by Zel
+Spain
+Spec Tiles, Attack Raiders, Inter-Race, and Not Again! - EU
+Special
+Special CD
+Special CD-ROM
+Special Disc
+Special Edition
+Special Fishing Set
+Special Limited Pack
+Special Pack
+Special Version
+Special Version 1
+Special Version 2
+Special-ban
+Speeder and Bend Bent - JP
+Spellmaster, Parallax, and Starshot - EU
+Spike Library
+Spring
+Springy Thingy and Placer - EU
+Sprite Improvement Patch, Rev 1.1, by Poody
+Sputnik World - 2018
+Sputnik World - 2021
+Square Soft on PlayStation Previews
+Square's Preview Extra
+Standalone Game from Tokimeki Memorial - Forever with You - JP
+Standard - Dirt
+Standard - Quarry
+Standard Controller
+Star Fox - Assault
+StarStruck Compilation Patch by Ok Impala! - NA
+StarTrekker and Ultimate Warrior - EU
+Starbug and Mosaic - EU
+Starbyte - 1990
+Starshot, Mine, Fortress, EggBum, 3D Maze, Whirlpool, and Black Box - EU
+Start Hack
+Stax!, SAM the Man, Submarine, and FRED Game - EU
+Steam
+Steam, GOG
+Stocks, Maze Muncher, and Bits and Bobs - EU
+Strictly Limited Games
+Strider Hiryuu
+Strider Hiryuu 2
+Subgames
+Subor
+Subor Keyboard
+Sumaru TV Special Preview Disc
+Summer
+Sunsoft
+Suntek
+Super 308
+Super Action Controller
+Super Fighter Team
+Super Game
+Super Justice King
+Super Man
+Super Mario All-Stars - 25th Anniversary
+Super Mario Collection - 25th Anniversary
+Super Mega
+Super Mega Drive 3
+Super Rally, Super Rally 2, Change, Moonlander, 21 or Bust, Monopoly, Star Cry, Megabert, S.O.S., Pontoon, Snake, and Prince of Persia - EU
+Super Robot Wars Complete Box
+Super Tank - KR
+SuperUFO
+SuperVision
+Supercom
+Supersoft
+Suzaku
+Sv
+Sv,No
+Sv,No,Da
+Sv,No,Da,Fi
+Sv,No,Fi
+Swallower and Cribbage - EU
+Sweden
+Sweets for My Sweet and Ice Chicken - EU
+Switch
+Switch Online
+Switch, PS Vita
+Synsoft
+System-X - 2021
+T-230
+T-A1
+T-T3
+TGROM
+TJAJ
+TJBJ
+TJCJ
+TJDJ
+TJEJ
+TKROM
+TMR - 2018
+TND - 2000
+TND - 2001
+TND - 2002
+TND - 2005
+TND - 2013
+TND - 2015
+TND - 2016
+TND - 2017
+TND - 2019
+TND - 2020
+TND - 2021
+TND - 2022
+TND - 2023
+TND+Blazon - 2023
+TNT-Beyond Force - 2010
+TOBJ
+TONY-I PCB
+TRSI - 2011
+TXC
+Tag Anywhere and Features Menu Patches, Rev 5, by Isotarge - NA
+Taijing Dadong
+Taikenban
+Taikenban 1
+Taikenban 2
+Taisen Game Sen'you
+Taisen Sen'you Disc
+Taito
+Taiwan
+Tambourine Set
+Tech Demo
+Teddy Boy Blues - JP
+Tengen
+Tenpins, Meteor Runner & Vortex
+Tentou Jitsuenban
+Tentou Shiyuudai-you Disc
+Tentou-you Movie Disc
+Tentou-you Special CD-ROM
+Terror Disc
+Test Drive
+Test Drive Disc
+Test Program
+Tetris, Shanghai, and Soccer Boss - EU
+Tetris, Sim Island, and Gods - Demo - EU
+The Atom Field Game - EU
+The Bugulators, Draconis, and Frog Squad - EU
+The Cowabunga Collection
+The Dark Tower - EU
+The Disney Afternoon Collection
+The Documentation
+The Dragon
+The Edge
+The First Generation
+The Game
+The Hermitage and Corya the Warrior-Sage I - Dragon - EU
+The Legend of Zelda - Ocarina of Time leftover data
+The Lost Tomb of Ananka - EU
+The Making of
+The Mojon Twins - 2010
+The Number Puzzle, Tycoon, and Tetris - EU
+The Power House
+The Rail Game - EU
+The Retro Room
+The Rubik Cube and War Games - EU
+The Secret City of Kokos Khan, and SCADS Demo - EU
+The Taxman Cometh - EU
+The Trader Trilogy - Part 1 - Pegasus, Guess a Tune, and The Tower of Hanoi - EU
+The Valley - EU
+The Wars of the Roses and The Game of Nim - EU
+The Wyrme, Investigations, Clue Crossword, and Pontoon - EU
+TheStuffMade - 2022
+Theater
+Thunder Storm
+Thunderbolt II
+Thundervision
+Time Crisis + GunCon
+Time Gal
+Toaplan Arcade Garage
+Tokubetsuban
+Tokusei Premium Disc
+Topo Soft
+Tower of Doom
+Track 01
+Track 02
+Track 03
+Track 04
+Track 05
+Track 06
+Track 07
+Track 08
+Track 09
+Track 1
+Track 10
+Track 11
+Track 12
+Track 13
+Track 14
+Track 15
+Track 16
+Track 17
+Track 18
+Track 19
+Track 2
+Track 20
+Track 21
+Track 22
+Track 23
+Track 24
+Track 25
+Track 26
+Track 27
+Track 28
+Track 29
+Track 3
+Track 30
+Track 31
+Track 32
+Track 33
+Track 34
+Track 35
+Track 36
+Track 37
+Track 38
+Track 39
+Track 4
+Track 40
+Track 41
+Track 42
+Track 43
+Track 44
+Track 45
+Track 46
+Track 47
+Track 48
+Track 49
+Track 50
+Track 51
+Track 52
+Track 53
+Track 54
+Track 55
+Track 56
+Track 57
+Track 58
+Track 59
+Track 60
+Track 61
+Track 62
+Track 63
+Track 64
+Track 65
+Track 66
+Track 67
+Track 68
+Track 69
+Trade Demo
+Traditional
+Translated En
+Treasure Island and The Magic Isle - EU
+Treasure Island, The Ellisnore Diamond, The Dark Tower, and The Mines of Lithiad - EU
+Trial Edition
+Triltex 2, Puzzled, Maths, and Castle - EU
+Triltex and Sim Island - EU
+Triltex and The Viking Game - EU
+Tringle and StereoMove - EU
+Tsang Hai
+TsuriCon Taiouban
+Tweaks
+Twierdza
+U.F.O. - Alien Massacre, Robots, Kaboomy Game from Planet Fip, and Mines - EU
+U.S. Version
+UBI Soft
+UK
+UNROM
+UNROM 512
+UNROM-512
+UOROM
+US
+USA
+USA Wii Virtual Console, Wii U Virtual Console
+USA, Asia
+USA, Australia
+USA, Brazil
+USA, Canada
+USA, Europe
+USA, Europe, Asia
+USA, Europe, Australia
+USA, Europe, Brazil
+USA, Europe, Korea
+USA, Germany
+USA, Japan
+USA, Korea
+USA, Taiwan
+Ubi Soft
+Un CD Bonus
+Un-Worked Design Patch by Lipemco! Translations - NA
+Un-Worked Design Patch by Supper - NA
+Un-Worked Design Patch by Supper With 1-4th Encounter Rate Patch, Rev 1.1, by Insane - NA
+Un-Worked Design Patch, Rev 2, by Studio Lucia - NA
+Uncensored Patch by DarkMadman_69 - NA
+Under Fire, Battleships, SAM Tetris, Puzzle Slider, Save the Village! - EU
+United Kingdom
+Unknown
+Unl
+Unreal - 2006
+Up the Wall, Solitaire!, and Abo - EU
+V1.000
+V1.00D
+V1.1
+V1.5
+V1995
+V2
+V3
+V4.0.11
+VPick Included
+VR-Disc
+VT-3074
+VT-3121
+VT-327
+VT-482
+VT302
+VT365,NT2057
+VT5114,NT2041
+VT605
+Value 1500
+Vector5 Games - 2021
+Vector5 Games - 2022
+Verkami
+Version 1
+Version 1 Jugador
+Version 2
+Version 2 Jugadores
+Version 2 Spieler
+Version 2.0
+Version 2.00S
+Version 2.01R
+Version 2.01S
+Version 2.10
+Version 3
+Version 3.5
+Version 4
+Version 5
+Version 6
+Version 7
+Versione 2 Giocatori
+Vertical Orientation
+Very Easy Version
+Victor
+VideoGames
+Virtual Console
+Virtual Console, Classic Mini
+Virtual Console, Classic Mini, Switch Online
+Virtual Console, Switch Online
+Visual Demo
+Visualize Software - 1995
+Vivendi
+Vol. 1 - Toki no Maigo
+Vol. 2 - Inochigake no Tabi
+Vol. 3 - Watashi ni Sayonara wo
+WARNING! WILL TURN ALL COLORS BLACK!!
+WCW Saturday Night Patch, Rev 8-15-23, by GMSpectre1 - NA
+WQ2006 D
+WQ5412
+WS-0040
+WS-0362
+Waixing
+WaterWorks Extra Level, Invaders, and Squarius - EU
+WaterWorks, Flip 'n Hell, and Invaders - EU
+WaterWorks, The Bugulators, Dyzonium, Spell Master, M-C Demo, Impatience, Parallax, and Frog Squad - EU
+Waterworld, Astroball, WordSearch, Panic Attack, and Vegas - EU
+Weapons Update
+Web Version
+Werner Soft - 2022
+What's Going On
+Whirlwind Manu
+Whirlygig, Grubbing for Gold, and Connect 4 - EU
+Wii U
+Wii U Virtual Console
+Wii Virtual Console
+Wii and Wii U Virtual Console
+Wind & Fang Tu
+Wind and Fang Tu - NA - Disc 2
+Windmill and Shapes Puzzle - EU
+Wings of Destiny
+Winter
+With Bugfixes - EU
+With Question Editor - EU
+Wiz 'n' Liz - EU
+Wizardry VI - Bane of the Cosmic Forge - English Translated by Remisse, Rev 0.51
+WonderWitch
+Wop Gamma, Kreuzen, and New York Game - EU
+World
+WrestleMania X 64 Patch by GMSpectre1 - NA
+X
+X-Sights, Wabbitz, C Mines, Ants, and Sim Brick - EU
+XYZ
+Xianfeng
+Xword, Bingo, and Crashout - EU
+YOKO
+YS-612 PCB
+YUNG-08 PCB
+YY-01
+YY-030
+YY0807
+Ya Se Chuanshuo
+Yahtzee and Memory Game - EU
+Yahtzee, Super League, Tower of Hanoi, Pain Game, Horsie, and Invaders - EU
+Yahzee or Yacht and Seven Card Poker - EU
+Yancheng
+Yarudora Series Vol. 1 - Double Cast
+Yellow Disc
+Yi
+Yoko
+Yokokuban
+You
+Young Chivalry
+Ys - Ancient Ys Vanished Omen Saturn Mode - English Translated by Murzik and CrawdKenny, Rev 0.763
+Ys - The Oath of Felghana
+Ys Origin - Hugo
+Ys Origin - Yunica
+Yumie Island
+Yuugi-ban
+ZAZ
+ZBZ
+ZR006
+Zelda Collection
+Zeon Disc
+Zeppelin Games
+Zeropaige - 2019
+Zh
+Zh-Hans
+Zh-Hant
+Zhenhua
+Zig-Zag - EU
+Zoinks, Captain Cosmic, Nine Card, and Lottery - EU
+Zoo Digital
+^^; (Japan
+aa9d5fd
+aka Crazy Coaster
+aka Froggee
+aka Overlord
+aka Pengo
+aka Skate Ball
+aka Speedboat Race
+aka Tournament Snooker
+alpham2
+alpham2p
+androdun
+aodk
+aof
+aof2
+aof2a
+aof3
+aof3k
+b
+b2b
+bakatono
+bangbead
+bitbitJAM #3
+bjourney
+blazstar
+boot
+bootleg
+bootleg 1
+bootleg 2
+breakers
+breakrev
+bstars
+bstars2
+bstarsh
+bugfix
+burningf
+burningfh
+burningfp
+burningfpa
+by $olo1870
+by hellboy73
+canonical off-blacks
+cfcb276
+columnsn
+crswd2bl
+crsword
+ct2k3sa
+ct2k3sp
+cthd2003
+ctomaday
+cyberlip
+dev
+diggerma
+dk'tronics
+doubledr
+dragonsh
+e-Reader
+e-Reader Edition
+eightman
+emu
+f
+fatfursp
+fatfurspa
+fatfury1
+fatfury2
+fatfury3
+fbfrenzy
+fightfev
+fightfeva
+flipshot
+frogfest
+froman2b
+fswords
+galaxyfg
+ganryu
+garou
+ghostlop
+goalx3
+gowcaizr
+gpilots
+gpilotsh
+gururin
+hack
+hack 1
+hack 2
+iam8bit
+ironclad
+ironclado
+irrmaze
+itch.io
+janshin
+japan
+jockeygp
+jockeygpa
+joyjoy
+jwarby
+k0rn
+kabukikl
+karnovr
+kf10thep
+kf2k2mp
+kf2k2mp2
+kf2k2pla
+kf2k2pls
+kf2k3bl
+kf2k3bla
+kf2k3pl
+kf2k3upl
+kf2k5uni
+kizuna
+kof2000
+kof2000n
+kof2001
+kof2001h
+kof2002
+kof2002b
+kof2003
+kof2003h
+kof2k4se
+kof94
+kof95
+kof95a
+kof95h
+kof96
+kof96h
+kof97
+kof97h
+kof97k
+kof97oro
+kof97pls
+kof98
+kof98a
+kof98ae
+kof98h
+kof98k
+kof98ka
+kof99
+kof99e
+kof99h
+kof99k
+kof99ka
+kof99p
+kog
+kotm
+kotm2
+kotm2a
+kotm2p
+kotmh
+lans2004
+lastblad
+lastbladh
+lastbld2
+lasthope
+lasthpcd
+lastsold
+lbowling
+legendos
+lresort
+lresortp
+magdrop2
+magdrop3
+maglord
+maglordh
+mahretsu
+malcontent - 2021
+marukodq
+matrim
+matrimbl
+miexchng
+minasan
+moshougi
+ms4plus
+ms5pcb
+ms5plus
+mslug
+mslug2
+mslug2t
+mslug3
+mslug3b6
+mslug3h
+mslug4
+mslug4h
+mslug5
+mslug5h
+mslugx
+mutnat
+nam1975
+ncombat
+ncombath
+ncommand
+neobombe
+neocup98
+neodrift
+neofight
+neomrdo
+neothund
+ninjamas
+nitd
+nitdbl
+overtop
+panicbom
+pbobbl2n
+pbobblen
+pbobblenb
+pgoal
+pnyaa
+popbounc
+preisle2
+prev
+proto
+prototype
+prototype 2
+prototype. bootleg
+pspikes2
+pulstar
+pure blacks
+puzzldpr
+puzzledp
+quizdai2
+quizdais
+quizdaisk
+quizkof
+quizkofk
+r313
+ragnagrd
+rbff1
+rbff1a
+rbff1k
+rbff2
+rbff2h
+rbff2k
+rbffspec
+rbffspeck
+ridhero
+ridheroh
+roboarma
+roboarmy
+rotd
+rotdh
+s1945p
+sai
+samsh5sp
+samsh5sph
+samsh5spho
+samsho
+samsho2
+samsho2k
+samsho2ka
+samsho3
+samsho3h
+samsho4
+samsho4k
+samsho5
+samsho5b
+samsho5h
+samsho5x
+samshoh
+savagere
+sbp
+sdodgeb
+sengoku
+sengoku2
+sengoku3
+sengokuh
+set 1
+set 2
+set 3
+shocktr2
+shocktro
+shocktroa
+socbrawl
+socbrawlh
+sonicwi2
+sonicwi3
+spinmast
+ssideki
+ssideki2
+ssideki3
+ssideki4
+stakwin
+stakwin2
+strhoop
+superspy
+svc
+svcboot
+svcpcb
+svcpcba
+svcplus
+svcplusa
+svcsplus
+tetrismn
+tophuntr
+tophuntrh
+totc
+tpgolf
+trally
+turfmast
+twinspri
+tws96
+unenc
+v.01
+v0.0
+v0.00001
+v0.01
+v0.02
+v0.03
+v0.03a
+v0.04
+v0.05
+v0.06
+v0.07
+v0.08
+v0.09
+v0.1
+v0.1.2
+v0.10
+v0.10.0
+v0.10.122
+v0.11
+v0.12
+v0.13
+v0.14
+v0.15
+v0.16
+v0.161
+v0.165
+v0.17
+v0.18
+v0.19
+v0.1b
+v0.1c
+v0.2
+v0.2.1
+v0.20
+v0.21
+v0.21b
+v0.22
+v0.22-132
+v0.23
+v0.28
+v0.29
+v0.2a
+v0.3
+v0.3.1
+v0.3.2
+v0.3.4
+v0.32
+v0.35
+v0.36
+v0.38
+v0.39
+v0.396
+v0.399
+v0.3a
+v0.4
+v0.4.0
+v0.40
+v0.41
+v0.41B
+v0.41C
+v0.41D
+v0.43
+v0.44
+v0.44a
+v0.45
+v0.46
+v0.47
+v0.5
+v0.5.095
+v0.50
+v0.51
+v0.55
+v0.58
+v0.6
+v0.60
+v0.61
+v0.62
+v0.68
+v0.7
+v0.70
+v0.71
+v0.80
+v0.81
+v0.83.0
+v0.84
+v0.86
+v0.9.106
+v0.90
+v0.92.3
+v0.924B
+v0.93
+v0.93.0
+v0.950
+v0.980
+v0.99
+v0.990
+v0.99a
+v0.99b
+v0.99c
+v02
+v03
+v04
+v05
+v06
+v08
+v0B
+v1
+v1.0
+v1.0.0
+v1.0.1
+v1.0.2
+v1.0.3
+v1.0.4
+v1.0.5
+v1.0.542
+v1.0.6
+v1.00
+v1.00AI
+v1.00AU
+v1.01
+v1.02
+v1.03
+v1.04
+v1.05
+v1.06
+v1.067
+v1.07
+v1.07.3
+v1.08
+v1.08.1
+v1.1
+v1.1.0
+v1.100
+v1.15
+v1.18b
+v1.19
+v1.2
+v1.2.0
+v1.2.1
+v1.25
+v1.2b
+v1.3
+v1.3.0
+v1.30
+v1.3e
+v1.4
+v1.46
+v1.5
+v1.52
+v1.7
+v1.9
+v10.0
+v11.3
+v13
+v16
+v1F
+v2.0
+v2.0-alpha12
+v2.0-beta1
+v2.0-beta2
+v2.0-beta3
+v2.0-beta4
+v2.0-beta5
+v2.0-beta6
+v2.0-beta7
+v2.0.0
+v2.0.1
+v2.000
+v2.01
+v2.013
+v2.03
+v2.1
+v2.100
+v2.11
+v2.110
+v2.2
+v2.3
+v2.4
+v2.6
+v2.73
+v2.83
+v3
+v3.0
+v3.0.1
+v3.0.2
+v3.1
+v3.11.088
+v3.12.027
+v3.1c
+v3.2
+v3.3
+v3.5
+v3.6
+v32
+v4.0
+v4.2
+v5
+v5.0
+v5.01.033
+v5.1
+v5.2
+v5.3
+v6.0
+v6.02.001
+v6.02.002
+v6.1
+v7.0
+v7.1
+v9.0
+v9.03.128
+vA1
+viewpoin
+vliner
+vlinero
+wakuwak7
+wh1
+wh1h
+wh1ha
+wh2
+wh2j
+whp
+with 3D Control Pad
+with Color Emphasis disabled
+wjamerss
+wjammers
+www.retroPLAYER.nl
+xbox hack
+zedblade
+zintrckb
+zupapa
