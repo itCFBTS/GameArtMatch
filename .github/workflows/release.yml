@@ -39,10 +39,29 @@ jobs:
           tar -czf "GameArtMatch-${version}-linux-x64.tar.gz" -C publish/linux-x64 GameArtMatch
           (cd publish/win-x64 && zip -j "$GITHUB_WORKSPACE/GameArtMatch-${version}-win-x64.zip" GameArtMatch.exe)
 
+      # Pulls just the section for this tag out of CHANGELOG.md (matched by
+      # "## <tag>" heading) so the release body is the curated, user-facing
+      # summary — not just a raw commit list. If a tag has no matching heading
+      # (e.g. CHANGELOG.md wasn't updated before tagging), this produces an
+      # empty file and the release falls back to auto-generated notes alone,
+      # rather than failing the whole workflow.
+      - name: Extract changelog section for this version
+        run: |
+          awk -v ver="${{ github.ref_name }}" '
+            $0 ~ "^## " ver { found=1; next }
+            found && /^## / { exit }
+            found { print }
+          ' CHANGELOG.md > release_notes.md
+
       - name: Create release and upload archives
         uses: softprops/action-gh-release@v2
         with:
           files: |
             GameArtMatch-${{ github.ref_name }}-linux-x64.tar.gz
             GameArtMatch-${{ github.ref_name }}-win-x64.zip
+          body_path: release_notes.md
+          # GitHub's release API pre-pends `body`/`body_path` to the
+          # auto-generated notes when both are given, rather than choosing one
+          # or the other — so the curated summary stays on top, with the full
+          # commit list still available below for anyone who wants it.
           generate_release_notes: true
