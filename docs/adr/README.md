@@ -21,3 +21,4 @@ working code being evaluated to help make one.
 - [0003 — Weight similarity scoring by corpus token frequency (TF-IDF-style)](0003-corpus-frequency-weighted-similarity-scoring.md)
 - [0004 — Omit translation-credit tag phrases from tokenization](0004-omit-translation-credit-tags-from-tokenization.md) (queued, not started)
 - [0005 — Normalize "N-in-1" compilation-cart phrasing](0005-normalize-compilation-cart-in-1-phrasing.md) (queued, needs research pass)
+- [0006 — Parse titles into base title / series index / remainder and score field by field](0006-structured-title-parsing-base-title-series-index-remainder.md) (proposed, decided 2026-09-22, not started)
