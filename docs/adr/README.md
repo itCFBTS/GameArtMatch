@@ -22,4 +22,4 @@ working code being evaluated to help make one.
 - [0004 — Omit translation-credit tag phrases from tokenization](0004-omit-translation-credit-tags-from-tokenization.md) (absorbed by 0007)
 - [0005 — Normalize "N-in-1" compilation-cart phrasing](0005-normalize-compilation-cart-in-1-phrasing.md) (queued, needs research pass)
 - [0006 — Parse titles into base title / series index / remainder and score field by field](0006-structured-title-parsing-base-title-series-index-remainder.md) (proposed, decided 2026-09-22, not started)
-- [0007 — Tokenize tags as one category-labeled token per clause, weighted by significance](0007-tag-clause-tokens-weighted-by-significance.md) (proposed, decided 2026-09-23, not started; absorbs 0004)
+- [0007 — Tokenize tags as one category-labeled token per clause, weighted by significance](0007-tag-clause-tokens-weighted-by-significance.md) (implemented 2026-09-23; absorbs 0004)

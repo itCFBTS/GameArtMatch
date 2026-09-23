@@ -2,7 +2,7 @@
 
 ## Status
 
-Implemented on `experiment/tag-clause-tokens` (2026-09-23) and validated
+Implemented and merged to `main` (2026-09-23), validated
 against the real NES, PSX and Saturn libraries — see "Validation" below.
 NES: 18 top picks changed, 0 regressions. PSX (2,839 ROMs, multi-disc): 303
 top picks changed, 238 of them now exact 100, every one of 275 disc-tagged
