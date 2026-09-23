@@ -26,26 +26,38 @@ that happened to turn up during ADR-0003's validation.
   naturally floats to the top and the long tail of one-off, weird, or hack/translation/
   compilation-specific tags sinks to the bottom.
 
-  `category` is one of: `Region`, `Language`, `Revision` (Rev/version numbers, plus
-  "Alt" — a No-Intro/Redump "alternate dump of the same release" disambiguator, not a
-  legitimacy flag, so it lives here rather than in `Unofficial`), `Disc`, `Date`,
+  `category` is one of the following, listed in **rank order** — how much a
+  difference in a tag of that category tends to mean "different box art," most
+  decisive first (decided 2026-09-23; the order is `TagCategorizer.TagCategory`'s
+  declaration order): `Disc` (a wrong disc is a wrong file outright), `Region`,
+  `Unofficial` (unlicensed/altered distribution — Unl, Pirate, Aftermarket,
+  Reproduction, Repro — a different product, not a variant of the licensed one),
   `Preview` (pre-release/promotional, not the final retail build — Beta, Demo,
-  Proto/Prototype, Sample, Promo, Kiosk demo units), `Unofficial` (unlicensed/altered
-  distribution — Unl, Pirate, Aftermarket, Reproduction, Repro), `Platform` (hardware,
-  storefronts, distribution services, mini-console/arcade reissues — Virtual Console,
-  Switch Online, Steam, GameCube, Arcade, ...), `Label` (publisher/reissue brand
-  names — Zeppelin Games, Limited Run Games, ...),
-  `TranslationCredit`, `HackOrPatchCredit`, a **combined label** for a compound tag
-  where every comma/dash-separated clause resolved to a *known* category, just not
-  all the same one — joined with `+` in clause order rather than one opaque
-  "Compound" bucket, e.g. `"NA, Rev 2"` → `Region+Revision`, `"NA - Disc 3"` →
-  `Region+Disc` — or `NeedsReview` (at least one clause didn't match
-  anything above — the actual "a human should look at this" pile). It's a **labeling
-  pass, not a decision** — it doesn't change matching/scoring behavior and isn't
-  itself the normalization/categorization call ADR-0004/0005 still need to make; it
-  just says where to spend attention. Non-exhaustive by design (same spirit as
-  `RegionCatalog`/`TagWordCatalog`) — expect it to misclassify or under-classify
-  things the real vocabulary hasn't been checked against yet.
+  Proto/Prototype, Sample, Promo, Kiosk demo units — a different build),
+  `Revision` (Rev/version numbers, plus "Alt" — a No-Intro/Redump "alternate dump
+  of the same release" disambiguator, not a legitimacy flag, so it lives here
+  rather than in `Unofficial` — the same box nearly every time), `Platform`
+  (hardware, storefronts, distribution services, mini-console/arcade reissues —
+  Virtual Console, Switch Online, Steam, GameCube, Arcade, ...), `Label`
+  (publisher/reissue brand names — Zeppelin Games, Limited Run Games, ...),
+  `Language` (mostly already carried by `Region`), `Date`, `TranslationCredit`
+  and `HackOrPatchCredit` (never get their own art — a patch is scored against
+  the original's box). The same order also groups into four **significance**
+  levels (`TagCategorizer.TagSignificance`, each a contiguous run of the rank):
+  *Decisive* (Disc, Region), *Distinguishing* (Unofficial, Preview, Revision),
+  *Descriptive* (Platform, Label, Language, Date), *Irrelevant* (TranslationCredit,
+  HackOrPatchCredit); a **combined label** for a compound tag where every
+  comma/dash-separated clause resolved to a *known* category, just not all the
+  same one — joined with `+` in rank order (most significant first) rather than
+  one opaque "Compound" bucket, e.g. `"NA, Rev 2"` → `Region+Revision`,
+  `"NA - Disc 3"` → `Disc+Region`; or `NeedsReview` (at least one clause didn't
+  match anything above — the actual "a human should look at this" pile, outside
+  the ranking). It's a **labeling pass, not a decision** — it doesn't change
+  matching/scoring behavior and isn't itself the normalization/categorization
+  call ADR-0004/0005 still need to make; it just says where to spend attention.
+  Non-exhaustive by design (same spirit as `RegionCatalog`/`TagWordCatalog`) —
+  expect it to misclassify or under-classify things the real vocabulary hasn't
+  been checked against yet.
 
   On the real library (2026-09-17 scan): `Region`/`Preview`/`Unofficial`/`Language`/
   `Revision`/`Disc`/`Platform`/`Label`/combined labels together already cover ~90% of total

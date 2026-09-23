@@ -2,8 +2,14 @@
 
 ## Status
 
-Proposed — queued to start after ADR-0003 (corpus-frequency weighting) is
-validated and merged
+Absorbed by [ADR-0007](0007-tag-clause-tokens-weighted-by-significance.md)
+(2026-09-23): dropping translation credits is the Irrelevant-significance
+case of 0007's general per-category rule, so this is not picked up
+separately. Kept as written below for the record of how the problem was
+first found.
+
+Originally: Proposed — queued to start after ADR-0003 (corpus-frequency
+weighting) is validated and merged
 
 ## Context
 

@@ -1,11 +1,11 @@
 tag	total	roms	images
 Japan	16688	1491	15197
-USA	12142	2215	9927
+USA	12143	2216	9927
 Europe	7048	387	6661
 World	2464	1479	985
-NA	2111	2111	0
+NA	2112	2112	0
 USA, Europe	1925	40	1885
-JP	1591	1591	0
+JP	1676	1676	0
 Asia	940	708	232
 Germany	748	13	735
 France	684	16	668
@@ -14,7 +14,6 @@ EU	594	594	0
 Taiwan	365	7	358
 Spain	345	22	323
 Italy	308	2	306
-Ja	264	149	115
 Japan, USA	220	22	198
 Korea	190	26	164
 USA, Europe, Brazil	178	0	178
@@ -55,6 +54,7 @@ Portugal	5	0	5
 Greece	4	0	4
 USA, Germany	4	0	4
 Belgium	3	0	3
+FR	3	3	0
 Japan, Brazil	3	0	3
 USA, Asia	3	1	2
 USA, Japan	3	0	3
@@ -69,6 +69,7 @@ Kor	2	2	0
 japan	2	0	2
 Australia, Greece	1	0	1
 Brazil, Portugal	1	0	1
+DE	1	1	0
 Europe, Germany	1	0	1
 France, Spain	1	0	1
 India	1	0	1

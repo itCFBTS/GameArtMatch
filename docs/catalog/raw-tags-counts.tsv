@@ -1,15 +1,15 @@
 tag	category	total	roms	images
 Japan	Region	16688	1491	15197
-USA	Region	12142	2215	9927
+USA	Region	12143	2216	9927
 Europe	Region	7048	387	6661
 Unl	Unofficial	3321	2203	1118
 En	Language	2881	673	2208
 World	Region	2464	1479	985
-NA	Region	2111	2111	0
+NA	Region	2112	2112	0
 Beta	Preview	1990	277	1713
 USA, Europe	Region	1925	40	1885
 Aftermarket	Unofficial	1911	1829	82
-JP	Region	1591	1591	0
+JP	Region	1676	1676	0
 Rev 1	Revision	1486	162	1324
 Demo	Preview	1196	301	895
 Pirate	Unofficial	1196	860	336
@@ -33,7 +33,7 @@ Italy	Region	308	2	306
 J1	NeedsReview	295	295	0
 Beta 1	Preview	291	12	279
 Beta 2	Preview	291	13	278
-Ja	Region	264	149	115
+Ja	Language	264	149	115
 En,Fr,De,Es,It,Nl	Language	251	0	251
 Disc 3	Disc	236	0	236
 En,Ja	Language	220	12	208
@@ -53,7 +53,7 @@ by $olo1870	NeedsReview	140	140	0
 Beta 3	Preview	135	3	132
 Evercade	Platform	133	0	133
 En,Fr	Language	129	17	112
-En,Fr,Es	Language	119	4	115
+En,Fr,Es	Language	120	5	115
 Disc 4	Disc	117	0	117
 Prototype	Preview	116	116	0
 NA, Rev 1	Region+Revision	111	111	0
@@ -61,6 +61,7 @@ Sample	Preview	110	26	84
 Australia	Region	104	24	80
 Program	NeedsReview	103	79	24
 Russia	Region	94	51	43
+NA - FastROM Hack by Kandowontu	HackOrPatchCredit	91	91	0
 Beta 4	Preview	89	1	88
 USA, Brazil	Region	89	2	87
 1M	NeedsReview	88	0	88
@@ -72,8 +73,8 @@ Beta 5	Preview	72	0	72
 En,Fr,De,It	Language	71	2	69
 Disk 1	Disc	70	70	0
 Disk 2	Disc	70	70	0
-NA - Disc 1	Region+Disc	65	65	0
-NA - Disc 2	Region+Disc	64	64	0
+NA - Disc 1	Disc+Region	65	65	0
+NA - Disc 2	Disc+Region	64	64	0
 Beta 6	Preview	62	0	62
 Early Days Collection	NeedsReview	59	0	59
 Netherlands	Region	59	0	59
@@ -96,6 +97,7 @@ Beta 8	Preview	42	0	42
 En,Ja,Fr,De,Es,It	Language	42	0	42
 Japan, Korea	Region	42	0	42
 Namcot Collection	NeedsReview	42	21	21
+JP, Rev 1	Region+Revision	41	41	0
 EDC	NeedsReview	40	0	40
 USA, Canada	Region	40	0	40
 Beta 9	Preview	39	0	39
@@ -106,7 +108,6 @@ Mega Drive Mini, Genesis Mini	Platform	37	0	37
 Wii Virtual Console	Platform	37	6	31
 v1.2	Revision	36	30	6
 En,Fr,De,Es,It,Pt	Language	35	0	35
-JP, Rev 1	Region+Revision	35	35	0
 Mega Drive 4	NeedsReview	34	0	34
 Fr	Region	33	14	19
 Game Disc	Disc	33	0	33
@@ -153,6 +154,7 @@ GameCube	Platform	22	0	22
 Retro-Bit	NeedsReview	22	0	22
 72 pin cart	NeedsReview	21	17	4
 Capcom Town	NeedsReview	21	4	17
+NA - FastROM Hack by Kandowontu, Rev 1.1	HackOrPatchCredit	21	21	0
 NTSC	NeedsReview	21	16	5
 10M	NeedsReview	20	0	20
 Byte-Off 2019	NeedsReview	20	20	0
@@ -169,9 +171,9 @@ Denmark	Region	19	0	19
 Beta 15	Preview	18	0	18
 Contra Anniversary Collection	NeedsReview	18	4	14
 Culture Publishers	NeedsReview	18	0	18
-JP - Disc 1	Region+Disc	18	18	0
-JP - Disc 2	Region+Disc	18	18	0
-NA - Disc 3	Region+Disc	18	18	0
+JP - Disc 1	Disc+Region	18	18	0
+JP - Disc 2	Disc+Region	18	18	0
+NA - Disc 3	Disc+Region	18	18	0
 Namcot Collection, Namco Museum Archives Vol 1	NeedsReview	18	9	9
 The Cowabunga Collection	NeedsReview	18	7	11
 UK	Region	18	0	18
@@ -232,6 +234,7 @@ En,Zh	Language	12	6	6
 Finland	Region	12	0	12
 Fr,Nl	Language	12	0	12
 Idea-Tek	NeedsReview	12	10	2
+JP - FastROM Hack by Kandowontu	HackOrPatchCredit	12	12	0
 Ka Sheng	NeedsReview	12	8	4
 Konami Collector's Series	NeedsReview	12	6	6
 Mega Man Legacy Collection	NeedsReview	12	6	6
@@ -280,12 +283,12 @@ Auto Demo	NeedsReview	9	0	9
 Beta 20	Preview	9	0	9
 Character Unlock Patch by Gallaux - NA	HackOrPatchCredit	9	9	0
 Columbus Circle	NeedsReview	9	0	9
-EU - Disc 1	Region+Disc	9	9	0
-EU - Disc 2	Region+Disc	9	9	0
+EU - Disc 1	Disc+Region	9	9	0
+EU - Disc 2	Disc+Region	9	9	0
 English Translated	TranslationCredit	9	9	0
 Korean	Region	9	9	0
 Mega-CD 32X	NeedsReview	9	0	9
-NA - Disc 4	Region+Disc	9	9	0
+NA - Disc 4	Disc+Region	9	9	0
 Namco	NeedsReview	9	4	5
 Namcot Collection, Namco Museum Archives Vol 2	NeedsReview	9	5	4
 Retro-Bit Generations	NeedsReview	9	2	7
@@ -336,6 +339,7 @@ JP, Rev 2	Region+Revision	7	7	0
 Made in USA	NeedsReview	7	0	7
 Mega Soft	NeedsReview	7	7	0
 Micro Genius	NeedsReview	7	7	0
+NA, Rev 1 - FastROM Hack by Kandowontu	HackOrPatchCredit	7	7	0
 Ocean	NeedsReview	7	5	2
 Prototype - Disc 1	Disc+Preview	7	7	0
 Prototype - Disc 2	Disc+Preview	7	7	0
@@ -443,8 +447,8 @@ Limited Box	NeedsReview	5	0	5
 Lost One Disc	NeedsReview	5	0	5
 Mad Dog	NeedsReview	5	0	5
 Made in EU	NeedsReview	5	0	5
-NA, Rev 1 - Disc 1	Region+Revision+Disc	5	5	0
-NA, Rev 1 - Disc 2	Region+Revision+Disc	5	5	0
+NA, Rev 1 - Disc 1	Disc+Region+Revision	5	5	0
+NA, Rev 1 - Disc 2	Disc+Region+Revision	5	5	0
 NESDev Compo 2018	NeedsReview	5	5	0
 NESDev Compo 2022	NeedsReview	5	5	0
 Opening Disc	NeedsReview	5	0	5
@@ -523,6 +527,7 @@ HeartBeat Catalyst	NeedsReview	4	0	4
 Honkakuha de 1300	NeedsReview	4	0	4
 Hudson	NeedsReview	4	2	2
 J.Y. Company	NeedsReview	4	3	1
+JP - Color Fixes by SCD, Rev Final	NeedsReview	4	4	0
 JP, Rev B	Region+Revision	4	4	0
 Ja,Zh	Language	4	0	4
 Joukan	NeedsReview	4	0	4
@@ -617,7 +622,7 @@ Digital Version	NeedsReview	3	3	0
 Disc 6	Disc	3	0	3
 Disc C	Disc	3	0	3
 Dragon Co.	NeedsReview	3	2	1
-EU - Disc 3	Region+Disc	3	3	0
+EU - Disc 3	Disc+Region	3	3	0
 En,De,It	Language	3	0	3
 En,Es,Pt,Sv,Da	Language	3	0	3
 En,Fr,De,Da	Language	3	0	3
@@ -645,6 +650,7 @@ English Translated, Rev 1.1, by Zoinkity	TranslationCredit	3	3	0
 Evolution Disc	NeedsReview	3	0	3
 Extendo UnCut Edition	NeedsReview	3	3	0
 Extract	NeedsReview	3	0	3
+FR	Region	3	3	0
 Final	NeedsReview	3	1	2
 Firebird	NeedsReview	3	3	0
 Fukkokuban	NeedsReview	3	0	3
@@ -662,7 +668,8 @@ Houkai-hen	NeedsReview	3	0	3
 Hwang Shinwei	NeedsReview	3	2	1
 Ice Team - 2013	NeedsReview	3	3	0
 In	NeedsReview	3	0	3
-JP - Disc 3	Region+Disc	3	3	0
+JP - Disc 3	Disc+Region	3	3	0
+JP, Rev 3	Region+Revision	3	3	0
 Japan, Brazil	Region	3	0	3
 Jou	NeedsReview	3	2	1
 Kitmaker	NeedsReview	3	0	3
@@ -670,7 +677,9 @@ Kyouchou-hen	NeedsReview	3	0	3
 Le Jeu	NeedsReview	3	0	3
 MAX	NeedsReview	3	3	0
 Making Disc	NeedsReview	3	0	3
+NA - FastROM Hack by MaxwelOlinda	HackOrPatchCredit	3	3	0
 NA - Flash Removal Patch by Privateye	HackOrPatchCredit	3	3	0
+NA - Undub Patch by C&P-kyun	HackOrPatchCredit	3	3	0
 NA, Rev 3	Region+Revision	3	3	0
 NESDev 2016	NeedsReview	3	3	0
 NESDev Compo 2011	NeedsReview	3	3	0
@@ -902,8 +911,8 @@ DigiCube Best Selection	NeedsReview	2	0	2
 Digital Release	NeedsReview	2	2	0
 Disc-B	Disc	2	0	2
 Disc-F	Disc	2	0	2
-Disk 1 - JP	Region+Disc	2	2	0
-Disk 2 - JP	Region+Disc	2	2	0
+Disk 1 - JP	Disc+Region	2	2	0
+Disk 2 - JP	Disc+Region	2	2	0
 Disk 5	Disc	2	2	0
 Disk 6	Disc	2	2	0
 Disk 7	Disc	2	2	0
@@ -915,8 +924,9 @@ Dual Shock Edition	NeedsReview	2	0	2
 ECP	NeedsReview	2	2	0
 EJ-4003	NeedsReview	2	1	1
 EPROM	NeedsReview	2	1	1
-EU, Rev 1 - Disc 1	Region+Revision+Disc	2	2	0
-EU, Rev 1 - Disc 2	Region+Revision+Disc	2	2	0
+EU - NTSC Conversion by Sakitoshi, Rev 1.3	NeedsReview	2	2	0
+EU, Rev 1 - Disc 1	Disc+Region+Revision	2	2	0
+EU, Rev 1 - Disc 2	Disc+Region+Revision	2	2	0
 Easy Version	NeedsReview	2	1	1
 Easy Zapping	NeedsReview	2	0	2
 Elite	NeedsReview	2	2	0
@@ -1000,9 +1010,9 @@ J-C5	NeedsReview	2	1	1
 JP - Disc 1 - Time Gal	NeedsReview	2	2	0
 JP - Disc 2 - Ninja Hayate	NeedsReview	2	2	0
 JP - Disc 2 - Road Blaster	NeedsReview	2	2	0
-JP - Disc 4	Region+Disc	2	2	0
+JP - Disc 4	Disc+Region	2	2	0
+JP - English Translated by Cirosan With The Chilling Cut Patch by Darkanioid1997	TranslationCredit	2	1	1
 JP - Flash Removal Patch by Privateye	HackOrPatchCredit	2	2	0
-JP, Rev 3	Region+Revision	2	2	0
 JP, Rev 4	Region+Revision	2	2	0
 JP, Rev 5	Region+Revision	2	2	0
 Japan, Europe, Brazil	Region	2	0	2
@@ -1042,12 +1052,21 @@ Meinu Quan	NeedsReview	2	1	1
 Menu	NeedsReview	2	0	2
 Midway Classics	NeedsReview	2	0	2
 Mr Micro	NeedsReview	2	2	0
+NA - Content Restoration Patch by RealGaea, Rev 1.2 3b - Arcade Remix Version	HackOrPatchCredit	2	2	0
+NA - Content Restoration Patch by SCD, Rev Final	HackOrPatchCredit	2	2	0
 NA - Disc 1 - Allies	NeedsReview	2	2	0
 NA - Disc 1 - GDI	NeedsReview	2	2	0
+NA - Disc 1 - Un-Working Designs Patch by Supper	HackOrPatchCredit	2	2	0
 NA - Disc 2 - NOD	NeedsReview	2	2	0
 NA - Disc 2 - Soviet	NeedsReview	2	2	0
-NA, Rev 1 - Disc 3	Region+Revision+Disc	2	2	0
-NA, Rev 1 - Disc 4	Region+Revision+Disc	2	2	0
+NA - Disc 2 - Un-Working Designs Patch by Supper	HackOrPatchCredit	2	2	0
+NA - FastROM Hack by Kandowontu, Rev 1.2	HackOrPatchCredit	2	2	0
+NA - Japanese Features Restoration Patch by SCD, Rev Final	HackOrPatchCredit	2	2	0
+NA - Project Pro Skater Volume 4 Patch by Casey Mongillo	HackOrPatchCredit	2	2	0
+NA - Secret Characters Unlocked Patch by Docrow	HackOrPatchCredit	2	2	0
+NA - Undub Patch by Swosho	HackOrPatchCredit	2	2	0
+NA, Rev 1 - Disc 3	Disc+Region+Revision	2	2	0
+NA, Rev 1 - Disc 4	Disc+Region+Revision	2	2	0
 NES-N7	NeedsReview	2	1	1
 NESDev 2011	NeedsReview	2	2	0
 NESDev 2014	NeedsReview	2	2	0
@@ -2098,6 +2117,7 @@ Accolade	NeedsReview	1	0	1
 Action 53	NeedsReview	1	1	0
 Add-on	NeedsReview	1	0	1
 Addition	NeedsReview	1	0	1
+Additions by Eskayelle, Rev 1.28.1.1 With the Mattrizzle Player Engine - 2K22 Version	NeedsReview	1	1	0
 Adventure Kid, Power Block, Twin Mouse, and Cave Dude - AU	NeedsReview	1	1	0
 Adventurer and Code Cracker - EU	NeedsReview	1	1	0
 Akai - Ichimonji - Yae	NeedsReview	1	0	1
@@ -2244,6 +2264,7 @@ CSAW CTF 2015	NeedsReview	1	1	0
 CTC-15	NeedsReview	1	1	0
 CTC-31	NeedsReview	1	1	0
 Calpis Water Version	NeedsReview	1	0	1
+Camera & FastROM hack by MaxwelOlinda v1.0	HackOrPatchCredit	1	1	0
 Camera Control Patch by AnimaC13 - NA, Rev 2	HackOrPatchCredit	1	1	0
 Car-Relative Steering	NeedsReview	1	0	1
 Carleton Handley - 2021	NeedsReview	1	1	0
@@ -2301,6 +2322,7 @@ D-N3	NeedsReview	1	1	0
 D-T2	NeedsReview	1	1	0
 D42	NeedsReview	1	1	0
 DA1AC0DB	NeedsReview	1	0	1
+DE	Region	1	1	0
 DEFCON 26 Indie Badge	NeedsReview	1	1	0
 DERF, Invaders, Xs & Os, and Tron - EU	NeedsReview	1	1	0
 DFJN5015ZAZ	NeedsReview	1	0	1
@@ -2351,6 +2373,7 @@ Disc 1 - English Translated by In the Rose Garden, Rev 1.04	TranslationCredit	1	
 Disc 1 - English Translated by John Osborne, Rev 2 - Subbed Version	TranslationCredit	1	1	0
 Disc 1 - English Translated by JunkerHQ	TranslationCredit	1	1	0
 Disc 1 - English Translated by JunkerHQ, Rev 1.0.1	TranslationCredit	1	1	0
+Disc 1 - English Translated by Load Word Team, Rev 1.1	TranslationCredit	1	1	0
 Disc 1 - English Translated by NoOneee	TranslationCredit	1	1	0
 Disc 1 - English Translated by Orihara Saki - Beta	TranslationCredit	1	1	0
 Disc 1 - English Translated by Sakura Wars Translation Project, Rev 1.1	TranslationCredit	1	1	0
@@ -2370,6 +2393,7 @@ Disc 2 - English Translated by In the Rose Garden, Rev 1.04	TranslationCredit	1	
 Disc 2 - English Translated by John Osborne, Rev 2 - Subbed Version	TranslationCredit	1	1	0
 Disc 2 - English Translated by JunkerHQ	TranslationCredit	1	1	0
 Disc 2 - English Translated by JunkerHQ, Rev 1.0.1	TranslationCredit	1	1	0
+Disc 2 - English Translated by Load Word Team, Rev 1.1	TranslationCredit	1	1	0
 Disc 2 - English Translated by NoOneee	TranslationCredit	1	1	0
 Disc 2 - English Translated by Orihara Saki - Beta	TranslationCredit	1	1	0
 Disc 2 - English Translated by Sakura Wars Translation Project, Rev 1.1	TranslationCredit	1	1	0
@@ -2392,13 +2416,13 @@ Disc 7 - English Translated by Delta-Islands Team, Rev 1.5 Final	TranslationCred
 Disc 8	Disc	1	0	1
 Disc 8 - English Translated by Delta-Islands Team, Rev 1.5 Final	TranslationCredit	1	1	0
 Disk 1 - Bishoujo Connection - JP	NeedsReview	1	1	0
-Disk 1 - EU	Region+Disc	1	1	0
+Disk 1 - EU	Disc+Region	1	1	0
 Disk 1 - Mahjong Game Hontai - JP	NeedsReview	1	1	0
 Disk 1 - Tokimeki Gals - JP	NeedsReview	1	1	0
 Disk 1 - Yonin no Tenshi Tachi - JP	NeedsReview	1	1	0
 Disk 2 - Dai H Taikai - JP	NeedsReview	1	1	0
 Disk 2 - Daitan H na Hirusagari - JP	NeedsReview	1	1	0
-Disk 2 - EU	Region+Disc	1	1	0
+Disk 2 - EU	Disc+Region	1	1	0
 Disk 2 - Tottemo H na Gogo - JP	NeedsReview	1	1	0
 Disk 2 - Yonin to Dai H Taikai - JP	NeedsReview	1	1	0
 Disk 8	Disc	1	1	0
@@ -2435,15 +2459,23 @@ EGS	NeedsReview	1	0	1
 EU - 4-in-1 Hack Patch by Meduza Team, Rev 1.5	HackOrPatchCredit	1	1	0
 EU - 4-in-1 Hack Patch by Meduza Team, Rev 1.5 - NDS Style Version	HackOrPatchCredit	1	1	0
 EU - 60Hz Hack Patch by NoelleAmelie, Rev 1.0a	HackOrPatchCredit	1	1	0
+EU - 60Hz Selector Patch by Paradox	HackOrPatchCredit	1	1	0
+EU - 60Hz Selector Patch by Static, Rev 1.01	HackOrPatchCredit	1	1	0
 EU - Disc 1 - Magical Drop III	NeedsReview	1	1	0
 EU - Disc 1 - Wings of Destiny	NeedsReview	1	1	0
 EU - Disc 2 - Chronicles of Arthur	NeedsReview	1	1	0
 EU - Disc 2 - Magical Drop Plus 1	NeedsReview	1	1	0
 EU - Disc 3 - The First Generation	NeedsReview	1	1	0
-EU - Disc 4	Region+Disc	1	1	0
+EU - Disc 4	Disc+Region	1	1	0
 EU - Disc 4 - Blazing Guns	NeedsReview	1	1	0
+EU - FastROM Hack by Kandowontu, Rev 1.4	HackOrPatchCredit	1	1	0
 EU - Flash Removal Patch by Privateye	HackOrPatchCredit	1	1	0
+EU - NTSC Conversion With Japanese Opening and Ending Patch by Sakitoshi	HackOrPatchCredit	1	1	0
+EU - NTSC Conversion by Markisha64	NeedsReview	1	1	0
+EU - NTSC Conversion by MyloWhylo	NeedsReview	1	1	0
+EU - NTSC Conversion by Sakitoshi	NeedsReview	1	1	0
 EU - Power Source Demo Disc	NeedsReview	1	1	0
+EU - Undub Patch by Swosho, Rev 1.1	HackOrPatchCredit	1	1	0
 Easier	NeedsReview	1	1	0
 Easy	NeedsReview	1	1	0
 EayFlash	NeedsReview	1	1	0
@@ -2514,14 +2546,30 @@ Endurance Course	NeedsReview	1	1	0
 Endurion - 2015	NeedsReview	1	1	0
 Endurion - 2018	NeedsReview	1	1	0
 Engagement Edition	NeedsReview	1	1	0
+English Retranslated and Content Restoration by Krokodyl	TranslationCredit	1	1	0
+English Retranslated and Content Restoration by The SAP Team - Reborn Version, Rev 2	TranslationCredit	1	1	0
+English Retranslated by CoolCatBomberMan, Rev 2 With FastROM Hack by Kandowontu, Rev 1.1	TranslationCredit	1	1	0
+English Retranslated by Rodimus Primal, Rev 1.99 - Namingway Edition	TranslationCredit	1	1	0
+English Retranslated by Rodimus Primal, Rev 3.06 With Bug Fixes, Updated Opera, and Add-Ons - Woolsey Uncensored Edition	TranslationCredit	1	1	0
+English Retranslated by Thirteen 1355, Rev 1.5	TranslationCredit	1	1	0
+English Retranslated by Watercrown Productions, Rev 1.2b With Original Title Screen Music	TranslationCredit	1	1	0
+English Retranslated from GBA Version by J121, Rev 1.16 With Bugfixes and Ginger Battle Galuf Patch, With FastROM Hack by Kandowontu	TranslationCredit	1	1	0
+English Retranslation and Content Restoration by CF, Rev 1.1	TranslationCredit	1	1	0
+English Retranslation and Fixes by Sarah Shinespark, Rev 3 - Seal of Rimsala Version	TranslationCredit	1	1	0
 English Translated With Arabic Numerals by Psyklax	TranslationCredit	1	1	0
 English Translated With Corrected Ending by BlackPaladin	TranslationCredit	1	1	0
 English Translated With Honorifics Patch, Rev 1.1, by Lipemco! Translations	TranslationCredit	1	1	0
 English Translated With PSP Audio Patch, Rev 1.01, by Shortfilms.tk and Burnt Lasagna	TranslationCredit	1	1	0
+English Translated and Content Restoration by Backlog Odyssey, Rev 2	TranslationCredit	1	1	0
+English Translated and Content Restored by FlashPV With FastROM Hack by Kandowontu	TranslationCredit	1	1	0
+English Translated and Uncensored Patch by Darkmoon2321, Rev 1.1	TranslationCredit	1	1	0
 English Translated by Acediez	TranslationCredit	1	1	0
 English Translated by Acediez, Rev 1.3	TranslationCredit	1	1	0
 English Translated by Adventurous Translations, Rev 0.96	TranslationCredit	1	1	0
+English Translated by Aeon Genesis With Epyon Unlocked Patch by CF, Rev 1.1	TranslationCredit	1	1	0
+English Translated by Aeon Genesis With FastROM Hack by Kandowontu, Rev 1.1	TranslationCredit	1	1	0
 English Translated by Aeon Genesis, Rev 0.95b	TranslationCredit	1	1	0
+English Translated by Aeon Genesis, Rev 1.01 With Deluxe Version Patch by BobSchneeder45, Rev 2	TranslationCredit	1	1	0
 English Translated by Aethin, Rev 1.04	TranslationCredit	1	1	0
 English Translated by Aishsha	TranslationCredit	1	1	0
 English Translated by Aishsha, Paul_met, and Pennywise, Rev 1.0.1	TranslationCredit	1	1	0
@@ -2530,6 +2578,8 @@ English Translated by Aishsha, Rev 1.1b	TranslationCredit	1	1	0
 English Translated by AlanMidas Cant.hack With Fixes by Jordiway73, Rev 1.1	TranslationCredit	1	1	0
 English Translated by Alex Kid, Darkfalzx, and Simon Fang, Rev 2022-01-20b	TranslationCredit	1	1	0
 English Translated by Arcraith, Rev 1.1	TranslationCredit	1	1	0
+English Translated by Asiwish, Rev 1.2 With FastROM Hack by Kandowontu	TranslationCredit	1	1	0
+English Translated by BST, Rev 2.08 With Grind-Be-Gone and Swiss Manicure Patches	TranslationCredit	1	1	0
 English Translated by Bankbank	TranslationCredit	1	1	0
 English Translated by Ben128	TranslationCredit	1	1	0
 English Translated by Bulk Slash English Localization Team, Rev 1.001	TranslationCredit	1	1	0
@@ -2539,9 +2589,11 @@ English Translated by Campanella999	TranslationCredit	1	1	0
 English Translated by Cargodin, EsperKnight, Gwendolyn, and PSXCraver	TranslationCredit	1	1	0
 English Translated by Cargodin, Rev 1.3	TranslationCredit	1	1	0
 English Translated by Chapu, Miniomegaking, PSXCraver, and Vervalkon	TranslationCredit	1	1	0
+English Translated by Chris Covell With Alt Font and Controls Patch by KingMike's Translations	TranslationCredit	1	1	0
 English Translated by Chris M. Covell	TranslationCredit	1	1	0
 English Translated by ChristopheF, Rev 2	TranslationCredit	1	1	0
 English Translated by Cirosan	TranslationCredit	1	1	0
+English Translated by DDSTranslation	TranslationCredit	1	1	0
 English Translated by Dave Shadoff	TranslationCredit	1	1	0
 English Translated by Dave Shadoff and Diogo Ribeiro	TranslationCredit	1	1	0
 English Translated by Dave Shadoff, Filler, and Diogo Ribeiro	TranslationCredit	1	1	0
@@ -2574,6 +2626,7 @@ English Translated by Gungriffon II Localization Team, Rev 0.97.5	TranslationCre
 English Translated by Hemulen	TranslationCredit	1	1	0
 English Translated by Hilltop, Cargodin, Blametherobots, Gwendolyn, and SnowyAria, Rev 1.1	TranslationCredit	1	1	0
 English Translated by Infinite Lupine Translations With Addendum by R4dius, Rev 1.01b	TranslationCredit	1	1	0
+English Translated by Infinite Lupine Translations With Addendum by R4dius, Rev 1.01b and Text Improvement Patch by VincentNL	TranslationCredit	1	1	0
 English Translated by Infinite Lupine Translations, Rev 1.01	TranslationCredit	1	1	0
 English Translated by Jink640	TranslationCredit	1	1	0
 English Translated by John Osborne, Rev 1.1	TranslationCredit	1	1	0
@@ -2592,6 +2645,7 @@ English Translated by Matizhill	TranslationCredit	1	1	0
 English Translated by Meduza Team, Rev 1.04a	TranslationCredit	1	1	0
 English Translated by Mentil	TranslationCredit	1	1	0
 English Translated by Mr.Nobody, Arcanearia, and NintendoComplete, Rev 1.1	TranslationCredit	1	1	0
+English Translated by NLeseul, Rev 0.9b	TranslationCredit	1	1	0
 English Translated by Nanashi, Rev 0.9	TranslationCredit	1	1	0
 English Translated by Necrosaro	TranslationCredit	1	1	0
 English Translated by Nick, Paul, and Akimaru	TranslationCredit	1	1	0
@@ -2657,6 +2711,7 @@ English Translated, Rev 1.01, by Onionzoo and Cabbage	TranslationCredit	1	1	0
 English Translated, Rev 1.01, by Ozidual	TranslationCredit	1	1	0
 English Translated, Rev 1.01, by Zoinkity	TranslationCredit	1	1	0
 English Translated, Rev 1.02, by Ozidual	TranslationCredit	1	1	0
+English Translated, Rev 1.1	TranslationCredit	1	1	0
 English Translated, Rev 1.1, by Filler and Cabbage	TranslationCredit	1	1	0
 English Translated, Rev 1.1, by Jordiway73	TranslationCredit	1	1	0
 English Translated, Rev 1.1, by MooZ and Shubibiman	TranslationCredit	1	1	0
@@ -2742,6 +2797,7 @@ FS305	NeedsReview	1	1	0
 FS308	NeedsReview	1	1	0
 Famitsuu Version	NeedsReview	1	0	1
 Fast Version	NeedsReview	1	1	0
+FastROM Hack by Wiiq and Conn, Rev 20160429	HackOrPatchCredit	1	1	0
 Faster Walking Speed Patch by Diogo Ribeiro - NA	HackOrPatchCredit	1	1	0
 Fears Behind	NeedsReview	1	0	1
 Field Hunter	NeedsReview	1	0	1
@@ -2870,9 +2926,13 @@ JP - 4MB Hack Patch by YZB, Rev 2020-05-31	HackOrPatchCredit	1	1	0
 JP - 4MB Hack Patch by YZB, Rev 2020-06-07	HackOrPatchCredit	1	1	0
 JP - 4MB Hack Patch by YZB, Rev 2020-08-24	HackOrPatchCredit	1	1	0
 JP - 4MB Hack Patch by YZB, Rev 2022-08-01	HackOrPatchCredit	1	1	0
-JP - Disc 1 - Arcade	Region+Disc+Platform	1	1	0
-JP - Disc 1 - Disc-B	Region+Disc	1	1	0
-JP - Disc 1 - Disc-F	Region+Disc	1	1	0
+JP - All Heroes Patch by Shadow501, Rev 1.2	HackOrPatchCredit	1	1	0
+JP - Disc 1 - Arcade	Disc+Region+Platform	1	1	0
+JP - Disc 1 - Disc-B	Disc+Region	1	1	0
+JP - Disc 1 - Disc-F	Disc+Region	1	1	0
+JP - Disc 1 - English Dubbed by John Osborne, Rev 2	NeedsReview	1	1	0
+JP - Disc 1 - English Translated by John Osborne With Cross MOD Patch by the Weekdays in Forsena Group, Rev 7.1	TranslationCredit	1	1	0
+JP - Disc 1 - English Translated by KBLO, Rev 20251010 - Dubbed Version	TranslationCredit	1	1	0
 JP - Disc 1 - Ichigo	NeedsReview	1	1	0
 JP - Disc 1 - Kamen Rider	NeedsReview	1	1	0
 JP - Disc 1 - Langrisser IV - English Translated by Kil, Rev 1.3	TranslationCredit	1	1	0
@@ -2881,6 +2941,8 @@ JP - Disc 1 - Thunder Storm LX-3	NeedsReview	1	1	0
 JP - Disc 1 - Vol. 1 - Toki no Maigo	NeedsReview	1	1	0
 JP - Disc 2 - Addition	NeedsReview	1	1	0
 JP - Disc 2 - Append	NeedsReview	1	1	0
+JP - Disc 2 - English Dubbed by John Osborne, Rev 2	NeedsReview	1	1	0
+JP - Disc 2 - English Translated by John Osborne With Cross MOD Patch by the Weekdays in Forsena Group, Rev 7.1	TranslationCredit	1	1	0
 JP - Disc 2 - Gallop	NeedsReview	1	1	0
 JP - Disc 2 - Momo	NeedsReview	1	1	0
 JP - Disc 2 - Omake Disc	NeedsReview	1	1	0
@@ -2892,7 +2954,9 @@ JP - Disc 2 - Vol. 2 - Inochigake no Tabi	NeedsReview	1	1	0
 JP - Disc 3 - Vol. 3 - Watashi ni Sayonara wo	NeedsReview	1	1	0
 JP - English Translated by Bulk Slash English Localization Team, Rev 1.001 - Dubbed Version	TranslationCredit	1	1	0
 JP - English Translated by Exxistance - Dubbed Version	TranslationCredit	1	1	0
+JP - English Translated by Gemini, Throughhim413, and Tom, Rev 1.2	TranslationCredit	1	1	0
 JP - English Translated by Hemulen	TranslationCredit	1	1	0
+JP - English Translated by Hilltop, Rev 1.1 - Classic Arale Version	TranslationCredit	1	1	0
 JP - English Translated by KoolFiller, Rev 2025-06-14 - Dubbed Version	TranslationCredit	1	1	0
 JP - English Translated by Malenko, Rev 2024.02.04-01 - Revised Version	TranslationCredit	1	1	0
 JP - English Translated by Meduza Team, Rev 1.1 - Ultimate Fork PSX Script Version	TranslationCredit	1	1	0
@@ -2900,11 +2964,17 @@ JP - English Translated by Meduza Team, Rev 1.1 - Ultimate PSP Script Version	Tr
 JP - English Translated by Mentil With EX Patch by Paul_met	TranslationCredit	1	1	0
 JP - English Translated by Shining Force III Translation Project, Rev 25.1	TranslationCredit	1	1	0
 JP - Eurobeat Mix Patch by Mr357	HackOrPatchCredit	1	1	0
+JP - FastROM Hack by Bankbank, Rev 1.04	HackOrPatchCredit	1	1	0
+JP - FastROM Hack by Kandowontu, Rev 1.2	HackOrPatchCredit	1	1	0
+JP - FastROM Hack by Kandowontu, Rev 1.21	HackOrPatchCredit	1	1	0
 JP - Hybrid Version	NeedsReview	1	1	0
 JP - Kisekae Disc Kanzenban	NeedsReview	1	1	0
 JP - Limit Over Hack by CafeBreak Project, Rev 2.1 - English Translated by Ms. Tea	TranslationCredit	1	1	0
+JP - MZD Mod Patch by BoubouV12, Rev 25-01-2025	HackOrPatchCredit	1	1	0
 JP - Quality of Life Improvements Patch by Privateye	HackOrPatchCredit	1	1	0
+JP - SRAM, Scroll Speed, and Stereo Patches by Blizzz, Rev 1b	NeedsReview	1	1	0
 JP - Wizardry VI - Bane of the Cosmic Forge - English Translated by Remisse, Rev 0.51 - Enhanced Version	TranslationCredit	1	1	0
+JP, Rev 1 - FastROM Hack by Kandowontu	HackOrPatchCredit	1	1	0
 JP, Rev B - Quality of Life Improvements Patch by Privateye	HackOrPatchCredit	1	1	0
 JP, Rev C	Region+Revision	1	1	0
 JR Nishi-Nihon Presents	NeedsReview	1	0	1
@@ -3173,23 +3243,141 @@ Music v1	NeedsReview	1	1	0
 Music v2	NeedsReview	1	1	0
 Myth Struggle	NeedsReview	1	1	0
 N-32	NeedsReview	1	1	0
+NA - 2.1 Improvements Patch by Lupus Erectus	HackOrPatchCredit	1	1	0
+NA - Additional Features and Improvements Patch by Manoel Messias, Rev PB4 - Plus Version	HackOrPatchCredit	1	1	0
+NA - All Characters Unlocked Patch by Golden Leon	HackOrPatchCredit	1	1	0
+NA - Annoyance Removals Patch by Trisma, Rev 1.1	HackOrPatchCredit	1	1	0
 NA - Audio Improvements Patch by Riggles, Rev 2	HackOrPatchCredit	1	1	0
-NA - Disc 0	Region+Disc	1	1	0
-NA - Disc 1 - Arcade Disc	Region+Disc+Platform	1	1	0
+NA - Bugfix Patch by John Osborne, Rev 5	HackOrPatchCredit	1	1	0
+NA - Bugfixes by SCD, Rev Final	NeedsReview	1	1	0
+NA - Bugfixes by Upsilandre	NeedsReview	1	1	0
+NA - Camera Fix Patch by Cyneprepou4uk, Rev 001	HackOrPatchCredit	1	1	0
+NA - Centipede Color Fix by 125scratch	NeedsReview	1	1	0
+NA - Color Fixes by Dex909, Rev 1.1	NeedsReview	1	1	0
+NA - Color Fixes by Mister Man, Rev 1.1	NeedsReview	1	1	0
+NA - Combined Disc Patch by Silent	HackOrPatchCredit	1	1	0
+NA - Complete Edition Patch by Hypercycle, Rev 3a	HackOrPatchCredit	1	1	0
+NA - Content Restoration Patch by SCD, Rev Final - Victory Drink Plus! Version	HackOrPatchCredit	1	1	0
+NA - Content Restoration Patch by SCD, Rev Final With FastROM Hack by Kandowontu	HackOrPatchCredit	1	1	0
+NA - Content Restoration and Bugfixes by Artemis, Rev 7 - Frue Lufia Version	NeedsReview	1	1	0
+NA - Content Restoration and Color Fix Patch by RealGaea, Rev 1.2 - Arcade Edition Version	HackOrPatchCredit	1	1	0
+NA - Disc 0	Disc+Region	1	1	0
+NA - Disc 1 - Arcade Disc	Disc+Region+Platform	1	1	0
+NA - Disc 1 - Font Hack Patch by GreenGoblin	HackOrPatchCredit	1	1	0
+NA - Disc 1 - Perfect Works Build, Rev 0.10.1 With All Patches, 1.5x EXP, Story Mode, and Script Changes	NeedsReview	1	1	0
+NA - Disc 1 - Retranslation Patch by VoidWaveCEO, Rev 1.1 With Undub Patch and Bugfixes by Swosho, Rev 1.1	TranslationCredit	1	1	0
 NA - Disc 1 - Shockwave - Invasion Earth	NeedsReview	1	1	0
+NA - Disc 1 - True Analogs Patch by VanLaser, Rev 1.52	HackOrPatchCredit	1	1	0
+NA - Disc 1 - True Analogs Patch by VanLaser, Rev 1.52 With Undub Patch by Swosho, Rev 1.1b	HackOrPatchCredit	1	1	0
+NA - Disc 1 - Undub Patch	HackOrPatchCredit	1	1	0
+NA - Disc 1 - Undub Patch by Etsuna, Rev 2	HackOrPatchCredit	1	1	0
+NA - Disc 1 - Undub Patch by Mugi	HackOrPatchCredit	1	1	0
+NA - Disc 1 - Undub Patch by NKS	HackOrPatchCredit	1	1	0
+NA - Disc 1 - Undub Patch by RyleFury, Rev 1.01	HackOrPatchCredit	1	1	0
 NA - Disc 2 - Evolution Disc	NeedsReview	1	1	0
+NA - Disc 2 - Font Hack Patch by GreenGoblin	HackOrPatchCredit	1	1	0
+NA - Disc 2 - Perfect Works Build, Rev 0.10.1 With All Patches, 1.5x EXP, Story Mode, and Script Changes	NeedsReview	1	1	0
+NA - Disc 2 - Retranslation Patch by VoidWaveCEO, Rev 1.1 With Undub Patch and Bugfixes by Swosho, Rev 1.1	TranslationCredit	1	1	0
 NA - Disc 2 - Shockwave - Operation Jumpgate	NeedsReview	1	1	0
+NA - Disc 2 - True Analogs Patch by VanLaser, Rev 1.52	HackOrPatchCredit	1	1	0
+NA - Disc 2 - True Analogs Patch by VanLaser, Rev 1.52 With Undub Patch by Swosho, Rev 1.1b	HackOrPatchCredit	1	1	0
 NA - Disc 2 - Turbo Mode Disc	NeedsReview	1	1	0
-NA - Disc 5	Region+Disc	1	1	0
-NA - Disc A	Region+Disc	1	1	0
-NA - Disc B	Region+Disc	1	1	0
+NA - Disc 2 - Undub Patch	HackOrPatchCredit	1	1	0
+NA - Disc 2 - Undub Patch by Etsuna, Rev 2	HackOrPatchCredit	1	1	0
+NA - Disc 2 - Undub Patch by Mugi	HackOrPatchCredit	1	1	0
+NA - Disc 2 - Undub Patch by NKS	HackOrPatchCredit	1	1	0
+NA - Disc 2 - Undub Patch by RyleFury, Rev 1.01	HackOrPatchCredit	1	1	0
+NA - Disc 3 - Retranslation Patch by VoidWaveCEO, Rev 1.1 With Undub Patch and Bugfixes by Swosho, Rev 1.1	TranslationCredit	1	1	0
+NA - Disc 3 - Un-Working Designs Patch by Supper	HackOrPatchCredit	1	1	0
+NA - Disc 4 - Retranslation Patch by VoidWaveCEO, Rev 1.1 With Undub Patch and Bugfixes by Swosho, Rev 1.1	TranslationCredit	1	1	0
+NA - Disc 5	Disc+Region	1	1	0
+NA - Disc A	Disc+Region	1	1	0
+NA - Disc B	Disc+Region	1	1	0
+NA - Easier Difficulty With Magic Fix Patch by Shatai	HackOrPatchCredit	1	1	0
+NA - Epic Turismo Patch by Epic, Inc., Rev 1.4	HackOrPatchCredit	1	1	0
+NA - Eyedol Unlocked Patch by NinjAkira - Deluxe Version	HackOrPatchCredit	1	1	0
+NA - F-Zero Final Patch by Grego, Rev 0.2	HackOrPatchCredit	1	1	0
+NA - FastROM Hack by Bankbank	HackOrPatchCredit	1	1	0
+NA - FastROM Hack by Kandowontu, Rev 1.01	HackOrPatchCredit	1	1	0
+NA - FastROM Hack by Kandowontu, Rev 2.1	HackOrPatchCredit	1	1	0
+NA - FastROM Hack by Kandowontu, Rev 4	HackOrPatchCredit	1	1	0
+NA - FastROM Hack by Master Linkuei	HackOrPatchCredit	1	1	0
+NA - FastROM Hack by Patrick Mollohan, Rev 1.1	HackOrPatchCredit	1	1	0
+NA - FastROM Hack by Vitor Vilela	HackOrPatchCredit	1	1	0
+NA - FastROM Hack by Vitor Vilela, Rev 1.4	HackOrPatchCredit	1	1	0
+NA - FastROM and SuperFX2 Hack by Catador, Kandowontu, and LivelyZephyrs, Rev 1.2	HackOrPatchCredit	1	1	0
 NA - Fix Patch by Authorfafling, Rev 0.3	HackOrPatchCredit	1	1	0
+NA - Graphical Overhaul by Gagarin, Rev 1.1 - Lennus Revival Version	NeedsReview	1	1	0
+NA - Improvement Project Patch by Dark Hunter, Rev 0.1.1 With Addendum by Acediez, Rev 2.1.4	HackOrPatchCredit	1	1	0
+NA - Inspired Patch by Inspired Wrestling, Rev 1.3	HackOrPatchCredit	1	1	0
+NA - Level 6-1 Bugfix by Sluffy, Rev 20181102	NeedsReview	1	1	0
+NA - Light Gun Support Patch by Raziel I.C.H.I. Znot	HackOrPatchCredit	1	1	0
+NA - Master Edition Patch by Team GEC, Rev B4	HackOrPatchCredit	1	1	0
+NA - Minor Improvements Patch by SCD	HackOrPatchCredit	1	1	0
+NA - Mouse Support Patch by Rainwarrior	HackOrPatchCredit	1	1	0
+NA - Movement Mod Patch by i_hate_drm With FastROM Hack by Kandowontu, Rev 1.01	HackOrPatchCredit	1	1	0
+NA - Multi-Hack Patch by Maeson, Rev 1.09a	HackOrPatchCredit	1	1	0
+NA - Music Restoration Patch by Alma Elma	HackOrPatchCredit	1	1	0
+NA - NBA Jam '22 Patch by Ponlork, Rev 1.4	HackOrPatchCredit	1	1	0
+NA - New Controls Patch by Mr2, Rev 0.4	HackOrPatchCredit	1	1	0
+NA - Optimized Patch by MaxwelOlinda, Rev 1.1	HackOrPatchCredit	1	1	0
+NA - PSP Improvements Patch by Acediez, Rev 1.1	HackOrPatchCredit	1	1	0
+NA - Prime Edition Patch by Wakkoswami, Rev 6.1	HackOrPatchCredit	1	1	0
+NA - Project A-Spec Patch by Komputerm Rev 1.2.1	HackOrPatchCredit	1	1	0
 NA - QoL Patch, Rev 1.1 With Music Pitch Fix by Paul_met	HackOrPatchCredit	1	1	0
 NA - Quality of Life Improvements Patch by Privateye	HackOrPatchCredit	1	1	0
 NA - Quality of Life Improvements Patch by Privateye, Rev 1.1	HackOrPatchCredit	1	1	0
+NA - Re-Dub Patch by Casey Mongillo, Kira Buckland, Eddie Correa Jr., and Others	HackOrPatchCredit	1	1	0
+NA - Red Blood Patch by DarkSamus993	HackOrPatchCredit	1	1	0
+NA - Red Blood Patch by Ortew	HackOrPatchCredit	1	1	0
+NA - Red Blood Patch by Takashi	HackOrPatchCredit	1	1	0
+NA - Reforged Patch by Mziab, FlamePurge, SeiichiroMine, and Kevan33, Rev 1.01	HackOrPatchCredit	1	1	0
+NA - Restored Content and Additions by Lucas Dext5r, Rev 2.3 - Deluxe Version	NeedsReview	1	1	0
+NA - Restored Progression Patch by CrazyMLC	HackOrPatchCredit	1	1	0
+NA - Retranslation and Undub Patch by Eiowlta	TranslationCredit	1	1	0
+NA - Retranslation and Undub Patch by FlamePurge	TranslationCredit	1	1	0
+NA - SA-1 Patch by Bosn, Rev 1.2	HackOrPatchCredit	1	1	0
+NA - SA-1 Patch by MaxwelOlinda With 2 Player Hack by VCG	HackOrPatchCredit	1	1	0
+NA - SA-1 Patch by Vitor Vilela, Rev 1.1 Base With SA-1 Origin Patch	HackOrPatchCredit	1	1	0
+NA - SA-1 Patch by Vitor Vilela, Rev 1.2	HackOrPatchCredit	1	1	0
+NA - SA-1 Patch by Vitor Vilela, Rev 1.2 With Japanese Features Restoration Patch by SCD, Rev Final	HackOrPatchCredit	1	1	0
+NA - SA-1 Patch by Vitor Vilela, Rev 1.4	HackOrPatchCredit	1	1	0
+NA - SA-1 Patch by Vitor Vilela, Rev 1.7 Base With SA-1 Origin Patch by GuyPerfect	HackOrPatchCredit	1	1	0
+NA - SRAM Patch by Yoshifanatic	HackOrPatchCredit	1	1	0
+NA - Secret Characters Unlocked Patch by BillyTime! Games	HackOrPatchCredit	1	1	0
+NA - Secret Characters Unlocked Patch by Gallaux	HackOrPatchCredit	1	1	0
+NA - Secret Characters Unlocked by Snark-4918, Rev 2 - Champion Edition Version	NeedsReview	1	1	0
 NA - Sound Canvas Patch by Shadowmask	HackOrPatchCredit	1	1	0
+NA - Standalone Disc Patch by MrMario2011, Rev 2	HackOrPatchCredit	1	1	0
+NA - Stereo Patch by Sluffy	HackOrPatchCredit	1	1	0
+NA - SuperFX Hack by Kandowontu	HackOrPatchCredit	1	1	0
+NA - The Last Hope Remastered Patch by Kaiseran, Rev 2.5	HackOrPatchCredit	1	1	0
+NA - The Lion War Patch by The Lion War Team, Rev 2.031, With Video Patch	HackOrPatchCredit	1	1	0
+NA - The Oath Patch by Kaiseran, Rev 8.2	HackOrPatchCredit	1	1	0
+NA - True Analogs Patch by VanLaser, Rev 1.52	HackOrPatchCredit	1	1	0
+NA - True Analogs Patch by VanLaser, Rev 1.52 With Undub Patch by Swosho, Rev 1.1b	HackOrPatchCredit	1	1	0
+NA - True Director's Cut Patch by Deli295, Rev 0.4 - Original Soundtrack Version	HackOrPatchCredit	1	1	0
+NA - Un-Working Designs Patch by Supper	HackOrPatchCredit	1	1	0
 NA - Un-Working Designs Patch by Supper, Rev 0	HackOrPatchCredit	1	1	0
+NA - Un-Working Designs Patch by Terrorgrafx, Rev 2	HackOrPatchCredit	1	1	0
+NA - Uncensored Patch and Bugfixes by Chronosplit, Rev Rebuilt Fe	HackOrPatchCredit	1	1	0
+NA - Uncensored Patch by Navarchos, Rev 1.12a With Dengeki Store Fix and Subbed FMV Addition by Swosho, Rev 1.1	HackOrPatchCredit	1	1	0
+NA - Uncensored Patch by Ortew, Rev 1.1	HackOrPatchCredit	1	1	0
+NA - Uncensored Patch by SCD, Rev Final	HackOrPatchCredit	1	1	0
+NA - Uncensored Patch by ShadowOne333, Rev 2.1 With U.S. Font, U.S. Chain Whip SFX, and U.S. Title Screen Patches With FastROM Hack by Vitor Vilela, Rev 1.1	HackOrPatchCredit	1	1	0
+NA - Uncensored Undub Patch by Sakitoshi, Rev 1.2	HackOrPatchCredit	1	1	0
+NA - Uncensored and Restored Patch by FlamePurge, Rev 3.1 - Always Retry Mode Version	HackOrPatchCredit	1	1	0
+NA - Undub Patch by Acediez, Rev 1.4	HackOrPatchCredit	1	1	0
+NA - Undub Patch by BloodRaynare	HackOrPatchCredit	1	1	0
+NA - Undub Patch by C&P-kyun, Rev 0.9	HackOrPatchCredit	1	1	0
+NA - Undub Patch by Guilherme Resende, Rev 1.14 With Retranslation Patch by NectarHime	TranslationCredit	1	1	0
+NA - Undub Patch by NKS	HackOrPatchCredit	1	1	0
+NA - Undub Patch by Rari-teh, Rev 2	HackOrPatchCredit	1	1	0
+NA - Variable Width Font Patch by FuSoYa’s Niche	HackOrPatchCredit	1	1	0
 NA, Rev 1 - Arcade Mode	Region+Revision+Platform	1	1	0
+NA, Rev 1.1 - True Analogs Patch by VanLaser, Rev 1.52	HackOrPatchCredit	1	1	0
+NA, Rev 1.1 - True Analogs Patch by VanLaser, Rev 1.52 With Undub Patch by Swosho, Rev 1.1b	HackOrPatchCredit	1	1	0
+NA, Rev 1.1 - Tweaks, Localization, and Custom Art Patch by Acediez, Rev 2.6	HackOrPatchCredit	1	1	0
 NA, Rev 125	Region+Revision	1	1	0
 NA, Rev 2 - Simulation Mode	NeedsReview	1	1	0
 NA, Rev 2.10	Region+Revision	1	1	0
@@ -3345,10 +3533,10 @@ Prototype - Warehouse, Hospital, King Pin's Pad, and Police Department	NeedsRevi
 Prototype 1	Preview	1	1	0
 Prototype 2	Preview	1	1	0
 Prototype 3	Preview	1	1	0
-Prototype, Rev 1.0a	Revision+Preview	1	1	0
-Prototype, Rev 1.0f	Revision+Preview	1	1	0
-Prototype, Rev 1.2	Revision+Preview	1	1	0
-Prototype, Rev 2	Revision+Preview	1	1	0
+Prototype, Rev 1.0a	Preview+Revision	1	1	0
+Prototype, Rev 1.0f	Preview+Revision	1	1	0
+Prototype, Rev 1.2	Preview+Revision	1	1	0
+Prototype, Rev 2	Preview+Revision	1	1	0
 Prototype, Rev 2000-05-28 Fixed	NeedsReview	1	1	0
 Protovision - 2002	NeedsReview	1	1	0
 Protovison - 2022	NeedsReview	1	1	0
@@ -3384,6 +3572,7 @@ Reduced Lag Patch by Nintendo 64 Wizard - NA	HackOrPatchCredit	1	1	0
 Redux Patch, Rev 2, by Maroc - NA	HackOrPatchCredit	1	1	0
 Redux Patch, Rev 2.2, by Maroc	HackOrPatchCredit	1	1	0
 Reflect, Heavier Than Metal, Reverse, GFX, M Driver, and Fishinvaders - EU	NeedsReview	1	1	0
+Relocalized and Uncensored Patch by CoolGuyBrendyn, Rev 1.5 - Perfect Edition Version	HackOrPatchCredit	1	1	0
 Remastered	NeedsReview	1	1	0
 Rental	NeedsReview	1	0	1
 Retream - 2022	NeedsReview	1	1	0
@@ -3450,6 +3639,7 @@ SLUS-00612	NeedsReview	1	0	1
 SM4-4 E	NeedsReview	1	1	0
 SNS-NA	NeedsReview	1	0	1
 SPC009	NeedsReview	1	1	0
+Sailor Moon Fighter S Hack by Metaquarius, Rev 1.67 - Purist Edition	HackOrPatchCredit	1	1	0
 Samar Productions - 2007	NeedsReview	1	1	0
 Sample-ban	NeedsReview	1	0	1
 Samsung	NeedsReview	1	0	1

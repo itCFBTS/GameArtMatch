@@ -1029,6 +1029,7 @@ Activision
 Activision Anthology - Remix Edition
 Add-on
 Addition
+Additions by Eskayelle, Rev 1.28.1.1 With the Mattrizzle Player Engine - 2K22 Version
 Adventure Kid, Power Block, Twin Mouse, and Cave Dude - AU
 Adventurer and Code Cracker - EU
 Aftermarket
@@ -1269,6 +1270,7 @@ CTC-15
 CTC-31
 Calpis Water Version
 Caltron
+Camera & FastROM hack by MaxwelOlinda v1.0
 Camera Control Patch by AnimaC13 - NA, Rev 2
 Can Bani Himekuri Calendar
 Canada
@@ -1359,6 +1361,7 @@ D-N3
 D-T2
 D42
 DA1AC0DB
+DE
 DEFCON 26 Indie Badge
 DERF, Invaders, Xs & Os, and Tron - EU
 DFJN5015ZAZ
@@ -1436,6 +1439,7 @@ Disc 1 - English Translated by In the Rose Garden, Rev 1.04
 Disc 1 - English Translated by John Osborne, Rev 2 - Subbed Version
 Disc 1 - English Translated by JunkerHQ
 Disc 1 - English Translated by JunkerHQ, Rev 1.0.1
+Disc 1 - English Translated by Load Word Team, Rev 1.1
 Disc 1 - English Translated by NoOneee
 Disc 1 - English Translated by Orihara Saki - Beta
 Disc 1 - English Translated by Sakura Wars Translation Project, Rev 1.1
@@ -1456,6 +1460,7 @@ Disc 2 - English Translated by In the Rose Garden, Rev 1.04
 Disc 2 - English Translated by John Osborne, Rev 2 - Subbed Version
 Disc 2 - English Translated by JunkerHQ
 Disc 2 - English Translated by JunkerHQ, Rev 1.0.1
+Disc 2 - English Translated by Load Word Team, Rev 1.1
 Disc 2 - English Translated by NoOneee
 Disc 2 - English Translated by Orihara Saki - Beta
 Disc 2 - English Translated by Sakura Wars Translation Project, Rev 1.1
@@ -1551,6 +1556,8 @@ EU
 EU - 4-in-1 Hack Patch by Meduza Team, Rev 1.5
 EU - 4-in-1 Hack Patch by Meduza Team, Rev 1.5 - NDS Style Version
 EU - 60Hz Hack Patch by NoelleAmelie, Rev 1.0a
+EU - 60Hz Selector Patch by Paradox
+EU - 60Hz Selector Patch by Static, Rev 1.01
 EU - Disc 1
 EU - Disc 1 - Magical Drop III
 EU - Disc 1 - Wings of Destiny
@@ -1561,8 +1568,15 @@ EU - Disc 3
 EU - Disc 3 - The First Generation
 EU - Disc 4
 EU - Disc 4 - Blazing Guns
+EU - FastROM Hack by Kandowontu, Rev 1.4
 EU - Flash Removal Patch by Privateye
+EU - NTSC Conversion With Japanese Opening and Ending Patch by Sakitoshi
+EU - NTSC Conversion by Markisha64
+EU - NTSC Conversion by MyloWhylo
+EU - NTSC Conversion by Sakitoshi
+EU - NTSC Conversion by Sakitoshi, Rev 1.3
 EU - Power Source Demo Disc
+EU - Undub Patch by Swosho, Rev 1.1
 EU, Rev 1
 EU, Rev 1 - Disc 1
 EU, Rev 1 - Disc 2
@@ -1734,15 +1748,31 @@ Endurance Course
 Endurion - 2015
 Endurion - 2018
 Engagement Edition
+English Retranslated and Content Restoration by Krokodyl
+English Retranslated and Content Restoration by The SAP Team - Reborn Version, Rev 2
+English Retranslated by CoolCatBomberMan, Rev 2 With FastROM Hack by Kandowontu, Rev 1.1
+English Retranslated by Rodimus Primal, Rev 1.99 - Namingway Edition
+English Retranslated by Rodimus Primal, Rev 3.06 With Bug Fixes, Updated Opera, and Add-Ons - Woolsey Uncensored Edition
+English Retranslated by Thirteen 1355, Rev 1.5
+English Retranslated by Watercrown Productions, Rev 1.2b With Original Title Screen Music
+English Retranslated from GBA Version by J121, Rev 1.16 With Bugfixes and Ginger Battle Galuf Patch, With FastROM Hack by Kandowontu
+English Retranslation and Content Restoration by CF, Rev 1.1
+English Retranslation and Fixes by Sarah Shinespark, Rev 3 - Seal of Rimsala Version
 English Translated
 English Translated With Arabic Numerals by Psyklax
 English Translated With Corrected Ending by BlackPaladin
 English Translated With Honorifics Patch, Rev 1.1, by Lipemco! Translations
 English Translated With PSP Audio Patch, Rev 1.01, by Shortfilms.tk and Burnt Lasagna
+English Translated and Content Restoration by Backlog Odyssey, Rev 2
+English Translated and Content Restored by FlashPV With FastROM Hack by Kandowontu
+English Translated and Uncensored Patch by Darkmoon2321, Rev 1.1
 English Translated by Acediez
 English Translated by Acediez, Rev 1.3
 English Translated by Adventurous Translations, Rev 0.96
+English Translated by Aeon Genesis With Epyon Unlocked Patch by CF, Rev 1.1
+English Translated by Aeon Genesis With FastROM Hack by Kandowontu, Rev 1.1
 English Translated by Aeon Genesis, Rev 0.95b
+English Translated by Aeon Genesis, Rev 1.01 With Deluxe Version Patch by BobSchneeder45, Rev 2
 English Translated by Aethin, Rev 1.04
 English Translated by AfroJackX, Rev 0.3
 English Translated by AgentOrange and MrRichard999
@@ -1753,6 +1783,8 @@ English Translated by Aishsha, Rev 1.1b
 English Translated by AlanMidas Cant.hack With Fixes by Jordiway73, Rev 1.1
 English Translated by Alex Kid, Darkfalzx, and Simon Fang, Rev 2022-01-20b
 English Translated by Arcraith, Rev 1.1
+English Translated by Asiwish, Rev 1.2 With FastROM Hack by Kandowontu
+English Translated by BST, Rev 2.08 With Grind-Be-Gone and Swiss Manicure Patches
 English Translated by Bankbank
 English Translated by Ben128
 English Translated by BlackPaladin
@@ -1766,9 +1798,11 @@ English Translated by Cargodin, Rev 1.3
 English Translated by Chapu
 English Translated by Chapu, Miniomegaking, PSXCraver, and Vervalkon
 English Translated by Chapu, Rev 1.1
+English Translated by Chris Covell With Alt Font and Controls Patch by KingMike's Translations
 English Translated by Chris M. Covell
 English Translated by ChristopheF, Rev 2
 English Translated by Cirosan
+English Translated by DDSTranslation
 English Translated by Dave Shadoff
 English Translated by Dave Shadoff and Diogo Ribeiro
 English Translated by Dave Shadoff, Filler, MooZ, and Diogo Ribeiro
@@ -1806,6 +1840,7 @@ English Translated by Hilltop
 English Translated by Hilltop, Cargodin, Blametherobots, Gwendolyn, and SnowyAria, Rev 1.1
 English Translated by Hilltop, Rev 1.1
 English Translated by Infinite Lupine Translations With Addendum by R4dius, Rev 1.01b
+English Translated by Infinite Lupine Translations With Addendum by R4dius, Rev 1.01b and Text Improvement Patch by VincentNL
 English Translated by Infinite Lupine Translations, Rev 1.01
 English Translated by Jink640
 English Translated by John Osborne
@@ -1831,6 +1866,7 @@ English Translated by Mentil
 English Translated by Mr.Nobody
 English Translated by Mr.Nobody, Arcanearia, and NintendoComplete, Rev 1.1
 English Translated by Mute
+English Translated by NLeseul, Rev 0.9b
 English Translated by Nanashi, Rev 0.9
 English Translated by Nebulous Translations
 English Translated by Necrosaro
@@ -1910,6 +1946,7 @@ English Translated, Rev 1.01, by Ozidual
 English Translated, Rev 1.01, by Stardust Crusaders
 English Translated, Rev 1.01, by Zoinkity
 English Translated, Rev 1.02, by Ozidual
+English Translated, Rev 1.1
 English Translated, Rev 1.1, by Filler and Cabbage
 English Translated, Rev 1.1, by Jordiway73
 English Translated, Rev 1.1, by MooZ and Shubibiman
@@ -2019,6 +2056,7 @@ FL-4466A
 FL-58
 FM Music Patch - NA
 FM Sound Patch, Rev 1.2 - NA
+FR
 FS005
 FS006
 FS303
@@ -2030,6 +2068,7 @@ Family BASIC
 Famitsuu Version
 Fast Tanks
 Fast Version
+FastROM Hack by Wiiq and Conn, Rev 20160429
 Faster Walking Speed Patch by Diogo Ribeiro - NA
 Fears Behind
 Field Hunter
@@ -2251,10 +2290,15 @@ JP - 4MB Hack Patch by YZB, Rev 2020-05-31
 JP - 4MB Hack Patch by YZB, Rev 2020-06-07
 JP - 4MB Hack Patch by YZB, Rev 2020-08-24
 JP - 4MB Hack Patch by YZB, Rev 2022-08-01
+JP - All Heroes Patch by Shadow501, Rev 1.2
+JP - Color Fixes by SCD, Rev Final
 JP - Disc 1
 JP - Disc 1 - Arcade
 JP - Disc 1 - Disc-B
 JP - Disc 1 - Disc-F
+JP - Disc 1 - English Dubbed by John Osborne, Rev 2
+JP - Disc 1 - English Translated by John Osborne With Cross MOD Patch by the Weekdays in Forsena Group, Rev 7.1
+JP - Disc 1 - English Translated by KBLO, Rev 20251010 - Dubbed Version
 JP - Disc 1 - Ichigo
 JP - Disc 1 - Kamen Rider
 JP - Disc 1 - Langrisser IV - English Translated by Kil, Rev 1.3
@@ -2265,6 +2309,8 @@ JP - Disc 1 - Vol. 1 - Toki no Maigo
 JP - Disc 2
 JP - Disc 2 - Addition
 JP - Disc 2 - Append
+JP - Disc 2 - English Dubbed by John Osborne, Rev 2
+JP - Disc 2 - English Translated by John Osborne With Cross MOD Patch by the Weekdays in Forsena Group, Rev 7.1
 JP - Disc 2 - Gallop
 JP - Disc 2 - Momo
 JP - Disc 2 - Ninja Hayate
@@ -2279,8 +2325,11 @@ JP - Disc 3
 JP - Disc 3 - Vol. 3 - Watashi ni Sayonara wo
 JP - Disc 4
 JP - English Translated by Bulk Slash English Localization Team, Rev 1.001 - Dubbed Version
+JP - English Translated by Cirosan With The Chilling Cut Patch by Darkanioid1997
 JP - English Translated by Exxistance - Dubbed Version
+JP - English Translated by Gemini, Throughhim413, and Tom, Rev 1.2
 JP - English Translated by Hemulen
+JP - English Translated by Hilltop, Rev 1.1 - Classic Arale Version
 JP - English Translated by KoolFiller, Rev 2025-06-14 - Dubbed Version
 JP - English Translated by Malenko, Rev 2024.02.04-01 - Revised Version
 JP - English Translated by Meduza Team, Rev 1.1 - Ultimate Fork PSX Script Version
@@ -2288,13 +2337,20 @@ JP - English Translated by Meduza Team, Rev 1.1 - Ultimate PSP Script Version
 JP - English Translated by Mentil With EX Patch by Paul_met
 JP - English Translated by Shining Force III Translation Project, Rev 25.1
 JP - Eurobeat Mix Patch by Mr357
+JP - FastROM Hack by Bankbank, Rev 1.04
+JP - FastROM Hack by Kandowontu
+JP - FastROM Hack by Kandowontu, Rev 1.2
+JP - FastROM Hack by Kandowontu, Rev 1.21
 JP - Flash Removal Patch by Privateye
 JP - Hybrid Version
 JP - Kisekae Disc Kanzenban
 JP - Limit Over Hack by CafeBreak Project, Rev 2.1 - English Translated by Ms. Tea
+JP - MZD Mod Patch by BoubouV12, Rev 25-01-2025
 JP - Quality of Life Improvements Patch by Privateye
+JP - SRAM, Scroll Speed, and Stereo Patches by Blizzz, Rev 1b
 JP - Wizardry VI - Bane of the Cosmic Forge - English Translated by Remisse, Rev 0.51 - Enhanced Version
 JP, Rev 1
+JP, Rev 1 - FastROM Hack by Kandowontu
 JP, Rev 2
 JP, Rev 3
 JP, Rev 4
@@ -2664,37 +2720,169 @@ Music v2
 Myth Struggle
 N-32
 NA
+NA - 2.1 Improvements Patch by Lupus Erectus
+NA - Additional Features and Improvements Patch by Manoel Messias, Rev PB4 - Plus Version
+NA - All Characters Unlocked Patch by Golden Leon
+NA - Annoyance Removals Patch by Trisma, Rev 1.1
 NA - Audio Improvements Patch by Riggles, Rev 2
+NA - Bugfix Patch by John Osborne, Rev 5
+NA - Bugfixes by SCD, Rev Final
+NA - Bugfixes by Upsilandre
+NA - Camera Fix Patch by Cyneprepou4uk, Rev 001
+NA - Centipede Color Fix by 125scratch
+NA - Color Fixes by Dex909, Rev 1.1
+NA - Color Fixes by Mister Man, Rev 1.1
+NA - Combined Disc Patch by Silent
+NA - Complete Edition Patch by Hypercycle, Rev 3a
+NA - Content Restoration Patch by RealGaea, Rev 1.2 3b - Arcade Remix Version
+NA - Content Restoration Patch by SCD, Rev Final
+NA - Content Restoration Patch by SCD, Rev Final - Victory Drink Plus! Version
+NA - Content Restoration Patch by SCD, Rev Final With FastROM Hack by Kandowontu
+NA - Content Restoration and Bugfixes by Artemis, Rev 7 - Frue Lufia Version
+NA - Content Restoration and Color Fix Patch by RealGaea, Rev 1.2 - Arcade Edition Version
 NA - Disc 0
 NA - Disc 1
 NA - Disc 1 - Allies
 NA - Disc 1 - Arcade Disc
+NA - Disc 1 - Font Hack Patch by GreenGoblin
 NA - Disc 1 - GDI
+NA - Disc 1 - Perfect Works Build, Rev 0.10.1 With All Patches, 1.5x EXP, Story Mode, and Script Changes
+NA - Disc 1 - Retranslation Patch by VoidWaveCEO, Rev 1.1 With Undub Patch and Bugfixes by Swosho, Rev 1.1
 NA - Disc 1 - Shockwave - Invasion Earth
+NA - Disc 1 - True Analogs Patch by VanLaser, Rev 1.52
+NA - Disc 1 - True Analogs Patch by VanLaser, Rev 1.52 With Undub Patch by Swosho, Rev 1.1b
+NA - Disc 1 - Un-Working Designs Patch by Supper
+NA - Disc 1 - Undub Patch
+NA - Disc 1 - Undub Patch by Etsuna, Rev 2
+NA - Disc 1 - Undub Patch by Mugi
+NA - Disc 1 - Undub Patch by NKS
+NA - Disc 1 - Undub Patch by RyleFury, Rev 1.01
 NA - Disc 2
 NA - Disc 2 - Evolution Disc
+NA - Disc 2 - Font Hack Patch by GreenGoblin
 NA - Disc 2 - NOD
+NA - Disc 2 - Perfect Works Build, Rev 0.10.1 With All Patches, 1.5x EXP, Story Mode, and Script Changes
+NA - Disc 2 - Retranslation Patch by VoidWaveCEO, Rev 1.1 With Undub Patch and Bugfixes by Swosho, Rev 1.1
 NA - Disc 2 - Shockwave - Operation Jumpgate
 NA - Disc 2 - Soviet
+NA - Disc 2 - True Analogs Patch by VanLaser, Rev 1.52
+NA - Disc 2 - True Analogs Patch by VanLaser, Rev 1.52 With Undub Patch by Swosho, Rev 1.1b
 NA - Disc 2 - Turbo Mode Disc
+NA - Disc 2 - Un-Working Designs Patch by Supper
+NA - Disc 2 - Undub Patch
+NA - Disc 2 - Undub Patch by Etsuna, Rev 2
+NA - Disc 2 - Undub Patch by Mugi
+NA - Disc 2 - Undub Patch by NKS
+NA - Disc 2 - Undub Patch by RyleFury, Rev 1.01
 NA - Disc 3
+NA - Disc 3 - Retranslation Patch by VoidWaveCEO, Rev 1.1 With Undub Patch and Bugfixes by Swosho, Rev 1.1
+NA - Disc 3 - Un-Working Designs Patch by Supper
 NA - Disc 4
+NA - Disc 4 - Retranslation Patch by VoidWaveCEO, Rev 1.1 With Undub Patch and Bugfixes by Swosho, Rev 1.1
 NA - Disc 5
 NA - Disc A
 NA - Disc B
+NA - Easier Difficulty With Magic Fix Patch by Shatai
+NA - Epic Turismo Patch by Epic, Inc., Rev 1.4
+NA - Eyedol Unlocked Patch by NinjAkira - Deluxe Version
+NA - F-Zero Final Patch by Grego, Rev 0.2
+NA - FastROM Hack by Bankbank
+NA - FastROM Hack by Kandowontu
+NA - FastROM Hack by Kandowontu, Rev 1.01
+NA - FastROM Hack by Kandowontu, Rev 1.1
+NA - FastROM Hack by Kandowontu, Rev 1.2
+NA - FastROM Hack by Kandowontu, Rev 2.1
+NA - FastROM Hack by Kandowontu, Rev 4
+NA - FastROM Hack by Master Linkuei
+NA - FastROM Hack by MaxwelOlinda
+NA - FastROM Hack by Patrick Mollohan, Rev 1.1
+NA - FastROM Hack by Vitor Vilela
+NA - FastROM Hack by Vitor Vilela, Rev 1.4
+NA - FastROM and SuperFX2 Hack by Catador, Kandowontu, and LivelyZephyrs, Rev 1.2
 NA - Fix Patch by Authorfafling, Rev 0.3
 NA - Flash Removal Patch by Privateye
+NA - Graphical Overhaul by Gagarin, Rev 1.1 - Lennus Revival Version
+NA - Improvement Project Patch by Dark Hunter, Rev 0.1.1 With Addendum by Acediez, Rev 2.1.4
+NA - Inspired Patch by Inspired Wrestling, Rev 1.3
+NA - Japanese Features Restoration Patch by SCD, Rev Final
+NA - Level 6-1 Bugfix by Sluffy, Rev 20181102
+NA - Light Gun Support Patch by Raziel I.C.H.I. Znot
+NA - Master Edition Patch by Team GEC, Rev B4
+NA - Minor Improvements Patch by SCD
+NA - Mouse Support Patch by Rainwarrior
+NA - Movement Mod Patch by i_hate_drm With FastROM Hack by Kandowontu, Rev 1.01
+NA - Multi-Hack Patch by Maeson, Rev 1.09a
+NA - Music Restoration Patch by Alma Elma
+NA - NBA Jam '22 Patch by Ponlork, Rev 1.4
+NA - New Controls Patch by Mr2, Rev 0.4
+NA - Optimized Patch by MaxwelOlinda, Rev 1.1
+NA - PSP Improvements Patch by Acediez, Rev 1.1
+NA - Prime Edition Patch by Wakkoswami, Rev 6.1
+NA - Project A-Spec Patch by Komputerm Rev 1.2.1
+NA - Project Pro Skater Volume 4 Patch by Casey Mongillo
 NA - QoL Patch, Rev 1.1 With Music Pitch Fix by Paul_met
 NA - Quality of Life Improvements Patch by Privateye
 NA - Quality of Life Improvements Patch by Privateye, Rev 1.1
+NA - Re-Dub Patch by Casey Mongillo, Kira Buckland, Eddie Correa Jr., and Others
+NA - Red Blood Patch by DarkSamus993
+NA - Red Blood Patch by Ortew
+NA - Red Blood Patch by Takashi
+NA - Reforged Patch by Mziab, FlamePurge, SeiichiroMine, and Kevan33, Rev 1.01
+NA - Restored Content and Additions by Lucas Dext5r, Rev 2.3 - Deluxe Version
+NA - Restored Progression Patch by CrazyMLC
+NA - Retranslation and Undub Patch by Eiowlta
+NA - Retranslation and Undub Patch by FlamePurge
+NA - SA-1 Patch by Bosn, Rev 1.2
+NA - SA-1 Patch by MaxwelOlinda With 2 Player Hack by VCG
+NA - SA-1 Patch by Vitor Vilela, Rev 1.1 Base With SA-1 Origin Patch
+NA - SA-1 Patch by Vitor Vilela, Rev 1.2
+NA - SA-1 Patch by Vitor Vilela, Rev 1.2 With Japanese Features Restoration Patch by SCD, Rev Final
+NA - SA-1 Patch by Vitor Vilela, Rev 1.4
+NA - SA-1 Patch by Vitor Vilela, Rev 1.7 Base With SA-1 Origin Patch by GuyPerfect
+NA - SRAM Patch by Yoshifanatic
+NA - Secret Characters Unlocked Patch by BillyTime! Games
+NA - Secret Characters Unlocked Patch by Docrow
+NA - Secret Characters Unlocked Patch by Gallaux
+NA - Secret Characters Unlocked by Snark-4918, Rev 2 - Champion Edition Version
 NA - Sound Canvas Patch by Shadowmask
+NA - Standalone Disc Patch by MrMario2011, Rev 2
+NA - Stereo Patch by Sluffy
+NA - SuperFX Hack by Kandowontu
+NA - The Last Hope Remastered Patch by Kaiseran, Rev 2.5
+NA - The Lion War Patch by The Lion War Team, Rev 2.031, With Video Patch
+NA - The Oath Patch by Kaiseran, Rev 8.2
+NA - True Analogs Patch by VanLaser, Rev 1.52
+NA - True Analogs Patch by VanLaser, Rev 1.52 With Undub Patch by Swosho, Rev 1.1b
+NA - True Director's Cut Patch by Deli295, Rev 0.4 - Original Soundtrack Version
+NA - Un-Working Designs Patch by Supper
 NA - Un-Working Designs Patch by Supper, Rev 0
+NA - Un-Working Designs Patch by Terrorgrafx, Rev 2
+NA - Uncensored Patch and Bugfixes by Chronosplit, Rev Rebuilt Fe
+NA - Uncensored Patch by Navarchos, Rev 1.12a With Dengeki Store Fix and Subbed FMV Addition by Swosho, Rev 1.1
+NA - Uncensored Patch by Ortew, Rev 1.1
+NA - Uncensored Patch by SCD, Rev Final
+NA - Uncensored Patch by ShadowOne333, Rev 2.1 With U.S. Font, U.S. Chain Whip SFX, and U.S. Title Screen Patches With FastROM Hack by Vitor Vilela, Rev 1.1
+NA - Uncensored Undub Patch by Sakitoshi, Rev 1.2
+NA - Uncensored and Restored Patch by FlamePurge, Rev 3.1 - Always Retry Mode Version
+NA - Undub Patch by Acediez, Rev 1.4
+NA - Undub Patch by BloodRaynare
+NA - Undub Patch by C&P-kyun
+NA - Undub Patch by C&P-kyun, Rev 0.9
+NA - Undub Patch by Guilherme Resende, Rev 1.14 With Retranslation Patch by NectarHime
+NA - Undub Patch by NKS
+NA - Undub Patch by Rari-teh, Rev 2
+NA - Undub Patch by Swosho
+NA - Variable Width Font Patch by FuSoYa’s Niche
 NA, Rev 1
 NA, Rev 1 - Arcade Mode
 NA, Rev 1 - Disc 1
 NA, Rev 1 - Disc 2
 NA, Rev 1 - Disc 3
 NA, Rev 1 - Disc 4
+NA, Rev 1 - FastROM Hack by Kandowontu
+NA, Rev 1.1 - True Analogs Patch by VanLaser, Rev 1.52
+NA, Rev 1.1 - True Analogs Patch by VanLaser, Rev 1.52 With Undub Patch by Swosho, Rev 1.1b
+NA, Rev 1.1 - Tweaks, Localization, and Custom Art Patch by Acediez, Rev 2.6
 NA, Rev 125
 NA, Rev 2
 NA, Rev 2 - Simulation Mode
@@ -3016,6 +3204,7 @@ Redux Patch, Rev 2, by Maroc - NA
 Redux Patch, Rev 2.2, by Maroc
 Reflect, Heavier Than Metal, Reverse, GFX, M Driver, and Fishinvaders - EU
 Reinhart Version
+Relocalized and Uncensored Patch by CoolGuyBrendyn, Rev 1.5 - Perfect Edition Version
 Remastered
 Renkaban
 Rental
@@ -3124,6 +3313,7 @@ SNS-NA
 SNS-XM
 SPC009
 Sachen
+Sailor Moon Fighter S Hack by Metaquarius, Rev 1.67 - Purist Edition
 Samar Productions
 Samar Productions - 2007
 Sample

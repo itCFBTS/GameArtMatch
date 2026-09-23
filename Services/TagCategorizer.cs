@@ -22,20 +22,22 @@ namespace GameArtMatch.Services;
 /// </summary>
 public static class TagCategorizer
 {
+    /// <summary>
+    /// Declaration order is the category's RANK — how much a difference in a tag of
+    /// this category tends to mean "different box art," most decisive first. Decided
+    /// 2026-09-23. The criterion: a wrong disc is a wrong file outright; a wrong
+    /// region is still the right game but almost always a different box; Unl/Pirate
+    /// carts are different products; a Beta/Proto is a different build; Rev/Alt is
+    /// the same box nearly every time; a translation or hack credit never gets its
+    /// own art at all. Categorize's compound labels sort by this order, so they read
+    /// most-significant-first ("Region+Revision", never "Revision+Region"). Nothing
+    /// consumes the rank as a number yet — if a scoring weight ever does, that's the
+    /// point to move the rank into an explicit table instead of relying on (int)c.
+    /// </summary>
     public enum TagCategory
     {
-        Region,
-        Language,
-        Revision,
         Disc,
-        Date,
-
-        /// <summary>Pre-release or promotional — not the final retail build (Beta,
-        /// Demo, Proto/Prototype, Sample, Promo, Kiosk demo units). A different axis
-        /// from Unofficial: this is about WHEN in the release cycle, not about
-        /// legitimacy of origin — plenty of Preview tags belong to perfectly official
-        /// releases (a publisher's own demo disc, a licensed kiosk cart).</summary>
-        Preview,
+        Region,
 
         /// <summary>Unlicensed/altered distribution (Unl, Pirate, Aftermarket,
         /// Reproduction, Repro). Deliberately doesn't include "Alt" — real examples
@@ -49,6 +51,14 @@ public static class TagCategorizer
         /// claim) — both left in NeedsReview rather than force-fit here.</summary>
         Unofficial,
 
+        /// <summary>Pre-release or promotional — not the final retail build (Beta,
+        /// Demo, Proto/Prototype, Sample, Promo, Kiosk demo units). A different axis
+        /// from Unofficial: this is about WHEN in the release cycle, not about
+        /// legitimacy of origin — plenty of Preview tags belong to perfectly official
+        /// releases (a publisher's own demo disc, a licensed kiosk cart).</summary>
+        Preview,
+        Revision,
+
         /// <summary>Hardware, storefronts, distribution/rental services, and
         /// mini-console/arcade-collection reissues — "what this runs on or was
         /// distributed through." Deliberately doesn't cover hardware-compatibility
@@ -61,7 +71,8 @@ public static class TagCategorizer
         /// <summary>Publisher/reissue brand names ("Zeppelin Games", "Limited Run
         /// Games") — who repackaged/re-released this, not what it runs on.</summary>
         Label,
-
+        Language,
+        Date,
         TranslationCredit,
         HackOrPatchCredit,
 
@@ -69,6 +80,46 @@ public static class TagCategorizer
         /// "needs a human to look at it" pile.</summary>
         NeedsReview,
     }
+
+    /// <summary>
+    /// Coarser grouping over TagCategory's rank: how much a difference in a tag of
+    /// this category matters to whether two names refer to the same box art. Decided
+    /// 2026-09-23. Each level is a contiguous run of the rank order, so rank and
+    /// significance never disagree about which of two categories matters more; the
+    /// rank still orders categories within a level. Nothing consumes this yet — it's
+    /// the vocabulary a future scoring rule (ADR-0004's "drop credits entirely", or
+    /// a per-level penalty in the tag-inclusive display score) would be written in.
+    /// </summary>
+    public enum TagSignificance
+    {
+        /// <summary>A mismatch is a wrong file outright, or the wrong box nearly
+        /// every time: Disc, Region.</summary>
+        Decisive,
+
+        /// <summary>A mismatch means a different product or build — Unl/Pirate
+        /// cart, Beta/Proto, Rev/Alt — whose art usually still resembles the
+        /// original's: Unofficial, Preview, Revision.</summary>
+        Distinguishing,
+
+        /// <summary>Describes the release without usually changing which box it
+        /// is: Platform, Label, Language, Date.</summary>
+        Descriptive,
+
+        /// <summary>Carries no art signal at all — a patch is scored against the
+        /// original's box: TranslationCredit, HackOrPatchCredit.</summary>
+        Irrelevant,
+    }
+
+    public static TagSignificance SignificanceOf(TagCategory category) => category switch
+    {
+        TagCategory.Disc or TagCategory.Region => TagSignificance.Decisive,
+        TagCategory.Unofficial or TagCategory.Preview or TagCategory.Revision => TagSignificance.Distinguishing,
+        TagCategory.Platform or TagCategory.Label or TagCategory.Language or TagCategory.Date => TagSignificance.Descriptive,
+        TagCategory.TranslationCredit or TagCategory.HackOrPatchCredit => TagSignificance.Irrelevant,
+        TagCategory.NeedsReview => throw new ArgumentOutOfRangeException(nameof(category),
+            "NeedsReview is a triage bucket, not a category — it has no significance level."),
+        _ => throw new ArgumentOutOfRangeException(nameof(category), category, "Unmapped TagCategory — add it to SignificanceOf."),
+    };
 
     // Non-exhaustive by design, same "extend as real data turns up more" spirit as
     // RegionCatalog/TagWordCatalog/NameNormalizer.KnownRomanLookalikes.
@@ -171,10 +222,11 @@ public static class TagCategorizer
         if (classified.Any(c => c is null))
             return nameof(TagCategory.NeedsReview);
 
-        // Sorted into a fixed order (enum declaration order) before joining, so
-        // "NA - Disc 1" and "Disk 1 - JP" both come out as "Region+Disc" regardless
-        // of which clause happened to come first in the source string — otherwise
-        // the same real combination would silently split across two category names.
+        // Sorted into a fixed order (enum declaration order = rank, see TagCategory)
+        // before joining, so "NA - Disc 1" and "Disk 1 - JP" both come out as
+        // "Disc+Region" regardless of which clause happened to come first in the
+        // source string — otherwise the same real combination would silently split
+        // across two category names.
         var distinct = classified.Cast<TagCategory>().Distinct().OrderBy(c => (int)c).ToList();
         return distinct.Count == 1 ? distinct[0].ToString() : string.Join("+", distinct);
     }
