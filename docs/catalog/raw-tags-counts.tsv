@@ -185,7 +185,7 @@ Othello Multivision	NeedsReview	16	0	16
 Proto 3	Preview	16	1	15
 Rev 4	Revision	16	0	16
 2S	NeedsReview	15	0	15
-Alt 2	NeedsReview	15	2	13
+Alt 2	Revision	15	2	13
 Canada	Region	15	1	14
 Collection of Mana	NeedsReview	15	0	15
 De	Region	15	1	14
@@ -261,7 +261,7 @@ Special Disc	NeedsReview	11	0	11
 Steam	Platform	11	1	10
 11M	NeedsReview	10	0	10
 3DS Virtual Console	Platform	10	4	6
-Alt 1	NeedsReview	10	0	10
+Alt 1	Revision	10	0	10
 Atari Anthology	NeedsReview	10	0	10
 Cowabunga Collection, The	NeedsReview	10	0	10
 Disc 5	Disc	10	0	10
@@ -425,8 +425,8 @@ v6.0	Revision	6	3	3
 5S	NeedsReview	5	0	5
 7S	NeedsReview	5	0	5
 Aladdin Compact Cartridge	NeedsReview	5	3	2
-Alt2	NeedsReview	5	5	0
-Alt3	NeedsReview	5	5	0
+Alt2	Revision	5	5	0
+Alt3	Revision	5	5	0
 Argentina	Region	5	0	5
 BIOS	NeedsReview	5	5	0
 BNROM	NeedsReview	5	5	0

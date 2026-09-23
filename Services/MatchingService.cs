@@ -265,11 +265,13 @@ public sealed class MatchingService : IMatchingService
     /// (DisregardRomTags is on), that's a second, tag-inclusive comparison against the
     /// image's own full tokens (computed lazily and cached in fullTokenCache, since the
     /// same image can be a candidate for multiple ROMs) — so identical filenames still
-    /// score 100 while differently-tagged siblings score lower. Deliberately left
-    /// UNWEIGHTED (no tokenWeight passed) — see ADR-0003's "Scope" section: it doesn't
-    /// gate candidacy, and weighting it would need an eager, corpus-wide tag-inclusive
+    /// score 100 while differently-tagged siblings score lower. Weighted by
+    /// TagTokenizer.Weight (tag-category significance, docs/adr/0007) — NOT by the
+    /// corpus-frequency tokenWeight candidacy uses: see ADR-0003's "Scope" section —
+    /// corpus weighting here would need an eager, corpus-wide tag-inclusive
     /// tokenization pass that undermines fullTokenCache's whole reason to exist (lazily
-    /// tokenizing only images that already survived the stripped-token threshold). When
+    /// tokenizing only images that already survived the stripped-token threshold),
+    /// whereas significance is a pure function of the token itself. When
     /// romFullTokens is null, the tag-stripped score IS the full score (nothing was
     /// stripped to begin with), so it's reused with no extra work. contentHashCache
     /// works the same lazy-per-image way for the file's content hash; pass null to skip
@@ -309,7 +311,7 @@ public sealed class MatchingService : IMatchingService
                     fullTokenCache[idx] = imageFullTokens;
                 }
 
-                displayScore = SimilarityScorer.ScorePercent(romFullTokens, imageFullTokens!);
+                displayScore = SimilarityScorer.ScorePercent(romFullTokens, imageFullTokens!, TagTokenizer.Weight);
             }
 
             var contentHash = "";

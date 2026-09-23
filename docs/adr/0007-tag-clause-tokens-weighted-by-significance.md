@@ -2,7 +2,13 @@
 
 ## Status
 
-Proposed — decided in discussion (2026-09-23), implementation not started.
+Implemented on `experiment/tag-clause-tokens` (2026-09-23) and validated
+against the real NES library — see "Validation" below. Net effect on top
+picks: 9 improvements, 6 neutral reorders, 2 ambiguous, 0 regressions; and
+the validation surfaced a pre-existing bug that had left the old tag-inclusive
+score broken for every multi-region tag. One placement changed during
+validation: **Platform moved from Descriptive to Distinguishing** (the
+tables below show the final state). Decided in discussion 2026-09-23.
 **Absorbs ADR-0004**: "omit translation-credit tag phrases" is the
 Irrelevant-level case of the general rule below, so 0004 is not picked up
 separately. Composes with ADR-0006 (title structure) — see "Relationship to
@@ -86,8 +92,8 @@ on the token's category prefix:
 | Significance | Categories | Weight |
 |---|---|---|
 | Decisive | Disc, Region | 1.0 — same as a title word |
-| Distinguishing | Unofficial, Preview, Revision | 0.75 |
-| Descriptive | Platform, Label, Language, Date | **omitted** — not emitted at all |
+| Distinguishing | Unofficial, Preview, Revision, Platform | 0.75 |
+| Descriptive | Label, Language, Date | **omitted** — not emitted at all |
 | Irrelevant | TranslationCredit, HackOrPatchCredit | **omitted** — not emitted at all |
 | *(unclassified — NeedsReview clause)* | — | 0.75, emitted as `tag:<clause>` |
 
@@ -105,9 +111,9 @@ still separates a Rev 1 ROM from Rev 2 art (now a full clause-token
 mismatch, not half of one) but lets a plain ROM score closer to 100 against
 Rev 1 art than against another region's. Descriptive is dropped *for now*
 rather than given a small weight: start from "no effect," and promote a
-category (Platform is the likely one — Virtual Console art is often a
-genuinely different box) only when the validation diff shows ties that
-should have been ordered.
+category only when the validation diff shows ties that should have been
+ordered. That happened once, during this ADR's own validation: Platform
+started in Descriptive and moved to Distinguishing — see "Validation".
 
 Unclassified clauses are **kept**, at Distinguishing weight, not dropped.
 The NeedsReview pile holds real signal ("Tengen", "Namcot Collection",
@@ -168,9 +174,8 @@ differs.
   intended effect, delivered by the general rule.
 - A differing revision, disc, or region pays its full penalty as one token
   instead of half of one; unrelated tags no longer share a number token.
-- Language, date, platform, and label tags stop affecting the display score
-  entirely. A ROM against Virtual Console art and against cartridge art tie
-  when everything else agrees — deliberate, revisit with data.
+- Language, date, and label tags stop affecting the display score entirely.
+  (Platform was going to be in that list; validation moved it — see below.)
 - Unclassified tags remain a penalty source, so the size of the NeedsReview
   pile now has a (small, 0.75-weighted) effect on displayed numbers. That
   makes the catalog triage worth doing, which is the point.
@@ -188,11 +193,8 @@ differs.
   A", "Game Disc" — the table above assumes Disc/Disk fold together and the
   number/letter is the canonical value; the rest needs a look when
   implementing.
-- **"Alt 1" / "Alt 2".** `RevisionPattern` matches bare "Alt" only; the
-  catalog has "Alt 1" (10) and "Alt 2" (15) in NeedsReview. Trivial pattern
-  fix, should land with the implementation.
-- **Platform's level** (Descriptive vs Distinguishing) — data question, see
-  §2.
+- ~~"Alt 1" / "Alt 2"~~ — `RevisionPattern` now matches them; landed with
+  the implementation.
 - **Weight for unclassified clauses** — 0.75 is a default, not a measured
   value.
 
@@ -206,3 +208,74 @@ Descriptive tag was dropped — the signal for promoting a category — and (b)
 ROMs whose top pick is now a tie that used to be ordered. Tune the two
 constants (0.75 for Distinguishing, 0.75 for unclassified) against that
 diff.
+
+## Validation (NES, 315 ROMs with candidates, 1,362 candidate pairs)
+
+Run via the `--scan` dev CLI added for this purpose (real settings.json
+paths, Console Mode with existing-art skip, ignore list applied, compiled
+defaults for matching options, threshold 65) on the branch immediately
+before and after the change, then diffed per ROM and per pair. Candidacy
+is untouched, so the candidate set was identical in both runs (1,362 pairs
+across 315 ROMs; 2,211 ROMs with none) — only displayed scores and
+ordering moved.
+
+### A pre-existing bug this exposed
+
+Dumping the old `ForceInclude` tokens on `main` showed that the previous
+tag-inclusive path never stripped the brackets: "(Japan, USA)" tokenized as
+`(japan` and `usa)`, and "(Japan)" as `(japan)`, so a region word inside a
+multi-region tag could never match the same region on the other side, and
+"(En)" was matching `(en)` only by luck of being a one-word group. The old
+display score was therefore already wrong for every compound tag — e.g.
+"Konamic Tennis (JP)" vs "Tennis (Japan, USA) (En)" scored 29.2 when the
+region actually agrees. This is why the bulk of pairs moved up (below):
+regions that should have matched all along now do.
+
+### Pair-level movement
+
+| | Count |
+|---|---|
+| Pairs whose displayed score changed | 1,311 of 1,362 |
+| … up | 1,140 |
+| … down | 171 |
+| Largest gains | +37 to +40 — translation-credit ROMs ("Yume Koujou - Doki Doki Panic (English Translated, Rev 1.1, by Vice Translations)" 40.4 → 80.8; "Eggerland (English Translated by Necrosaro)" 20.0 → 60.0) and compound-tag ROMs ("Fruits Mahjong 3 (Disk 1 - Yonin no Tenshi Tachi - JP)" 30.0 → 67.4) |
+| Largest drops | −12 to −21 — a language list that used to match on both sides no longer counts ("Wonderland Dizzy (World) (En,Fr,Es,Nl,Pt,Pl) (Aftermarket) (Unl)" vs its Europe Proto art 81.8 → 61.1, which is honest: different region, different build), and multi-game pirate carts vs single-game art losing the shared "(En)" |
+
+### Top-candidate changes (17 ROMs)
+
+| Verdict | Count | ROMs |
+|---|---|---|
+| IMPROVEMENT | 9 | Rockman IV / VI (Taiwan) now land on *Rockman 4* / *Rockman 6* instead of *Rockman*; "Super Bros. 2" and "Super Mario Bros. II+" now pick *Super Mario Bros. 2* instead of *1*; "Mortal Kombat III Super Special" now *Mortal Kombat 3* instead of *II*; "Super Contra 8" now *Super Contra* instead of *Contra*; "Konamic Tennis (JP)" now *Tennis (Japan, USA)* (66.7) instead of *Tennis (Europe)* (41.7); "Final Fantasy - Taikong Zhanshi V (v1.1)" now the plain *Final Fantasy (Japan)* over *(Rev 1)*; "Dragon Ball Z - Super Butouden 2 (v1.0)" now the un-versioned Taiwan art over *(v1.1)* |
+| NEUTRAL | 6 | Region-mismatched Asian pirate carts whose old top pick won only on a shared "(En)": Bishoujo Sexy Puzzle, Double Dragon V, Ghostbusters III, Over Horizon, Puzzle Boys, Super Bros. 10 - Kung Fu Mari. Now a tie among equally-wrong-region candidates, broken by filename order; no candidate is more correct than another |
+| AMBIGUOUS | 2 | "Super 4-in-1 - Fantasy Gun" (*4-in-1* → *Super Gun*), "Super Contra 3-in-1" (*Contra* → *3-in-1*) — compilation carts, ADR-0005 territory |
+| REGRESSION | 0 | |
+
+### Platform: Descriptive → Distinguishing
+
+The first run had Platform in Descriptive (omitted), per the original
+table. The diff showed exactly the pattern §2 said to watch for, seven
+times: "Foo (Europe) (Virtual Console)" and "Foo (Europe)" tied, and the
+Virtual Console file won on filename order ("(Europe) (V…" sorts before
+"(Europe).jpg") — Double Dragon, Ice Hockey, Lode Runner ×2, Rockman 4,
+Mario Bros. (e-Reader) — and in one case the omission caused a genuine
+regression: "Super Mario Bros. 2j (USA) (RetroZone) (Aftermarket) (Pirate)"
+lost *Super Mario Bros. 2 (USA)* (67.6) to the short *Mario Bros. (USA)
+(e-Reader)* (70.7), because with "e-Reader" contributing nothing the image
+side's three tokens were fully contained in the ROM's. Moving Platform to
+Distinguishing (0.75) resolved all seven in favor of the plain release and
+restored the SMB2 pick; 104 pairs moved, all down (a Platform tag on one
+side now costs 0.75), no other top pick changed.
+
+### Ties
+
+ROMs whose top candidates tie rose from 69 to 111. Inspected: the new ties
+are (a) the region-mismatched pirates above, where the tie is correct, and
+(b) images differing only in a Language tag — "Contra (Asia) (En)" vs
+"Contra (Asia) (Ja)" — which is the deliberate consequence of Language
+being Descriptive. If (b) turns out to matter, Language is the next
+candidate for promotion, by the same evidence rule Platform followed.
+
+### Not measured
+
+Only NES. Disc tokens (`disc:1`) were checked by token dump, not by a
+multi-disc system scan; PSX/Saturn is the obvious next validation set.

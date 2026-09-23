@@ -28,6 +28,17 @@ sealed class Program
             return;
         }
 
+        if (GetArgValue(args, "--tokens") is { } name)
+        {
+            // Dev aid: what NameNormalizer makes of one name, both ways, with the
+            // display-score weight of each tag-inclusive token.
+            var settings = new Models.MatchSettings();
+            Console.WriteLine("stripped: " + string.Join(" ", NameNormalizer.ToTokens(name, settings)));
+            Console.WriteLine("full:     " + string.Join(" ", NameNormalizer.ToTokens(name, settings, NameNormalizer.TagHandling.ForceInclude)
+                .Select(t => $"{t}[{TagTokenizer.Weight(t):0.##}]")));
+            return;
+        }
+
         BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
     }
 

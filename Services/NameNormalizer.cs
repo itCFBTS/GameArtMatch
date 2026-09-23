@@ -36,11 +36,11 @@ public static partial class NameNormalizer
         /// true, so title matching stays insensitive to version/region noise.</summary>
         StripPerSettings,
 
-        /// <summary>Never strip tags — region words, plus a handful of other known
-        /// cross-spelling tag words (e.g. "Prototype"/"Proto"), are first canonicalized
-        /// (see CanonicalizeTagWords) so those spelling differences don't count against
-        /// the resulting token set, but every other tag word (version numbers, "Unl",
-        /// "Rev A") stays literal and does count.</summary>
+        /// <summary>Tokenize the title text exactly as StripPerSettings would with tags
+        /// stripped, then ADD one category-labeled token per tag clause via
+        /// TagTokenizer ("region:usa", "revision:rev 1") — spelling-canonicalized, and
+        /// with Descriptive/Irrelevant-significance clauses omitted entirely — see
+        /// docs/adr/0007. Pair with TagTokenizer.Weight when scoring.</summary>
         ForceInclude,
     }
 
@@ -50,17 +50,21 @@ public static partial class NameNormalizer
         var comparer = settings.MatchCase ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
         var name = rawName;
 
-        if (tagHandling == TagHandling.StripPerSettings)
+        // Collected before the groups are stripped from the name, and added to the
+        // set after the title words — tag tokens are always lowercase and prefixed
+        // ("region:usa"), so they can't collide with a title word under either comparer.
+        List<string>? tagTokens = null;
+        if (tagHandling == TagHandling.ForceInclude)
         {
-            if (settings.DisregardRomTags)
-            {
-                name = RemoveBetween(name, '(', ')');
-                name = RemoveBetween(name, '[', ']');
-            }
+            tagTokens = RegionCatalog.FindTagGroups(name)
+                .SelectMany(match => TagTokenizer.Tokenize(match.Groups[1].Value))
+                .ToList();
         }
-        else
+
+        if (tagHandling == TagHandling.ForceInclude || settings.DisregardRomTags)
         {
-            name = CanonicalizeTagWords(name);
+            name = RemoveBetween(name, '(', ')');
+            name = RemoveBetween(name, '[', ']');
         }
 
         name = ApplyPunctuationRules(name);
@@ -96,32 +100,10 @@ public static partial class NameNormalizer
             AddYearAbbreviationVariant(tokens, token);
         }
 
+        if (tagTokens is not null)
+            tokens.UnionWith(tagTokens);
+
         return tokens;
-    }
-
-    /// <summary>Replaces any region- or tag-word synonym found inside a "(...)"/"[...]"
-    /// group with its canonical spelling (e.g. "US" -> "USA", "Prototype" -> "Proto"),
-    /// leaving every other word — both unrecognized tag words and the actual title text
-    /// outside any group — untouched. Run as a single pass over the raw string, before
-    /// punctuation/splitting, because once tokens are split there's no way to tell which
-    /// ones came from inside a tag group without re-plumbing that context through the
-    /// rest of the pipeline.</summary>
-    private static string CanonicalizeTagWords(string name)
-    {
-        var result = name;
-        // Replace back-to-front so each earlier match's span/index stays valid as later
-        // ones are rewritten in place.
-        foreach (var match in RegionCatalog.FindTagGroups(name).Reverse())
-        {
-            var inner = match.Groups[1].Value;
-            var rewritten = string.Join(' ', RegionCatalog.SplitWords(inner)
-                .Select(word => RegionCatalog.TryCanonicalize(word) ?? TagWordCatalog.TryCanonicalize(word) ?? word));
-
-            var openChar = result[match.Index];
-            var closeChar = openChar == '(' ? ')' : ']';
-            result = result[..match.Index] + openChar + rewritten + closeChar + result[(match.Index + match.Length)..];
-        }
-        return result;
     }
 
     /// <summary>Strips everything between (and including) paired open/close markers —
