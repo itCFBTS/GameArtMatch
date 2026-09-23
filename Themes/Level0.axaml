@@ -1,6 +1,6 @@
 <!--
   Level 0 — the Backrooms: wallpaper yellow, damp-carpet browns. Hidden: reached only by
-  typing "noclip" in the Match page's search box (see MainViewModel.OnNoclip). Strictly
+  typing "/noclip" in the Match page's search box (see MainViewModel.OnNoclip). Strictly
   the Lospec Backrooms-22 palette (lospec.com/palette-list/backrooms-22), no outside
   colours — so Error/Warning are browns, not red/amber.
   One of the app's colour themes (see Themes/ThemeCatalog.cs). Every theme file

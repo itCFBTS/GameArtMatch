@@ -53,7 +53,7 @@ public partial class OptionsViewModel : ViewModelBase
     };
 
     /// <summary>What the Appearance page lists — every theme except hidden (easter-egg)
-    /// ones, which are only ever reached their own way (Level 0: "noclip").</summary>
+    /// ones, which are only ever reached their own way (Level 0: "/noclip").</summary>
     public IReadOnlyList<AppTheme> Themes { get; } = ThemeCatalog.All.Where(t => !t.IsHidden).ToList();
 
     /// <summary>The Appearance list's selection — SelectedTheme when it's a listed theme,

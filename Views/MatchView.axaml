@@ -84,7 +84,7 @@
                  sidebar (which is for setting a scan up). Search and Expand/Collapse All on
                  the right; the expand icon shows what a click will do next. Everything but
                  the search box waits for results — the search box is always live (it also
-                 happens to be where "noclip" gets typed). -->
+                 happens to be where "/noclip" gets typed). -->
             <DockPanel DockPanel.Dock="Top" Margin="0,10,0,0">
                 <Button DockPanel.Dock="Right" Classes="icon" Command="{Binding ToggleExpandCollapseCommand}"
                         IsEnabled="{Binding HasResults}"

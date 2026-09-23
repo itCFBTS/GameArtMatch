@@ -170,7 +170,7 @@ public partial class MainViewModel : ViewModelBase
         });
     }
 
-    /// <summary>Raised when "noclip" is typed into the Match page's search box — MainWindow
+    /// <summary>Raised when "/noclip" is typed into the Match page's search box — MainWindow
     /// plays the fluorescent-flicker transition and calls ApplyTheme at its darkest
     /// moment, so the theme swaps while the screen is out.</summary>
     public event EventHandler<NoclipEventArgs>? NoclipTransition;

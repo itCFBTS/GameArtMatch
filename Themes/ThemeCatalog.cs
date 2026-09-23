@@ -58,7 +58,7 @@ public static class ThemeCatalog
         new("Snes", "SNES", "Warm charcoal with Super Famicom lavender.", ThemeVariant.Dark),
         new("MegaDrive", "Mega Drive", "Near-black console plastic with Sega blue.", ThemeVariant.Dark),
         new("GameBoy", "Game Boy", "Pale DMG screen green, dark-green ink.", ThemeVariant.Light),
-        // Only reachable by typing "noclip" into the Match page's search box (MainViewModel.OnNoclip).
+        // Only reachable by typing "/noclip" into the Match page's search box (MainViewModel.OnNoclip).
         new("Level0", "Level 0", "You noclipped out of reality.", ThemeVariant.Light, isHidden: true),
     ];
 

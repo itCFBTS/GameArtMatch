@@ -254,13 +254,13 @@ public partial class MatchViewModel : ViewModelBase
     /// delay (see MatchView.axaml) so a fast typist doesn't rebuild the tree per key.</summary>
     [ObservableProperty] public partial string SearchText { get; set; } = "";
 
-    /// <summary>Raised when the search box reads "noclip" — MainViewModel takes it from
+    /// <summary>Raised when the search box reads "/noclip" — MainViewModel takes it from
     /// there (the Level 0 easter egg). The search is cleared, not applied.</summary>
     public event EventHandler? Noclipped;
 
     partial void OnSearchTextChanged(string value)
     {
-        if (string.Equals(value?.Trim(), "noclip", StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(value?.Trim(), "/noclip", StringComparison.OrdinalIgnoreCase))
         {
             SearchText = "";
             Noclipped?.Invoke(this, EventArgs.Empty);
@@ -347,8 +347,11 @@ public partial class MatchViewModel : ViewModelBase
         var romTypeOk = SelectedFileType == FileTypeAll ||
                          string.Equals(Path.GetExtension(group.RomFileName), SelectedFileType, StringComparison.OrdinalIgnoreCase);
         var romRegionOk = RegionFilter.Matches(group.RomFileName, SelectedRegion, isImage: false);
-        var romSearchOk = string.IsNullOrWhiteSpace(SearchText)
-                          || group.RomFileName.Contains(SearchText.Trim(), StringComparison.OrdinalIgnoreCase);
+        // Text starting with "/" is a command being typed (only "/noclip" exists), not a
+        // search — leave the tree alone rather than flashing "nothing matches" per key.
+        var search = SearchText.Trim();
+        var romSearchOk = search.Length == 0 || search.StartsWith('/')
+                          || group.RomFileName.Contains(search, StringComparison.OrdinalIgnoreCase);
 
         group.VisibleCandidates.Clear();
         if (romTypeOk && romRegionOk && romSearchOk)
