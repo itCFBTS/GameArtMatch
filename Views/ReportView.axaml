@@ -19,10 +19,10 @@
             <Button Content="Export..." Click="OnExportClick" />
         </DockPanel>
 
-        <!-- Reflects whatever the Match tab's last scan found — not re-scanned here, see
-             ReportViewModel — so results are stale until a scan has actually run there. -->
+        <!-- Reflects whatever the Match page's last scan found — not re-scanned here, see
+             ReportViewModel; re-copied each time this page is shown. -->
         <TextBlock DockPanel.Dock="Top" Margin="0,0,0,8" Classes="hint"
-                   Text="ROMs the Match tab's last scan found no art for. Run (or re-run) a scan there, then hit Refresh." />
+                   Text="ROMs the last scan on the Match page found no art for." />
 
         <!-- Matched was dropped — Missing is the only list left, so (matching
              MainWindow's own single-tab precedent) there's no TabControl anymore, just

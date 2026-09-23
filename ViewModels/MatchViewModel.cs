@@ -14,7 +14,7 @@ using GameArtMatch.Services;
 
 namespace GameArtMatch.ViewModels;
 
-/// <summary>Backs the "Match" tab — the old frmMatch's Start/Cancel + Results tree.</summary>
+/// <summary>Backs the Match page — the old frmMatch's Start/Cancel + Results tree.</summary>
 public partial class MatchViewModel : ViewModelBase
 {
     private readonly MatchSettings _settings;
@@ -33,7 +33,7 @@ public partial class MatchViewModel : ViewModelBase
     /// <summary>Drives the "ROMs •  images" bouncing-dot separator shown once both
     /// figures above are final and Indexing/Matching are running — same DispatcherTimer-
     /// driven "steadily changing string" technique as ActivityDotsText (see MatchView.
-    /// axaml.cs), just recomposing the whole StatusText each tick instead of a
+    /// axaml.cs), just recomposing the whole ScanProgressText each tick instead of a
     /// standalone TextBlock, since the two numbers around it live here already.</summary>
     private DispatcherTimer? _separatorTimer;
     private int _separatorFrameIndex;
@@ -76,12 +76,96 @@ public partial class MatchViewModel : ViewModelBase
     /// <summary>ROMs the last scan found zero candidates for above the accuracy
     /// threshold — a side effect of the same StartAsync pass (see MatchingService.
     /// FindMatchesAsync/MatchScanResult), read directly by ReportViewModel for the
-    /// Report window's Missing tab instead of that window running its own separate,
+    /// Report page's Missing list instead of that window running its own separate,
     /// redundant re-scan just to reproduce the same list. Empty until the first scan
     /// ever completes.</summary>
     public IReadOnlyList<ReportEntry> MissingRoms { get; private set; } = [];
 
-    [ObservableProperty] public partial string StatusText { get; set; } = "Press 'Start' when ready.";
+    // --- What used to be one StatusText, split by job so no message overwrites another:
+    // live scan counts (the centered progress overlay), a permanent results summary
+    // (under the tree), an empty-state message (centered where the tree would be), and
+    // the last rename's outcome (a notice beside the Rename button). ---
+
+    /// <summary>"412 ROMs • 380 images" while a scan runs — shown under the progress bar
+    /// in MatchView's scan overlay.</summary>
+    [ObservableProperty] public partial string ScanProgressText { get; set; } = "";
+
+    /// <summary>How the most recent scan ended — picks the empty state's wording.</summary>
+    private enum ScanOutcome { NeverRun, Completed, Cancelled }
+
+    private ScanOutcome _lastScanOutcome = ScanOutcome.NeverRun;
+
+    /// <summary>Visible candidates whose rename checkbox is ticked — drives the Rename
+    /// button's label/enabled state and the results summary. Recounted lazily (see
+    /// ScheduleResultsRefresh) since "Select Best Matched" can flip thousands at once.</summary>
+    [NotifyCanExecuteChangedFor(nameof(RenameFilesCommand))]
+    [ObservableProperty]
+    public partial int SelectedCount { get; set; }
+
+    /// <summary>True once the current scan has produced at least one ROM with a candidate
+    /// (before filtering) — the sidebar's Filters section is disabled until then.</summary>
+    [ObservableProperty] public partial bool HasResults { get; set; }
+
+    public string RenameButtonText => SelectedCount switch
+    {
+        0 => "Rename",
+        1 => "Rename 1 file",
+        _ => $"Rename {SelectedCount:N0} files",
+    };
+
+    /// <summary>"380 of 412 ROMs shown · 12 selected" — live, follows filters and
+    /// checkboxes, unlike the old one-shot "Found N candidates" message.</summary>
+    public string ResultsSummaryText
+    {
+        get
+        {
+            var text = Groups.Count == _allGroups.Count
+                ? $"{_allGroups.Count:N0} ROM(s)"
+                : $"{Groups.Count:N0} of {_allGroups.Count:N0} ROMs shown";
+            return SelectedCount > 0 ? $"{text} · {SelectedCount:N0} selected" : text;
+        }
+    }
+
+    public bool IsEmptyStateVisible => !IsMatchRunning && Groups.Count == 0;
+
+    public string EmptyStateText =>
+        _lastScanOutcome == ScanOutcome.NeverRun ? "Pick your ROMs and Images folders, then Start scan."
+        : _allGroups.Count > 0 ? "Nothing matches the current filters."
+        : _lastScanOutcome == ScanOutcome.Cancelled ? "Scan cancelled."
+        : "No matches found above the accuracy threshold.";
+
+    /// <summary>Outcome of the last rename ("Renamed 11 file(s). 1 failed.") — shown
+    /// beside the Rename button. MatchView fades a clean result out after a few seconds;
+    /// one with skips/failures stays until dismissed.</summary>
+    [ObservableProperty] public partial string? RenameNotice { get; set; }
+
+    [ObservableProperty] public partial bool RenameNoticeHasProblems { get; set; }
+
+    [RelayCommand]
+    private void DismissRenameNotice() => RenameNotice = null;
+
+    private bool _resultsRefreshPending;
+
+    /// <summary>Coalesces everything derived from Groups/checkboxes (selected count,
+    /// summary, empty state) into one recount per dispatcher pass — a bulk select or a
+    /// streaming scan would otherwise recount the whole tree once per changed row.</summary>
+    private void ScheduleResultsRefresh()
+    {
+        if (_resultsRefreshPending)
+            return;
+
+        _resultsRefreshPending = true;
+        Dispatcher.UIThread.Post(() =>
+        {
+            _resultsRefreshPending = false;
+            SelectedCount = Groups.Sum(g => g.VisibleCandidates.Count(c => c.IsSelected));
+            HasResults = _allGroups.Count > 0;
+            OnPropertyChanged(nameof(RenameButtonText));
+            OnPropertyChanged(nameof(ResultsSummaryText));
+            OnPropertyChanged(nameof(IsEmptyStateVisible));
+            OnPropertyChanged(nameof(EmptyStateText));
+        }, DispatcherPriority.Background);
+    }
 
     /// <summary>0-100, driven by MatchingService's throttled progress reports during a
     /// scan — a real determinate progress bar, since the ROM count is known upfront.</summary>
@@ -91,6 +175,8 @@ public partial class MatchViewModel : ViewModelBase
     /// broader IsBusy (which also covers Rename) so the progress bar doesn't show a
     /// stale matching percentage during an unrelated rename operation.</summary>
     [ObservableProperty] public partial bool IsMatchRunning { get; set; }
+
+    partial void OnIsMatchRunningChanged(bool value) => ScheduleResultsRefresh();
 
     /// <summary>True from the moment Start is clicked until MatchingService starts
     /// scoring ROMs against the image index (MatchPhase.Matching) — covers both the
@@ -139,9 +225,24 @@ public partial class MatchViewModel : ViewModelBase
     /// filtered out by region/exact-score stays out regardless of this setting.</summary>
     [ObservableProperty] public partial bool HideSameImages { get; set; }
 
-    partial void OnSelectedFileTypeChanged(string value) => ApplyFilters();
+    // The sidebar's ComboBoxes push null back through their TwoWay SelectedItem binding
+    // whenever their list is cleared (StartAsync resets AvailableFileTypes/Regions) —
+    // snap that back to "All" instead of filtering on a null type/region.
+    partial void OnSelectedFileTypeChanged(string value)
+    {
+        if (value is null)
+            SelectedFileType = FileTypeAll;
+        else
+            ApplyFilters();
+    }
 
-    partial void OnSelectedRegionChanged(string value) => ApplyFilters();
+    partial void OnSelectedRegionChanged(string value)
+    {
+        if (value is null)
+            SelectedRegion = RegionFilter.All;
+        else
+            ApplyFilters();
+    }
 
     partial void OnShowOnlyExactScoreMatchesChanged(bool value) => ApplyFilters();
 
@@ -170,9 +271,9 @@ public partial class MatchViewModel : ViewModelBase
 
         // A filter can hide a previously-selected candidate (or reveal previously-hidden
         // ones) without any single candidate's own IsSelected value changing, so this
-        // needs its own explicit re-check rather than relying solely on
+        // needs its own explicit recount rather than relying solely on
         // OnCandidatePropertyChanged.
-        RenameFilesCommand.NotifyCanExecuteChanged();
+        ScheduleResultsRefresh();
 
         RestoreTreeSelectionAfterFilter(highlighted);
     }
@@ -339,7 +440,7 @@ public partial class MatchViewModel : ViewModelBase
     [ObservableProperty]
     public partial bool IsBusy { get; set; }
 
-    public string StartCancelButtonText => IsBusy ? "Cancel" : "Start";
+    public string StartCancelButtonText => IsBusy ? "Cancel" : "Start scan";
 
     partial void OnIsBusyChanged(bool value) => OnPropertyChanged(nameof(StartCancelButtonText));
 
@@ -421,7 +522,8 @@ public partial class MatchViewModel : ViewModelBase
         IsMatchRunning = true;
         IsIndexing = true;
         ProgressPercent = 0;
-        StatusText = "Preparing scan";
+        ScanProgressText = "Preparing scan";
+        RenameNotice = null;
         _lastRomsListed = 0;
         _lastImagesListed = 0;
         _separatorFrameIndex = 0;
@@ -459,11 +561,11 @@ public partial class MatchViewModel : ViewModelBase
                 // once CurrentName switches to "images" — see that field's declaration.
                 case MatchPhase.Listing when p.CurrentName == "ROMs":
                     _lastRomsListed = p.Current;
-                    StatusText = $"{_lastRomsListed:N0} ROMs";
+                    ScanProgressText = $"{_lastRomsListed:N0} ROMs";
                     break;
                 case MatchPhase.Listing:
                     _lastImagesListed = p.Current;
-                    StatusText = $"{_lastRomsListed:N0} ROMs, {_lastImagesListed:N0} images";
+                    ScanProgressText = $"{_lastRomsListed:N0} ROMs, {_lastImagesListed:N0} images";
                     break;
                 case MatchPhase.Indexing:
                     // No more "(X/Y)" here — once both counts are final there's nothing
@@ -483,7 +585,7 @@ public partial class MatchViewModel : ViewModelBase
             }
         });
 
-        // Local, not a private method — captures StatusText updates against the two
+        // Local, not a private method — captures ScanProgressText updates against the two
         // fields above via the same closure the "ROMs"/images cases already write to,
         // and there's no reason for anything outside this one progress handler to ever
         // start it.
@@ -496,7 +598,7 @@ public partial class MatchViewModel : ViewModelBase
             _separatorTimer.Tick += (_, _) =>
             {
                 _separatorFrameIndex = (_separatorFrameIndex + 1) % SeparatorFrames.Length;
-                StatusText = $"{_lastRomsListed:N0} ROMs{SeparatorFrames[_separatorFrameIndex]}{_lastImagesListed:N0} images";
+                ScanProgressText = $"{_lastRomsListed:N0} ROMs{SeparatorFrames[_separatorFrameIndex]}{_lastImagesListed:N0} images";
             };
             _separatorTimer.Start();
         }
@@ -507,15 +609,11 @@ public partial class MatchViewModel : ViewModelBase
         {
             var scanResult = await _matchingService.FindMatchesAsync(_settings, progress, romMatched, _cts.Token);
             MissingRoms = scanResult.Missing;
-
-            var totalCandidates = Groups.Sum(g => g.Candidates.Count);
-            StatusText = Groups.Count == 0
-                ? "No matches found above the accuracy threshold."
-                : $"Found {totalCandidates} candidate(s) across {Groups.Count} ROM(s). Select the ones to rename.";
+            _lastScanOutcome = ScanOutcome.Completed;
         }
         catch (OperationCanceledException)
         {
-            StatusText = "Cancelled.";
+            _lastScanOutcome = ScanOutcome.Cancelled;
         }
         finally
         {
@@ -524,6 +622,7 @@ public partial class MatchViewModel : ViewModelBase
             IsIndexing = false;
             _separatorTimer?.Stop();
             _separatorTimer = null;
+            ScheduleResultsRefresh();
         }
     }
 
@@ -551,7 +650,7 @@ public partial class MatchViewModel : ViewModelBase
                 Groups.Add(existingGroup);
             if (existingGroup == _previewGroup)
                 SyncCarousel(); // its visible set just changed under the carousel
-            RenameFilesCommand.NotifyCanExecuteChanged();
+            ScheduleResultsRefresh();
             return;
         }
 
@@ -573,7 +672,7 @@ public partial class MatchViewModel : ViewModelBase
         if (ApplyFiltersToGroup(romGroup))
             Groups.Add(romGroup); // no sorted-insert needed — MatchingService.ListRoms now hands out ROMs pre-sorted
 
-        RenameFilesCommand.NotifyCanExecuteChanged();
+        ScheduleResultsRefresh();
     }
 
     /// <summary>Grows AvailableFileTypes incrementally as each new extension is first
@@ -627,19 +726,19 @@ public partial class MatchViewModel : ViewModelBase
         }
     }
 
-    /// <summary>Mirrors exactly what RenameFilesAsync itself acts on — a VISIBLE and
-    /// selected candidate — so the button disables itself the moment there's nothing to
-    /// rename, rather than being clickable and just showing a "Nothing selected" message.</summary>
-    private bool CanRenameFiles() => !IsBusy && Groups.Any(g => g.VisibleCandidates.Any(c => c.IsSelected));
+    /// <summary>SelectedCount mirrors exactly what RenameFilesAsync itself acts on — a
+    /// VISIBLE and selected candidate — so the button disables itself the moment there's
+    /// nothing to rename, rather than being clickable and just showing a "Nothing
+    /// selected" message.</summary>
+    private bool CanRenameFiles() => !IsBusy && SelectedCount > 0;
 
-    /// <summary>Fires RenameFilesCommand's CanExecute re-check whenever any candidate's
-    /// checkbox toggles anywhere in the tree — IsSelected isn't a single ObservableProperty
-    /// on this ViewModel (it's spread across every MatchCandidate), so it can't use the
-    /// usual [NotifyCanExecuteChangedFor] attribute the way IsBusy does above.</summary>
+    /// <summary>Schedules a recount whenever any candidate's checkbox toggles anywhere in
+    /// the tree — IsSelected isn't a single ObservableProperty on this ViewModel (it's
+    /// spread across every MatchCandidate), so SelectedCount can't just follow it.</summary>
     private void OnCandidatePropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(MatchCandidate.IsSelected))
-            RenameFilesCommand.NotifyCanExecuteChanged();
+            ScheduleResultsRefresh();
     }
 
     private void Cancel() => _cts?.Cancel();
@@ -741,7 +840,7 @@ public partial class MatchViewModel : ViewModelBase
         foreach (var group in removed)
             ForgetGroup(group);
 
-        // Keeps the Report window's Missing tab in sync — otherwise a folder ignored
+        // Keeps the Report page's Missing list in sync — otherwise a folder ignored
         // here could still hide an already-cached "missing" entry for a ROM that
         // happened to sit under it, until the next full scan naturally excludes it.
         RemoveFromMissingCacheUnderFolder(folderPath);
@@ -751,7 +850,7 @@ public partial class MatchViewModel : ViewModelBase
     }
 
     /// <summary>Called by ReportViewModel when a ROM gets individually ignored from the
-    /// Report window's Missing list — MissingRoms is a snapshot from whenever the last
+    /// Report page's Missing list — MissingRoms is a snapshot from whenever the last
     /// scan ran, so simply mutating IgnoredRomPaths elsewhere wouldn't otherwise remove
     /// it from this cache until the next full scan happens to exclude it.</summary>
     public void RemoveFromMissingCache(IReadOnlyCollection<string> romFullPaths)
@@ -831,18 +930,17 @@ public partial class MatchViewModel : ViewModelBase
     {
         var selected = Groups.SelectMany(g => g.VisibleCandidates).Where(c => c.IsSelected).ToList();
         if (selected.Count == 0)
-        {
-            StatusText = "Nothing selected to rename.";
-            return;
-        }
+            return; // CanRenameFiles normally prevents this; the recount is just lagging
 
         IsBusy = true;
+        RenameNotice = null;
         _cts = new CancellationTokenSource();
 
         try
         {
             var summary = await _renameService.RenameAsync(selected, _settings, _cts.Token);
-            StatusText = summary.ToStatusText();
+            RenameNoticeHasProblems = summary.Skipped > 0 || summary.Failed > 0;
+            RenameNotice = summary.ToStatusText();
 
             // The operation was attempted for all of these — clear their checkboxes so a
             // second click of "Rename Selected" doesn't just repeat the same batch. Ones
@@ -852,7 +950,8 @@ public partial class MatchViewModel : ViewModelBase
         }
         catch (OperationCanceledException)
         {
-            StatusText = "Rename cancelled.";
+            RenameNoticeHasProblems = false;
+            RenameNotice = "Rename cancelled.";
         }
         finally
         {

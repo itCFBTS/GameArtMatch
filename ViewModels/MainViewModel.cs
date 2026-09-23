@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using GameArtMatch.Models;
 using GameArtMatch.Services;
@@ -8,11 +9,11 @@ using GameArtMatch.Services;
 namespace GameArtMatch.ViewModels;
 
 /// <summary>
-/// The single-window shell. Owns the shared MatchSettings (bound directly by the
-/// Paths and Options tabs) and hands it to both MatchViewModel and ReportViewModel,
-/// so there's one set of folder/option inputs feeding both the fuzzy-match wizard
-/// and the missing/matched report — replacing the original's launcher window +
-/// two separate top-level windows.
+/// The single-window shell (sidebar + Match/Report pages). Owns the shared
+/// MatchSettings (bound directly by the sidebar's Sources section and Options) and
+/// hands it to both MatchViewModel and ReportViewModel, so there's one set of
+/// folder/option inputs feeding both the fuzzy-match wizard and the missing report —
+/// replacing the original's launcher window + two separate top-level windows.
 /// </summary>
 public partial class MainViewModel : ViewModelBase
 {
@@ -30,22 +31,33 @@ public partial class MainViewModel : ViewModelBase
 
     public IgnoredRomsViewModel IgnoredRomsVm { get; }
 
-    /// <summary>Folder the persisted settings.json lives in — backs File > Open Settings
-    /// Folder (see MainWindow.axaml.cs).</summary>
+    /// <summary>Folder the persisted settings.json lives in — backs Options' "Open
+    /// Settings Folder" button (see OptionsWindow.axaml.cs).</summary>
     public string SettingsFolderPath => _settingsStore.FolderPath;
 
-    /// <summary>Raised (via the view) to show the About dialog — kept out of the tab strip
-    /// per the request to move it into a menu instead of a launcher button.</summary>
-    public event System.EventHandler? AboutRequested;
+    /// <summary>Which sidebar destination is showing — Match (false) or Report (true).
+    /// MainWindow keeps both views alive and just toggles visibility, rather than
+    /// swapping ContentControl.Content, so flipping pages never rebuilds the results
+    /// tree (ViewLocator would construct a fresh MatchView on every swap).</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsMatchPageActive))]
+    public partial bool IsReportPageActive { get; set; }
 
-    /// <summary>Raised (via the view) to show the Options dialog — moved out of its own
-    /// tab and into File > Options, an Avalonia-idiomatic modal preferences window.</summary>
+    public bool IsMatchPageActive => !IsReportPageActive;
+
+    /// <summary>Report is a snapshot of the last scan's missing list — re-copy it each
+    /// time the page is shown so it's never stale from an earlier scan.</summary>
+    partial void OnIsReportPageActiveChanged(bool value)
+    {
+        if (value)
+            ReportVm.RefreshCommand.Execute(null);
+    }
+
+    [ObservableProperty] public partial bool IsSidebarOpen { get; set; } = true;
+
+    /// <summary>Raised (via the view) to show the Options dialog — reached from the
+    /// sidebar's footer (or Ctrl+,), an Avalonia-idiomatic modal preferences window.</summary>
     public event System.EventHandler? OptionsRequested;
-
-    /// <summary>Raised (via the view) to open the Report window — moved out of its own
-    /// main-window tab and into File > Report, a non-modal window so it can stay open
-    /// alongside continued work in the Match tab.</summary>
-    public event System.EventHandler? ReportRequested;
 
     public MainViewModel() : this(new MatchingService(), new RenameService(), new SettingsStore())
     {
@@ -151,11 +163,14 @@ public partial class MainViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void ShowAbout() => AboutRequested?.Invoke(this, System.EventArgs.Empty);
-
-    [RelayCommand]
     private void OpenOptions() => OptionsRequested?.Invoke(this, System.EventArgs.Empty);
 
     [RelayCommand]
-    private void OpenReport() => ReportRequested?.Invoke(this, System.EventArgs.Empty);
+    private void ShowMatchPage() => IsReportPageActive = false;
+
+    [RelayCommand]
+    private void ShowReportPage() => IsReportPageActive = true;
+
+    [RelayCommand]
+    private void ToggleSidebar() => IsSidebarOpen = !IsSidebarOpen;
 }

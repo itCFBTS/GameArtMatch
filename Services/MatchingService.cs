@@ -69,7 +69,7 @@ public sealed class MatchingService : IMatchingService
             var results = new List<MatchCandidate>();
             // A ROM that scores zero candidates above the threshold — tracked as a side
             // effect of this same pass rather than via a separate FindMissingAsync scan,
-            // so the Report window's Missing tab (see MatchViewModel.MissingRoms) can
+            // so the Report page's Missing list (see MatchViewModel.MissingRoms) can
             // just read this instead of re-scanning from scratch.
             var missing = new List<ReportEntry>();
             var imageUseCount = new Dictionary<string, int>();

@@ -8,7 +8,7 @@ using GameArtMatch.Models;
 
 namespace GameArtMatch.ViewModels;
 
-/// <summary>Backs the Report window (see ReportWindow) — just the Missing tab now
+/// <summary>Backs the sidebar's Report page (see ReportView) — just the Missing list now
 /// (Matched was dropped; ignored ROMs are managed from the Options window instead, see
 /// IgnoredRomsViewModel). Reads directly from MatchViewModel.MissingRoms — a cached
 /// side effect of that ViewModel's own last scan — rather than running a second,
@@ -43,10 +43,9 @@ public partial class ReportViewModel : ViewModelBase
     {
     }
 
-    /// <summary>Copies MatchViewModel.MissingRoms as of right now — run automatically as
-    /// soon as the Report window opens (see ReportWindow.axaml.cs), and re-runnable via
-    /// the window's own Refresh button afterward, e.g. after running a fresh scan on the
-    /// Match tab while the Report window stays open. Synchronous: unlike the old
+    /// <summary>Copies MatchViewModel.MissingRoms as of right now — run automatically
+    /// every time the sidebar switches to the Report page (see MainViewModel.
+    /// OnIsReportPageActiveChanged), and re-runnable via the page's own Refresh button. Synchronous: unlike the old
     /// scan-based version, this is just copying an already-computed list, no I/O.</summary>
     [RelayCommand]
     private void Refresh()

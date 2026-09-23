@@ -52,7 +52,7 @@ public partial class IgnoredRomsViewModel : ObservableObject
 
     /// <summary>Re-reads MatchSettings.IgnoredRomPaths — called at construction and again
     /// each time the Options window opens (see MainWindow.axaml.cs), since paths can
-    /// change from the Match tab's or Report window's own "Ignore Selected ROM(s)" while
+    /// change from the Match or Report page's own "Ignore Selected ROM(s)" while
     /// this window was closed. Only paths that still exist on disk are shown — same
     /// "silently skip anything since deleted/moved" behavior the old Report Ignored tab
     /// had; nothing here prunes IgnoredRomPaths itself over a missing file.</summary>

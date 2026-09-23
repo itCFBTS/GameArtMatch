@@ -52,16 +52,16 @@ Output lands in `publish/linux-x64/` and `publish/win-x64/`.
 
 ## Usage
 
-1. Pick a **ROMs** folder and an **Images** folder from the main window.
-2. Click **Start** to scan. Candidates are grouped by ROM, best match first,
+1. Pick a **ROMs** folder and an **Images** folder in the sidebar.
+2. Click **Start scan** (F5). Candidates are grouped by ROM, best match first,
    with a score and any relevant markers (exact match, duplicate elsewhere,
-   identical to another candidate here).
-3. Select the correct image for each ROM (or use the **Selection** dropdown
-   to auto-select best/single matches across the board) and click
-   **Rename Selected**.
-4. Use **File > Options** to configure root folders, matching behavior, and
-   renaming options; **File > Report** to see what's missing, matched, or
-   ignored across a scan.
+   identical to another candidate here). Narrow them down with the sidebar's
+   **Filters**.
+3. Select the correct image for each ROM (or use **Select Best** / **Select
+   Singles** above the results) and click **Rename** (Ctrl+Enter).
+4. Use **Options** (Ctrl+,) at the foot of the sidebar to configure root
+   folders, matching behavior, and ignored ROMs; the sidebar's **Report** page
+   lists ROMs the last scan found no art for.
 
 Folder selections and the last-used ROMs↔Images pairing are remembered
 between launches — see below for exactly what's stored and where.
@@ -78,8 +78,8 @@ Settings are stored as plain JSON in the OS's per-user app-data folder:
 What's in it:
 
 - **Root folders** (`RomsRootPath`, `ImagesRootPath`) — the starting point
-  offered when browsing for a system's ROMs/Images folder from **File >
-  Options**.
+  offered when browsing for a system's ROMs/Images folder from the
+  sidebar (set in **Options**).
 - **Console Mode** (`IsConsoleMode`) and **include subfolders**
   (`RomsIncludeSubfolders`, `ImagesIncludeSubfolders`).
 - **Last-used folders** (`LastRomsPath`, `LastImagesPath`) — the exact ROMs

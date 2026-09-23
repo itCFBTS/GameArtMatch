@@ -135,7 +135,7 @@
     <!-- Every button gets the pixel display font — buttons only ever hold short
          labels ("Start", "Close", "..."), so Press Start 2P's readability limits
          don't bite here the way they would on filenames. MenuItem gets the same
-         treatment (File/Help menu bar, DropDownButton flyouts, context-menu
+         treatment (DropDownButton flyouts, context-menu
          entries) so a flyout opened from a button doesn't suddenly switch fonts. -->
     <Style Selector="Button, MenuItem">
         <Setter Property="FontFamily" Value="{DynamicResource FontFamilyDisplay}" />
@@ -164,6 +164,17 @@
         <Setter Property="Height" Value="32" />
         <Setter Property="Padding" Value="12,0" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+
+    <!-- Square, chrome-less icon button — the sidebar's ☰ toggle, MatchView's
+         Expand/Collapse All and rename-notice dismiss. Fluent's own pointer-over
+         background still shows, so it reads as clickable on hover. -->
+    <Style Selector="Button.icon">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Width" Value="32" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
     </Style>
 
     <!-- Muted secondary text, no size change — e.g. a candidate count, a

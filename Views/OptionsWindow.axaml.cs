@@ -29,12 +29,32 @@ public partial class OptionsWindow : Window
         set => SetValue(IgnoredRomsVmProperty, value);
     }
 
+    /// <summary>MainViewModel.SettingsFolderPath — only read on click, so a plain
+    /// property is enough (unlike IgnoredRomsVm, nothing binds to it).</summary>
+    public string? SettingsFolderPath { get; init; }
+
     public OptionsWindow()
     {
         InitializeComponent();
     }
 
     private void OnCloseClick(object? sender, RoutedEventArgs e) => Close();
+
+    private void OnAboutClick(object? sender, RoutedEventArgs e) =>
+        new AboutWindow { DataContext = new AboutViewModel() }.ShowDialog(this);
+
+    // Directory.CreateDirectory first — on a fresh install nothing has ever been
+    // persisted yet (MainViewModel.Persist only runs once a setting actually changes),
+    // so the folder may not exist yet; without this, the very first click on a clean
+    // install would try to reveal a path that isn't there.
+    private void OnOpenSettingsFolderClick(object? sender, RoutedEventArgs e)
+    {
+        if (string.IsNullOrEmpty(SettingsFolderPath))
+            return;
+
+        System.IO.Directory.CreateDirectory(SettingsFolderPath);
+        FileExplorerService.RevealFolder(SettingsFolderPath);
+    }
 
     private void OnOpenIgnoredFilePathClick(object? sender, RoutedEventArgs e)
     {

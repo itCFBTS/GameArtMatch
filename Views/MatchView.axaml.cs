@@ -29,6 +29,10 @@ public partial class MatchView : UserControl
     private readonly DispatcherTimer _zIndexTimer = new() { Interval = ZIndexSwapDelay };
     private PreviewCarouselViewModel? _subscribedCarousel;
 
+    /// <summary>Clears a clean rename's notice after a few seconds; one with skips or
+    /// failures is left up until dismissed. View-owned, like the other timers here.</summary>
+    private readonly DispatcherTimer _renameNoticeTimer = new() { Interval = TimeSpan.FromSeconds(6) };
+
     public MatchView()
     {
         InitializeComponent();
@@ -51,6 +55,13 @@ public partial class MatchView : UserControl
             ActivityDotsText.Text = ActivityDotsFrames[_activityDotsIndex];
         };
 
+        _renameNoticeTimer.Tick += (_, _) =>
+        {
+            _renameNoticeTimer.Stop();
+            if (DataContext is MatchViewModel { RenameNoticeHasProblems: false } vm)
+                vm.RenameNotice = null;
+        };
+
         _zIndexTimer.Tick += (_, _) =>
         {
             _zIndexTimer.Stop();
@@ -70,6 +81,7 @@ public partial class MatchView : UserControl
         {
             _zIndexTimer.Stop();
             _activityDotsTimer.Stop();
+            _renameNoticeTimer.Stop();
         };
     }
 
@@ -150,6 +162,12 @@ public partial class MatchView : UserControl
         {
             case nameof(MatchViewModel.IsPreviewVisible):
                 SetPreviewPaneVisible(vm.IsPreviewVisible);
+                break;
+
+            case nameof(MatchViewModel.RenameNotice):
+                _renameNoticeTimer.Stop();
+                if (vm.RenameNotice is not null && !vm.RenameNoticeHasProblems)
+                    _renameNoticeTimer.Start();
                 break;
 
             case nameof(MatchViewModel.IsIndexing):

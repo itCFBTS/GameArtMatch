@@ -3,99 +3,160 @@
         xmlns:vm="using:GameArtMatch.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="820" d:DesignHeight="680"
+        mc:Ignorable="d" d:DesignWidth="1060" d:DesignHeight="700"
         x:Class="GameArtMatch.Views.MainWindow"
         x:DataType="vm:MainViewModel"
         Icon="/Assets/avalonia-logo.ico"
         Title="GameArtMatch"
-        Width="820" Height="680">
+        Width="1060" Height="700" MinWidth="720" MinHeight="480">
 
     <Design.DataContext>
         <vm:MainViewModel />
     </Design.DataContext>
 
-    <DockPanel>
-        <Menu DockPanel.Dock="Top">
-            <MenuItem Header="_File">
-                <MenuItem Header="_Rename Selected" Command="{Binding MatchVm.RenameFilesCommand}" />
-                <Separator />
-                <MenuItem Header="_Report..." Command="{Binding OpenReportCommand}" />
-                <MenuItem Header="_Options..." Command="{Binding OpenOptionsCommand}" />
-                <MenuItem Header="Open Settings _Folder" Click="OnOpenSettingsFolderClick" />
-                <Separator />
-                <MenuItem Header="_Exit" Click="OnExitClick" />
-            </MenuItem>
-            <MenuItem Header="_Select">
-                <MenuItem Header="Select Best Matched" Command="{Binding MatchVm.SelectBestMatchedCommand}" />
-                <MenuItem Header="Select Single Matches" Command="{Binding MatchVm.SelectSingleMatchesCommand}" />
-                <Separator />
-                <MenuItem Header="Deselect All" Command="{Binding MatchVm.DeselectAllCommand}" />
-            </MenuItem>
-            <MenuItem Header="_View">
-                <MenuItem Header="{Binding MatchVm.ExpandCollapseButtonText}" Command="{Binding MatchVm.ToggleExpandCollapseCommand}" />
-                <Separator />
-                <!-- Post-scan display filters — hide/show already-computed rows, don't
-                     re-run matching. File type only ever restricts ROMs; region restricts
-                     both ROMs and images, except English Translated, which always shows
-                     every image (see RegionFilter.Matches).
-                     File Type/Region are single-choice from a dynamic, scan-dependent
-                     list (MatchVm.AvailableFileTypes/AvailableRegions), so each is its own
-                     submenu of radio-checkable items rather than a combo box embedded in
-                     a menu — Click bubbles up from whichever auto-generated child was
-                     actually clicked (see OnFileTypeClick/OnRegionClick, which read
-                     e.Source for exactly that reason, same technique as MatchView's
-                     "Ignore Folder" submenu), and SubmenuOpened refreshes each child's
-                     checkmark against the current selection right before it's shown
-                     (see OnFileTypeSubmenuOpened/OnRegionSubmenuOpened) rather than via a
-                     live two-way binding, since nothing needs to reflect a change while
-                     the submenu isn't even open. The parent item's own header shows the
-                     current selection ("File Type: All") so it's visible without opening
-                     the submenu at all. -->
-                <MenuItem Header="{Binding MatchVm.SelectedFileType, StringFormat='File Type: {0}'}"
-                          ItemsSource="{Binding MatchVm.AvailableFileTypes}"
-                          Click="OnFileTypeClick" SubmenuOpened="OnFileTypeSubmenuOpened" />
-                <MenuItem Header="{Binding MatchVm.SelectedRegion, StringFormat='Region: {0}'}"
-                          ItemsSource="{Binding MatchVm.AvailableRegions}"
-                          Click="OnRegionClick" SubmenuOpened="OnRegionSubmenuOpened" />
-                <MenuItem Header="Exact Score Only" ToggleType="CheckBox"
-                          IsChecked="{Binding MatchVm.ShowOnlyExactScoreMatches, Mode=TwoWay}" />
-                <MenuItem Header="Hide Same Images" ToggleType="CheckBox"
-                          IsChecked="{Binding MatchVm.HideSameImages, Mode=TwoWay}" />
-            </MenuItem>
-            <MenuItem Header="_Help">
-                <MenuItem Header="_About" Command="{Binding ShowAboutCommand}" />
-            </MenuItem>
-        </Menu>
+    <!-- The menu bar's replacement for keyboard access (Alt+F-style mnemonics went with
+         it). Ctrl+Q (exit) is added from code-behind — it's a window action, not a
+         ViewModel command. -->
+    <Window.KeyBindings>
+        <KeyBinding Gesture="F5" Command="{Binding MatchVm.ToggleStartCancelCommand}" />
+        <KeyBinding Gesture="Ctrl+Enter" Command="{Binding MatchVm.RenameFilesCommand}" />
+        <KeyBinding Gesture="Ctrl+E" Command="{Binding MatchVm.ToggleExpandCollapseCommand}" />
+        <KeyBinding Gesture="Ctrl+OemComma" Command="{Binding OpenOptionsCommand}" />
+        <KeyBinding Gesture="Ctrl+B" Command="{Binding ToggleSidebarCommand}" />
+    </Window.KeyBindings>
 
-        <!-- ROMs/Images pickers docked as their own top row now (root folders, extensions,
-             and "include subfolders" live in File > Options; the Report tab has moved to
-             its own window via File > Report — see OptionsWindow/ReportWindow). Report was
-             the only other tab, so the TabControl itself is gone now that Match is the only
-             thing left to host — a lone single-tab strip would've served no purpose. -->
-        <DockPanel>
-            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Left"
-                        Spacing="{DynamicResource SpaceLg}" Margin="16,10,0,10">
-                <Button Content="{Binding MatchVm.StartCancelButtonText}" Command="{Binding MatchVm.ToggleStartCancelCommand}"
-                        VerticalAlignment="Center" />
-                <StackPanel Orientation="Horizontal" Spacing="{DynamicResource SpaceXs}">
-                    <TextBlock Text="ROMs:" VerticalAlignment="Center" />
-                    <TextBox Text="{Binding Settings.RomsPathDisplayName}" IsReadOnly="True"
-                             Width="165" VerticalAlignment="Center" />
-                    <Button Content="..." Click="OnBrowseRomsClick" Padding="8,2" />
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Spacing="{DynamicResource SpaceXs}">
-                    <TextBlock Text="Images:" VerticalAlignment="Center" />
-                    <TextBox Text="{Binding Settings.ImagesPathDisplayName}" IsReadOnly="True"
-                             Width="165" VerticalAlignment="Center" />
-                    <Button Content="..." Click="OnBrowseImagesClick" Padding="8,2" />
-                </StackPanel>
-            </StackPanel>
+    <Window.Styles>
+        <!-- Small-caps-ish section heading inside the sidebar ("SOURCES", "FILTERS"). -->
+        <Style Selector="TextBlock.sidebarSection">
+            <Setter Property="FontFamily" Value="{DynamicResource FontFamilyDisplay}" />
+            <Setter Property="FontSize" Value="{DynamicResource FontSizeDisplay}" />
+            <Setter Property="Foreground" Value="{DynamicResource ForegroundMutedBrush}" />
+            <Setter Property="Margin" Value="0,18,0,8" />
+        </Style>
+        <Style Selector="TextBlock.fieldLabel">
+            <Setter Property="Foreground" Value="{DynamicResource ForegroundMutedBrush}" />
+            <Setter Property="FontSize" Value="{DynamicResource FontSizeSmall}" />
+            <Setter Property="Margin" Value="0,0,0,4" />
+        </Style>
 
-            <!-- Hairline under the toolbar, separating it from the Match view below —
-                 same token as the vertical results/image-pane divider in MatchView. -->
-            <Border DockPanel.Dock="Top" Height="1" Background="{DynamicResource BorderBrush}" />
+        <!-- Flat, full-width, left-aligned sidebar rows (Match / Report / Options) —
+             Discord-channel-list style rather than Fluent's raised button chrome. The
+             active page gets the Surface-on-Surface highlight plus the accent text. -->
+        <Style Selector="Button.nav">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="Padding" Value="10,0" />
+        </Style>
+        <Style Selector="Button.nav.active">
+            <Setter Property="Background" Value="{DynamicResource BorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+        </Style>
+    </Window.Styles>
 
-            <ContentControl Content="{Binding MatchVm}" />
-        </DockPanel>
-    </DockPanel>
+    <!-- Sidebar in the order the app is actually used, top to bottom: pick folders ->
+         scan -> filter; the rename step lives at the foot of the Match page itself (see
+         MatchView). Replaces the old File/Select/View/Help menu bar and the ROMs/Images
+         toolbar. CompactInline + a 48px compact length leaves just the ☰ button visible
+         when collapsed (Ctrl+B); every other section hides itself outright rather than
+         showing a clipped 48px sliver of its controls. -->
+    <SplitView IsPaneOpen="{Binding IsSidebarOpen}" DisplayMode="CompactInline"
+               OpenPaneLength="236" CompactPaneLength="48"
+               PaneBackground="{DynamicResource SurfaceBrush}">
+        <SplitView.Pane>
+            <DockPanel>
+                <DockPanel DockPanel.Dock="Top" Margin="8,8,8,0">
+                    <Button DockPanel.Dock="Left" Classes="icon" Command="{Binding ToggleSidebarCommand}"
+                            ToolTip.Tip="Toggle sidebar (Ctrl+B)">
+                        <PathIcon Width="16" Height="16"
+                                  Data="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z" />
+                    </Button>
+                    <TextBlock Text="GameArtMatch" Classes="retroLabel" VerticalAlignment="Center"
+                               Margin="8,0,0,0" IsVisible="{Binding IsSidebarOpen}" />
+                </DockPanel>
+
+                <!-- Footer: Options (About and Open Settings Folder live inside it now). -->
+                <Border DockPanel.Dock="Bottom" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0"
+                        Padding="8" IsVisible="{Binding IsSidebarOpen}">
+                    <Button Classes="nav" Content="Options" Command="{Binding OpenOptionsCommand}"
+                            ToolTip.Tip="Options (Ctrl+,)" />
+                </Border>
+
+                <ScrollViewer IsVisible="{Binding IsSidebarOpen}" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Margin="8,12,12,12">
+                        <Button Classes="nav" Classes.active="{Binding IsMatchPageActive}"
+                                Content="Match" Command="{Binding ShowMatchPageCommand}" />
+                        <Button Classes="nav" Classes.active="{Binding IsReportPageActive}"
+                                Content="Report" Command="{Binding ShowReportPageCommand}" Margin="0,2,0,0" />
+
+                        <StackPanel Margin="4,0,0,0">
+                            <TextBlock Text="SOURCES" Classes="sidebarSection" />
+
+                            <TextBlock Text="ROMs" Classes="fieldLabel" />
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource SpaceXs}">
+                                <TextBox Text="{Binding Settings.RomsPathDisplayName}" IsReadOnly="True"
+                                         ToolTip.Tip="{Binding Settings.RomsPath}" />
+                                <Button Grid.Column="1" Content="..." Click="OnBrowseRomsClick" Padding="8,0" />
+                            </Grid>
+
+                            <TextBlock Text="Images" Classes="fieldLabel" Margin="0,10,0,4" />
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource SpaceXs}">
+                                <TextBox Text="{Binding Settings.ImagesPathDisplayName}" IsReadOnly="True"
+                                         ToolTip.Tip="{Binding Settings.ImagesPath}" />
+                                <Button Grid.Column="1" Content="..." Click="OnBrowseImagesClick" Padding="8,0" />
+                            </Grid>
+
+                            <Button Classes="accent" Content="{Binding MatchVm.StartCancelButtonText}"
+                                    Command="{Binding MatchVm.ToggleStartCancelCommand}"
+                                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                                    Margin="0,14,0,0" ToolTip.Tip="F5" />
+
+                            <!-- Post-scan display filters — hide/show already-computed rows,
+                                 don't re-run matching (see MatchViewModel.ApplyFilters). File
+                                 type only ever restricts ROMs; region restricts both ROMs and
+                                 images, except English Translated, which always shows every
+                                 image (see RegionFilter.Matches). Plain ComboBoxes over the
+                                 scan-dependent AvailableFileTypes/AvailableRegions lists — the
+                                 old View-menu radio submenus needed click/submenu-opened
+                                 handlers to fake the same thing. Disabled until a scan has
+                                 produced something to filter. -->
+                            <StackPanel IsEnabled="{Binding MatchVm.HasResults}">
+                                <TextBlock Text="FILTERS" Classes="sidebarSection" />
+
+                                <TextBlock Text="File type" Classes="fieldLabel" />
+                                <ComboBox ItemsSource="{Binding MatchVm.AvailableFileTypes}"
+                                          SelectedItem="{Binding MatchVm.SelectedFileType, Mode=TwoWay}"
+                                          HorizontalAlignment="Stretch" />
+
+                                <TextBlock Text="Region" Classes="fieldLabel" Margin="0,10,0,4" />
+                                <ComboBox ItemsSource="{Binding MatchVm.AvailableRegions}"
+                                          SelectedItem="{Binding MatchVm.SelectedRegion, Mode=TwoWay}"
+                                          HorizontalAlignment="Stretch" />
+
+                                <Grid ColumnDefinitions="*,Auto" Margin="0,12,0,0">
+                                    <TextBlock Text="Exact score only" VerticalAlignment="Center" />
+                                    <ToggleSwitch Grid.Column="1" OnContent="{x:Null}" OffContent="{x:Null}" MinWidth="0"
+                                                  IsChecked="{Binding MatchVm.ShowOnlyExactScoreMatches, Mode=TwoWay}" />
+                                </Grid>
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Text="Hide same images" VerticalAlignment="Center" />
+                                    <ToggleSwitch Grid.Column="1" OnContent="{x:Null}" OffContent="{x:Null}" MinWidth="0"
+                                                  IsChecked="{Binding MatchVm.HideSameImages, Mode=TwoWay}" />
+                                </Grid>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </DockPanel>
+        </SplitView.Pane>
+
+        <!-- Both pages stay alive and just swap visibility (see MainViewModel.
+             IsReportPageActive) — swapping Content would have ViewLocator build a fresh
+             MatchView, re-realizing the whole results tree, on every page flip. -->
+        <Panel>
+            <ContentControl Content="{Binding MatchVm}" IsVisible="{Binding IsMatchPageActive}" />
+            <ContentControl Content="{Binding ReportVm}" IsVisible="{Binding IsReportPageActive}" />
+        </Panel>
+    </SplitView>
 </Window>
