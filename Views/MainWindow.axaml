@@ -91,6 +91,10 @@
                 </StackPanel>
             </StackPanel>
 
+            <!-- Hairline under the toolbar, separating it from the Match view below —
+                 same token as the vertical results/image-pane divider in MatchView. -->
+            <Border DockPanel.Dock="Top" Height="1" Background="{DynamicResource BorderBrush}" />
+
             <ContentControl Content="{Binding MatchVm}" />
         </DockPanel>
     </DockPanel>

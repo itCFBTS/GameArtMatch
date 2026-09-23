@@ -44,39 +44,52 @@
         </Style>
     </UserControl.Styles>
 
-    <DockPanel Margin="12">
-        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,4">
-            <TextBlock Text="{Binding StatusText}" VerticalAlignment="Center" />
-            <!-- Cycled by a DispatcherTimer in code-behind (see MatchView.axaml.cs) —
-                 Avalonia's Style.Animations has no built-in animator for string
-                 properties like Text (confirmed: attempting it throws
-                 "No animator registered for the property Text" the moment the style
-                 tries to attach), so this can't be done as a plain XAML animation the
-                 way the old rotating-ring spinner was. Shown throughout MatchPhase.
-                 Listing and MatchPhase.Indexing, both otherwise-silent (no per-item
-                 feedback) passes before per-ROM matching begins. -->
-            <TextBlock Name="ActivityDotsText" Text="." VerticalAlignment="Center"
-                       IsVisible="{Binding IsIndexing}" />
-        </DockPanel>
-
+    <!-- Horizontal-only margin: the results/image-pane divider (see ResultsLayout) is
+         meant to run edge to edge, from the rule under the toolbar right down to the
+         window's bottom edge, so the vertical breathing room lives on the individual
+         rows (column headers, status line, image pane padding) instead of out here. -->
+    <DockPanel Margin="12,0">
         <!-- Single bar spanning MatchPhase.Indexing and MatchPhase.Matching (see
              MatchViewModel.IndexingPhaseWeight) rather than an indeterminate/determinate
              swap, so it's always visibly moving instead of appearing to freeze during
              the indexing pass. Stays at 0% through MatchPhase.Listing — a directory walk
-             has no meaningful percentage to show, only the activity dots above. -->
-        <Grid DockPanel.Dock="Top" Margin="0,0,0,8" IsVisible="{Binding IsMatchRunning}">
+             has no meaningful percentage to show, only the activity dots in the status
+             line (which sits at the bottom of the results column — see ResultsLayout).
+             Docked to the top of the Match view, full width, right under the toolbar. -->
+        <Grid DockPanel.Dock="Top" Margin="0,12,0,0" IsVisible="{Binding IsMatchRunning}">
             <ProgressBar Minimum="0" Maximum="100" Value="{Binding ProgressPercent}" Height="20" />
             <TextBlock Text="{Binding ProgressPercent, StringFormat={}{0:0}%}"
                        HorizontalAlignment="Center" VerticalAlignment="Center"
                        FontSize="{DynamicResource FontSizeSmall}" />
         </Grid>
 
-        <Grid ColumnDefinitions="2*,8,1*">
+        <!-- The preview pane's two right-hand columns (gap + pane) are collapsed to zero
+             width from code-behind whenever nothing is selected, so the results tree
+             gets the full width until there's actually art to show (see
+             MatchView.SetPreviewPaneVisible). -->
+        <Grid x:Name="ResultsLayout" ColumnDefinitions="2*,8,1*">
             <DockPanel Grid.Column="0">
-                <Grid DockPanel.Dock="Top" ColumnDefinitions="46,100,*" Margin="4,0,4,4">
+                <Grid DockPanel.Dock="Top" ColumnDefinitions="46,100,*" Margin="4,12,4,4">
                     <TextBlock Grid.Column="1" Text="Score %" Classes="columnHeader" />
                     <TextBlock Grid.Column="2" Text="ROM / Image" Classes="columnHeader" />
                 </Grid>
+
+                <!-- Status line lives INSIDE the results column, docked under the tree, so
+                     it never runs on underneath the image pane. (The progress bar is
+                     separate — docked full-width at the top of the Match view, see above.) -->
+                <DockPanel DockPanel.Dock="Bottom" Margin="0,8,0,12">
+                    <TextBlock Text="{Binding StatusText}" VerticalAlignment="Center" />
+                    <!-- Cycled by a DispatcherTimer in code-behind (see MatchView.axaml.cs) —
+                         Avalonia's Style.Animations has no built-in animator for string
+                         properties like Text (confirmed: attempting it throws
+                         "No animator registered for the property Text" the moment the style
+                         tries to attach), so this can't be done as a plain XAML animation the
+                         way the old rotating-ring spinner was. Shown throughout MatchPhase.
+                         Listing and MatchPhase.Indexing, both otherwise-silent (no per-item
+                         feedback) passes before per-ROM matching begins. -->
+                    <TextBlock Name="ActivityDotsText" Text="." VerticalAlignment="Center"
+                               IsVisible="{Binding IsIndexing}" />
+                </DockPanel>
 
                 <!-- Two-level tree: each ROM is a node, its candidate images nest underneath —
                      mirrors FatMatch's own results tree instead of a flat per-pair list. -->
@@ -181,25 +194,130 @@
                 </TreeView>
             </DockPanel>
 
-            <!-- Preview pane: shows the art for whichever candidate row is highlighted above.
-                 Independent of each row's own checkbox (that's the rename-batch selection). -->
-            <Border Grid.Column="2" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-                    CornerRadius="{DynamicResource CornerRadiusBase}" Padding="8">
-                <Grid RowDefinitions="*,36">
-                    <Panel Grid.Row="0">
-                        <TextBlock Text="Select image row to preview art"
-                                   IsVisible="{Binding SelectedCandidate, Converter={x:Static ObjectConverters.IsNull}}"
-                                   Classes="muted" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        <TextBlock Text="{Binding PreviewError}"
-                                   IsVisible="{Binding PreviewError, Converter={x:Static ObjectConverters.IsNotNull}}"
-                                   Foreground="{DynamicResource ErrorBrush}" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        <Image Source="{Binding PreviewImage}"
-                               IsVisible="{Binding PreviewImage, Converter={x:Static ObjectConverters.IsNotNull}}"
-                               Stretch="Uniform" />
-                    </Panel>
-                    <TextBlock Grid.Row="1" Text="{Binding SelectedCandidate.ImageFileName}"
-                               TextTrimming="CharacterEllipsis" Classes="hint"
-                               Margin="0,8,0,0" VerticalAlignment="Top" />
+            <!-- Preview pane: a vertical coverflow-style carousel of the highlighted ROM's
+                 DISTINCT candidate images (see PreviewCarouselViewModel / PreviewSlide) —
+                 current image large in the middle, the previous/next ones peeking above
+                 and below. Independent of each row's own checkbox (that's the rename-batch
+                 selection). Hidden entirely (not just emptied) while nothing is highlighted;
+                 IsPreviewVisible is also what MatchView.SetPreviewPaneVisible keys the
+                 column collapse off. -->
+            <!-- Hairline divider between the results column and the image pane — its own
+                 element, centred in the 8px gap column, rather than a border on either
+                 neighbour. Spans the grid's full height (tree + status line). Bound to
+                 IsPreviewVisible explicitly: the gap column does collapse to 0 when the
+                 pane hides (see SetPreviewPaneVisible), but an explicit Width="1" child
+                 can still paint past a zero-width column, so it's hidden outright too. -->
+            <Border Grid.Column="1" Width="1" HorizontalAlignment="Center"
+                    Background="{DynamicResource BorderBrush}"
+                    IsVisible="{Binding IsPreviewVisible}" />
+
+            <!-- Not a card: no background of its own (it shares the main area's), no
+                 border, no corner radius — Discord-member-list style. -->
+            <Border Grid.Column="2" Padding="8,12,0,12"
+                    IsVisible="{Binding IsPreviewVisible}">
+                <Grid RowDefinitions="*,Auto">
+                    <!-- The wheel steps the carousel (and, through it, the tree's highlight)
+                         anywhere over the pane, scrollbar included. -->
+                    <Grid Grid.Row="0" ColumnDefinitions="*,Auto" PointerWheelChanged="OnCarouselPointerWheelChanged">
+                        <!-- ClipToBounds so slides parked beyond the top/bottom edge (see
+                             PreviewCarouselViewModel.Relayout) stay invisible until they animate
+                             in. SizeChanged feeds the real viewport (excluding the scrollbar's
+                             column) back to the ViewModel, which does all the layout math in
+                             pixels. -->
+                        <Panel Grid.Column="0" Name="CarouselViewport" ClipToBounds="True"
+                               SizeChanged="OnCarouselViewportSizeChanged">
+                            <ItemsControl Name="CarouselItems" ItemsSource="{Binding Carousel.Slides}"
+                                          ContainerPrepared="OnCarouselContainerPrepared">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <Canvas />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <!-- Positioned via the generated ContentPresenter, NOT the
+                                     DataTemplate's root: ItemsControl wraps each item in a
+                                     ContentPresenter and that wrapper is the Canvas's actual child,
+                                     the only thing Canvas.Left/Top are read from (avalonia-patterns
+                                     skill, "ItemsControl + Canvas positioning"). The Style needs its
+                                     own x:DataType because it lives outside the DataTemplate and
+                                     would otherwise bind against MatchViewModel. Transitions sit on
+                                     this same element so they animate the properties the Canvas
+                                     actually reads. ZIndex is deliberately NOT transitioned — it's
+                                     swapped at the transition's midpoint from code-behind instead
+                                     (see MatchView._zIndexTimer).
+
+                                     The Transitions live in a separate ".animated" style that
+                                     code-behind adds to each container only AFTER its first
+                                     layout (see OnCarouselContainerPrepared). With them in the
+                                     base style, a freshly-created container animated from its
+                                     defaults — zero size at the corner — to its first real
+                                     position: every newly shown image zoomed in from the corner
+                                     of the pane. -->
+                                <ItemsControl.Styles>
+                                    <Style Selector="ContentPresenter" x:DataType="vm:PreviewSlide">
+                                        <Setter Property="Canvas.Left" Value="{Binding Left}" />
+                                        <Setter Property="Canvas.Top" Value="{Binding Top}" />
+                                        <Setter Property="Width" Value="{Binding Width}" />
+                                        <Setter Property="Height" Value="{Binding Height}" />
+                                        <Setter Property="Opacity" Value="{Binding Opacity}" />
+                                        <Setter Property="ZIndex" Value="{Binding ZIndex}" />
+                                    </Style>
+                                    <Style Selector="ContentPresenter.animated">
+                                        <Setter Property="Transitions">
+                                            <Transitions>
+                                                <!-- Duration must stay in step with MatchView.ZIndexSwapDelay
+                                                     (half of this). -->
+                                                <DoubleTransition Property="Canvas.Left" Duration="0:0:0.35" Easing="CubicEaseInOut" />
+                                                <DoubleTransition Property="Canvas.Top" Duration="0:0:0.35" Easing="CubicEaseInOut" />
+                                                <DoubleTransition Property="Width" Duration="0:0:0.35" Easing="CubicEaseInOut" />
+                                                <DoubleTransition Property="Height" Duration="0:0:0.35" Easing="CubicEaseInOut" />
+                                                <DoubleTransition Property="Opacity" Duration="0:0:0.35" Easing="CubicEaseInOut" />
+                                            </Transitions>
+                                        </Setter>
+                                    </Style>
+                                </ItemsControl.Styles>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:PreviewSlide">
+                                        <!-- PointerPressed (code-behind) rather than a Button: a Fluent
+                                             Button's own hover/pressed chrome would fight the image.
+                                             No frame, fill, or margin of its own — the image is shown
+                                             as-is at its natural aspect ratio (Uniform: fit inside the
+                                             slide's square box, never cropped or stretched), and whatever
+                                             the image doesn't cover is simply see-through, not a
+                                             letterbox bar. Background="Transparent" (not none) keeps the
+                                             whole box clickable, not just the painted pixels. -->
+                                        <Border Background="Transparent" Cursor="Hand" PointerPressed="OnSlidePointerPressed">
+                                            <Panel>
+                                                <Image Source="{Binding Image}" Stretch="Uniform"
+                                                       IsVisible="{Binding Image, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                                                <TextBlock Text="{Binding Error}"
+                                                           IsVisible="{Binding Error, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                                           Foreground="{DynamicResource ErrorBrush}" TextWrapping="Wrap"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            </Panel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Panel>
+
+                        <!-- Same Fluent ScrollBar the results tree shows, but standalone: one
+                             notch per distinct image (see PreviewCarouselViewModel's scrollbar
+                             adapter properties). Hidden — and its Auto column collapsed — while
+                             there's only one image, just as the tree's bar hides when nothing
+                             overflows. -->
+                        <ScrollBar Grid.Column="1" Orientation="Vertical" Margin="4,0,0,0"
+                                   Minimum="0" Maximum="{Binding Carousel.ScrollMaximum}"
+                                   Value="{Binding Carousel.ScrollPosition, Mode=TwoWay}"
+                                   ViewportSize="1" SmallChange="1" LargeChange="1"
+                                   IsVisible="{Binding Carousel.CanScroll}" />
+                    </Grid>
+
+                    <!-- Just "3 / 5" — deliberately no filename: the highlighted tree row
+                         already shows it, and the carousel always tracks that highlight. The
+                         count is the one thing the tree can't tell you, since identical files
+                         collapse into a single slide here. -->
+                    <TextBlock Grid.Row="1" Text="{Binding Carousel.PositionText}" Classes="muted"
+                               FontSize="{DynamicResource FontSizeSmall}" HorizontalAlignment="Right" Margin="0,8,0,0" />
                 </Grid>
             </Border>
         </Grid>

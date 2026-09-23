@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -22,7 +21,6 @@ public partial class MatchViewModel : ViewModelBase
     private readonly IMatchingService _matchingService;
     private readonly IRenameService _renameService;
     private CancellationTokenSource? _cts;
-    private int _previewRequestId;
 
     /// <summary>Final ROM count from the Listing phase's "ROMs" reports and the Listing
     /// phase's "images" reports, held onto so StartAsync's progress handler can keep
@@ -62,6 +60,12 @@ public partial class MatchViewModel : ViewModelBase
     /// as two identically-named groups, matching what the old batch-built code did by
     /// grouping over the complete candidate list up front.</summary>
     private readonly Dictionary<string, RomMatchGroup> _groupsByRomFileName = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>Which group each candidate belongs to — a MatchCandidate doesn't know its
+    /// own group, but the preview carousel is per-ROM, so highlighting a candidate row
+    /// has to find the ROM it sits under (see SyncCarousel). Reference-keyed; kept in
+    /// step with _allGroups by OnRomMatched and the ignore commands.</summary>
+    private readonly Dictionary<MatchCandidate, RomMatchGroup> _groupByCandidate = new(ReferenceEqualityComparer.Instance);
 
     /// <summary>The filtered view of _allGroups that ApplyFilters keeps in sync with the
     /// current file-type/region/100%-only filters — bound directly to the TreeView.
@@ -155,6 +159,9 @@ public partial class MatchViewModel : ViewModelBase
     /// focus a collapsed, zero-size TreeViewItem instead of skipping over it.</summary>
     private void ApplyFilters()
     {
+        var highlighted = SelectedTreeItem;
+        _suppressCarouselSync = true;
+
         Groups.Clear();
 
         foreach (var group in _allGroups)
@@ -166,6 +173,44 @@ public partial class MatchViewModel : ViewModelBase
         // needs its own explicit re-check rather than relying solely on
         // OnCandidatePropertyChanged.
         RenameFilesCommand.NotifyCanExecuteChanged();
+
+        RestoreTreeSelectionAfterFilter(highlighted);
+    }
+
+    /// <summary>Puts the tree's highlight back after ApplyFilters has rebuilt Groups from
+    /// scratch — Groups.Clear() can drop the TreeView's SelectedItem (bounced back into
+    /// SelectedTreeItem as null), and the row itself may legitimately be gone now. Falls
+    /// through the same "what's the nearest thing still visible" ladder either way:
+    /// the exact row if it survived; otherwise, for a candidate, the still-visible leader
+    /// of its identical-content cluster (exactly what Hide Same Images collapses a "Same
+    /// as above" row into — the carousel doesn't move, since it's the same image);
+    /// otherwise the ROM's header row; otherwise nothing, and the preview pane closes.
+    /// SyncCarousel runs once here rather than on every intermediate selection change
+    /// during the rebuild (see _suppressCarouselSync), so the carousel never sees the
+    /// transient "nothing selected" state and never drops its decoded bitmaps.</summary>
+    private void RestoreTreeSelectionAfterFilter(object? highlighted)
+    {
+        var group = GroupFor(highlighted);
+        object? restored = null;
+        if (group is not null && Groups.Contains(group))
+        {
+            if (highlighted is MatchCandidate candidate)
+            {
+                restored = group.VisibleCandidates.Contains(candidate)
+                    ? candidate
+                    : group.VisibleCandidates.FirstOrDefault(c => c.ContentHash == candidate.ContentHash) ?? (object)group;
+            }
+            else
+            {
+                restored = group;
+            }
+        }
+
+        _suppressCarouselSync = false;
+        if (Equals(SelectedTreeItem, restored))
+            SyncCarousel(); // no change to raise OnSelectedTreeItemChanged — sync explicitly, the visible set may still differ
+        else
+            SelectedTreeItem = restored;
     }
 
     /// <summary>The per-group half of ApplyFilters' work, pulled out so a scan streaming
@@ -260,8 +305,23 @@ public partial class MatchViewModel : ViewModelBase
     /// am I looking at right now"). Null when a ROM group header is selected instead.</summary>
     [ObservableProperty] public partial MatchCandidate? SelectedCandidate { get; set; }
 
-    [ObservableProperty] public partial Bitmap? PreviewImage { get; set; }
-    [ObservableProperty] public partial string? PreviewError { get; set; }
+    /// <summary>The right-hand art pane — one slide per DISTINCT image among the
+    /// highlighted ROM's visible candidates, kept in step with the tree both ways (see
+    /// SyncCarousel and PreviewCarouselViewModel's own doc comment).</summary>
+    public PreviewCarouselViewModel Carousel { get; } = new();
+
+    /// <summary>True while a ROM (header row or any of its candidates) is highlighted and
+    /// has at least one visible candidate — MatchView collapses the pane's grid columns
+    /// to zero width when false, not just the pane itself.</summary>
+    [ObservableProperty] public partial bool IsPreviewVisible { get; set; }
+
+    /// <summary>The ROM whose images the carousel is currently showing, or null while the
+    /// pane is hidden — lets OnRomMatched notice when a mid-scan merge changes the very
+    /// group being previewed.</summary>
+    private RomMatchGroup? _previewGroup;
+
+    /// <summary>Set for the duration of ApplyFilters' rebuild — see RestoreTreeSelectionAfterFilter.</summary>
+    private bool _suppressCarouselSync;
 
     /// <summary>Raised right as a scan begins — MainViewModel listens for this to
     /// remember which Images folder was paired with the current ROMs folder, so
@@ -288,6 +348,11 @@ public partial class MatchViewModel : ViewModelBase
         _settings = settings;
         _matchingService = matchingService;
         _renameService = renameService;
+
+        // Carousel -> tree: user navigated the carousel, so highlight the matching row.
+        // That highlight comes straight back through OnSelectedTreeItemChanged ->
+        // SyncCarousel -> Carousel.Show, which resolves to the slide already selected.
+        Carousel.RepresentativeChosen += candidate => SelectedTreeItem = candidate;
     }
 
     /// <summary>Design-time only (XAML previewer's Design.DataContext).</summary>
@@ -295,56 +360,43 @@ public partial class MatchViewModel : ViewModelBase
     {
     }
 
-    partial void OnSelectedTreeItemChanged(object? value) => SelectedCandidate = value as MatchCandidate;
-
-    partial void OnSelectedCandidateChanged(MatchCandidate? value) => _ = LoadPreviewAsync(value);
-
-    private async Task LoadPreviewAsync(MatchCandidate? candidate)
+    partial void OnSelectedTreeItemChanged(object? value)
     {
-        var requestId = ++_previewRequestId;
-        PreviewError = null;
+        SelectedCandidate = value as MatchCandidate;
+        if (!_suppressCarouselSync)
+            SyncCarousel();
+    }
 
-        if (candidate is null)
+    /// <summary>The ROM a tree row belongs to — the row itself for a header, its owning
+    /// group for a candidate.</summary>
+    private RomMatchGroup? GroupFor(object? treeItem) => treeItem switch
+    {
+        RomMatchGroup group => group,
+        MatchCandidate candidate => _groupByCandidate.GetValueOrDefault(candidate),
+        _ => null,
+    };
+
+    /// <summary>Tree -> carousel. Hands the carousel the highlighted ROM's VISIBLE
+    /// candidates (the same collection the tree shows, so region/exact-score/Hide Same
+    /// Images filters apply identically to both) and asks it to land on the highlighted
+    /// candidate's ContentHash — the carousel collapses identical content itself, so a
+    /// highlighted "Same as above" row resolves to the same slide as the row above it
+    /// and the image simply doesn't move. Hides the pane when nothing (or a ROM with no
+    /// visible candidates) is highlighted.</summary>
+    private void SyncCarousel()
+    {
+        var group = GroupFor(SelectedTreeItem);
+        if (group is null || group.VisibleCandidates.Count == 0)
         {
-            SetPreviewImage(null);
+            _previewGroup = null;
+            Carousel.Clear();
+            IsPreviewVisible = false;
             return;
         }
 
-        try
-        {
-            var bitmap = await Task.Run(() =>
-            {
-                using var stream = File.OpenRead(candidate.ImageFullPath);
-                return new Bitmap(stream);
-            });
-
-            // A newer selection came in while this load was in flight — drop this result
-            // rather than flash a stale image over the row the user has since moved to.
-            if (requestId != _previewRequestId)
-            {
-                bitmap.Dispose();
-                return;
-            }
-
-            SetPreviewImage(bitmap);
-        }
-        catch (Exception ex)
-        {
-            // Broad catch deliberately: a missing file, an unreadable/corrupt image, or a
-            // codec failure should all just show a friendly message here, never crash or
-            // silently leave the preview blank with no explanation.
-            if (requestId != _previewRequestId)
-                return;
-
-            SetPreviewImage(null);
-            PreviewError = $"Couldn't load image: {ex.Message}";
-        }
-    }
-
-    private void SetPreviewImage(Bitmap? bitmap)
-    {
-        PreviewImage?.Dispose();
-        PreviewImage = bitmap;
+        _previewGroup = group;
+        Carousel.Show(group.VisibleCandidates, SelectedCandidate?.ContentHash);
+        IsPreviewVisible = true;
     }
 
     /// <summary>Single Start/Cancel button's command — dispatches on IsBusy rather than
@@ -377,6 +429,7 @@ public partial class MatchViewModel : ViewModelBase
         _separatorTimer = null;
         _allGroups.Clear();
         _groupsByRomFileName.Clear();
+        _groupByCandidate.Clear();
         Groups.Clear();
         SelectedTreeItem = null;
 
@@ -488,11 +541,16 @@ public partial class MatchViewModel : ViewModelBase
         {
             existingGroup.MergeCandidates(result.Candidates);
             foreach (var candidate in result.Candidates)
+            {
                 candidate.PropertyChanged += OnCandidatePropertyChanged;
+                _groupByCandidate[candidate] = existingGroup;
+            }
             RegisterRegionsFrom(existingGroup, result.Candidates);
 
             if (ApplyFiltersToGroup(existingGroup) && !Groups.Contains(existingGroup))
                 Groups.Add(existingGroup);
+            if (existingGroup == _previewGroup)
+                SyncCarousel(); // its visible set just changed under the carousel
             RenameFilesCommand.NotifyCanExecuteChanged();
             return;
         }
@@ -502,7 +560,10 @@ public partial class MatchViewModel : ViewModelBase
         // So RenameFilesCommand's enabled state can react to a checkbox toggle anywhere
         // in the tree — see OnCandidatePropertyChanged.
         foreach (var candidate in romGroup.Candidates)
+        {
             candidate.PropertyChanged += OnCandidatePropertyChanged;
+            _groupByCandidate[candidate] = romGroup;
+        }
 
         _allGroups.Add(romGroup);
         _groupsByRomFileName.Add(result.RomFileName, romGroup);
@@ -641,8 +702,7 @@ public partial class MatchViewModel : ViewModelBase
 
             if (_settings.IgnoredRomPaths.Add(group.RomFullPath))
             {
-                _allGroups.Remove(group);
-                _groupsByRomFileName.Remove(group.RomFileName);
+                ForgetGroup(group);
                 anyIgnored = true;
             }
         }
@@ -652,6 +712,17 @@ public partial class MatchViewModel : ViewModelBase
 
         ApplyFilters();
         RomIgnored?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>Drops a group from every per-scan lookup at once — the caller's following
+    /// ApplyFilters then takes it out of Groups (and, via RestoreTreeSelectionAfterFilter,
+    /// closes the preview pane if that was the ROM being shown).</summary>
+    private void ForgetGroup(RomMatchGroup group)
+    {
+        _allGroups.Remove(group);
+        _groupsByRomFileName.Remove(group.RomFileName);
+        foreach (var candidate in group.Candidates)
+            _groupByCandidate.Remove(candidate);
     }
 
     /// <summary>Right-click "Ignore Folder" action (see MatchView.axaml's ROM row context
@@ -668,10 +739,7 @@ public partial class MatchViewModel : ViewModelBase
 
         var removed = _allGroups.Where(g => FolderAncestry.IsUnderFolder(g.RomFullPath, folderPath)).ToList();
         foreach (var group in removed)
-        {
-            _allGroups.Remove(group);
-            _groupsByRomFileName.Remove(group.RomFileName);
-        }
+            ForgetGroup(group);
 
         // Keeps the Report window's Missing tab in sync — otherwise a folder ignored
         // here could still hide an already-cached "missing" entry for a ROM that

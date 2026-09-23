@@ -20,6 +20,15 @@ public partial class MatchView : UserControl
     private readonly DispatcherTimer _activityDotsTimer;
     private int _activityDotsIndex;
 
+    /// <summary>Half of the carousel's DoubleTransition Duration (0.35s, see MatchView.axaml's
+    /// ContentPresenter style) — two slides swapping sizes with the same symmetric easing
+    /// are exactly equal at the temporal midpoint, so that's when the z-order swap is
+    /// invisible (avalonia-patterns skill, "crossover timing"). Owned here, not in the
+    /// ViewModel, so it stops with the view (skill: timer ownership).</summary>
+    private static readonly TimeSpan ZIndexSwapDelay = TimeSpan.FromMilliseconds(175);
+    private readonly DispatcherTimer _zIndexTimer = new() { Interval = ZIndexSwapDelay };
+    private PreviewCarouselViewModel? _subscribedCarousel;
+
     public MatchView()
     {
         InitializeComponent();
@@ -42,28 +51,131 @@ public partial class MatchView : UserControl
             ActivityDotsText.Text = ActivityDotsFrames[_activityDotsIndex];
         };
 
+        _zIndexTimer.Tick += (_, _) =>
+        {
+            _zIndexTimer.Stop();
+            _subscribedCarousel?.ApplyZIndices();
+        };
+
         DataContextChanged += (_, _) =>
         {
             if (DataContext is MatchViewModel vm)
+            {
                 vm.PropertyChanged += OnMatchViewModelPropertyChanged;
+                SetPreviewPaneVisible(vm.IsPreviewVisible);
+                SubscribeCarousel(vm.Carousel);
+            }
         };
+        DetachedFromVisualTree += (_, _) =>
+        {
+            _zIndexTimer.Stop();
+            _activityDotsTimer.Stop();
+        };
+    }
+
+    private void SubscribeCarousel(PreviewCarouselViewModel? carousel)
+    {
+        if (_subscribedCarousel is not null)
+            _subscribedCarousel.PropertyChanged -= OnCarouselPropertyChanged;
+
+        _subscribedCarousel = carousel;
+
+        if (_subscribedCarousel is not null)
+            _subscribedCarousel.PropertyChanged += OnCarouselPropertyChanged;
+    }
+
+    private void OnCarouselPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName != nameof(PreviewCarouselViewModel.SelectedIndex))
+            return;
+
+        // Restart (not just start) so rapid successive steps each get a full half-
+        // transition before their swap, instead of an early tick from the previous step.
+        _zIndexTimer.Stop();
+        _zIndexTimer.Start();
+    }
+
+    // A container's first position must land WITHOUT animating — otherwise every newly
+    // shown image zooms in from the pane's corner (its Width/Height/Canvas.Left/Top all
+    // start at their defaults). So the Transitions aren't in the container's base style;
+    // they're in a ".animated" class (see MatchView.axaml's ItemsControl.Styles) that's
+    // added here, posted at Background priority so it runs only after the layout and
+    // render passes that place the container have already happened. Adding a class
+    // changes no property values, so nothing animates at that moment — only from the
+    // next real move onward. Deferring the slide build until the viewport is known (see
+    // PreviewCarouselViewModel._pending) turned out not to be enough on its own.
+    private static void OnCarouselContainerPrepared(object? sender, ContainerPreparedEventArgs e)
+    {
+        var container = e.Container;
+        Dispatcher.UIThread.Post(() => container.Classes.Add("animated"), DispatcherPriority.Background);
+    }
+
+    private void OnCarouselViewportSizeChanged(object? sender, SizeChangedEventArgs e)
+    {
+        if (DataContext is MatchViewModel vm)
+            vm.Carousel.SetViewport(e.NewSize.Width, e.NewSize.Height);
+    }
+
+    private void OnCarouselPointerWheelChanged(object? sender, PointerWheelEventArgs e)
+    {
+        if (DataContext is not MatchViewModel vm)
+            return;
+
+        // Wheel down = next (further down the tree), wheel up = previous — matches the
+        // vertical layout, where the next image is the one peeking in from below.
+        if (e.Delta.Y < 0 && vm.Carousel.NextCommand.CanExecute(null))
+            vm.Carousel.NextCommand.Execute(null);
+        else if (e.Delta.Y > 0 && vm.Carousel.PreviousCommand.CanExecute(null))
+            vm.Carousel.PreviousCommand.Execute(null);
+        e.Handled = true;
+    }
+
+    // Reads sender's DataContext rather than routing a command — same reasoning as the
+    // context-menu handlers below: a Border has no Command, and the slide is right there.
+    private void OnSlidePointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (sender is Border { DataContext: PreviewSlide slide } && DataContext is MatchViewModel vm)
+        {
+            vm.Carousel.SelectSlide(slide);
+            e.Handled = true;
+        }
     }
 
     private void OnMatchViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName != nameof(MatchViewModel.IsIndexing) || sender is not MatchViewModel vm)
+        if (sender is not MatchViewModel vm)
             return;
 
-        if (vm.IsIndexing)
+        switch (e.PropertyName)
         {
-            _activityDotsIndex = 0;
-            ActivityDotsText.Text = ActivityDotsFrames[0];
-            _activityDotsTimer.Start();
+            case nameof(MatchViewModel.IsPreviewVisible):
+                SetPreviewPaneVisible(vm.IsPreviewVisible);
+                break;
+
+            case nameof(MatchViewModel.IsIndexing):
+                if (vm.IsIndexing)
+                {
+                    _activityDotsIndex = 0;
+                    ActivityDotsText.Text = ActivityDotsFrames[0];
+                    _activityDotsTimer.Start();
+                }
+                else
+                {
+                    _activityDotsTimer.Stop();
+                }
+                break;
         }
-        else
-        {
-            _activityDotsTimer.Stop();
-        }
+    }
+
+    // The preview Border's own IsVisible is bound in XAML, but a star-sized Grid column
+    // keeps its share of the width even when its only child is collapsed — so the gap
+    // and pane columns are zeroed here too, letting the results tree take the full
+    // width until a ROM or candidate row is actually highlighted.
+    private void SetPreviewPaneVisible(bool visible)
+    {
+        var columns = ResultsLayout.ColumnDefinitions;
+        columns[1].Width = visible ? new GridLength(8) : new GridLength(0);
+        columns[2].Width = visible ? new GridLength(1, GridUnitType.Star) : new GridLength(0);
     }
 
     private void OnResultsTreeKeyDown(object? sender, KeyEventArgs e)
