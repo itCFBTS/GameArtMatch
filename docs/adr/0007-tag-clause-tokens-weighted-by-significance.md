@@ -3,15 +3,17 @@
 ## Status
 
 Implemented on `experiment/tag-clause-tokens` (2026-09-23) and validated
-against the real NES and PSX libraries — see "Validation" below. NES: 17 top
-picks changed, 9 improvements, 6 neutral, 2 ambiguous, 0 regressions. PSX
-(2,839 ROMs, multi-disc): 303 top picks changed, 238 of them now exact 100,
-every one of 275 disc-tagged ROMs now lands on its own disc number (was
-221), 0 regressions. The validation surfaced a pre-existing bug that had
-left the old tag-inclusive score broken for every multi-region tag. Two
-things changed during validation: **Platform moved from Descriptive to
-Distinguishing**, and **credits are now recognized per segment rather than
-per whole tag** (the tables and §1 below show the final state). Decided in
+against the real NES, PSX and Saturn libraries — see "Validation" below.
+NES: 18 top picks changed, 0 regressions. PSX (2,839 ROMs, multi-disc): 303
+top picks changed, 238 of them now exact 100, every one of 275 disc-tagged
+ROMs now lands on its own disc number (was 221), 0 regressions. Saturn (737
+ROMs): 62 top picks changed, all 76 disc-tagged ROMs on their own disc (was
+52), 0 regressions. The validation surfaced a pre-existing bug that had left
+the old tag-inclusive score broken for every multi-region tag. Three things
+changed during validation: **Platform moved from Descriptive to
+Distinguishing**, **credits are now recognized per segment rather than per
+whole tag**, and **the unclassified-clause weight was tuned from 0.75 to
+0.5** (the tables and §1–2 below show the final state). Decided in
 discussion 2026-09-23.
 **Absorbs ADR-0004**: "omit translation-credit tag phrases" is the
 Irrelevant-level case of the general rule below, so 0004 is not picked up
@@ -112,7 +114,7 @@ on the token's category prefix:
 | Distinguishing | Unofficial, Preview, Revision, Platform | 0.75 |
 | Descriptive | Label, Language, Date | **omitted** — not emitted at all |
 | Irrelevant | TranslationCredit, HackOrPatchCredit | **omitted** — not emitted at all |
-| *(unclassified — NeedsReview clause)* | — | 0.75, emitted as `tag:<clause>` |
+| *(unclassified — NeedsReview clause)* | — | 0.5, emitted as `tag:<clause>` |
 
 Title tokens keep weight 1.0. Descriptive and Irrelevant tokens are omitted
 rather than weighted 0: in this scorer a weight-0 token contributes nothing
@@ -132,14 +134,17 @@ category only when the validation diff shows ties that should have been
 ordered. That happened once, during this ADR's own validation: Platform
 started in Descriptive and moved to Distinguishing — see "Validation".
 
-Unclassified clauses are **kept**, at Distinguishing weight, not dropped.
-The NeedsReview pile holds real signal ("Tengen", "Namcot Collection",
-"Whirlwind Manu" all appear on both sides) alongside one-sided noise ("SGB
-Enhanced"); dropping it wholesale would silently discard the former, and
-0.75 is strictly no worse than today's 1.0 for the latter. The catalog's
-triage loop — promote a NeedsReview clause into a real category as evidence
-accumulates — is how that noise gets removed, one category at a time, with
-the significance table deciding its fate when it lands.
+Unclassified clauses are **kept**, at 0.5, not dropped. The NeedsReview
+pile holds real signal ("Tengen", "Namcot Collection", "Whirlwind Manu" all
+appear on both sides) alongside one-sided noise ("SGB Enhanced", Saturn's
+"1S"/"10M"/"RE" media markers); dropping it wholesale would silently
+discard the former. It sits *below* Distinguishing because an unknown tag
+is more often descriptive noise than a real "different box": at 0.75,
+Saturn's retail "(USA) (1S)" art tied its own "(USA) (Beta)" art and lost
+on candidate order — see "Validation (Saturn)". The catalog's triage loop —
+promote a NeedsReview clause into a real category as evidence accumulates —
+is how that noise gets removed, one category at a time, with the
+significance table deciding its fate when it lands.
 
 ### 3. Scope: display score only
 
@@ -212,8 +217,11 @@ differs.
   implementing.
 - ~~"Alt 1" / "Alt 2"~~ — `RevisionPattern` now matches them; landed with
   the implementation.
-- **Weight for unclassified clauses** — 0.75 is a default, not a measured
-  value.
+- ~~Weight for unclassified clauses~~ — tuned to 0.5 by the Saturn diff; see
+  "Validation (Saturn)". The next lever is the catalog triage the tokenizer's
+  doc comment describes: Saturn's "1S"/"10M" media markers and the GB "SGB
+  Enhanced"/"GB Compatible" flags are the highest-count NeedsReview entries
+  and would drop out entirely as a Descriptive category.
 
 ## Validation plan
 
@@ -347,8 +355,35 @@ Localization, and Custom Art Patch by Acediez") don't strand `tag:` tokens
 — changed no top pick on either system but cleaned the emitted sets. The
 rule as it stands is described in §1.
 
+## Validation (Saturn, 737 ROMs with candidates, 2,822 candidate pairs)
+
+Same method as PSX (`--include-existing`), run after the PSX fixes.
+
+| | Before | Final |
+|---|---|---|
+| Top picks that are an exact 100 | 466 | 572 |
+| Disc-tagged ROMs on their own disc number | 52 of 76 | 76 of 76 |
+| ROMs whose top candidates tie | 75 | 28 |
+| Pairs moved | — | 1,775 (1,761 up, 14 down, all 14 correct) |
+| Top picks changed | — | 62: 31 now exact 100, 21 disc fixes, 3 region fixes, 5 onto the matching Rev A sibling, 2 neutral, 0 regressions |
+
+### What Saturn caught: unclassified vs Distinguishing
+
+The first Saturn run had four retail ROMs — "Revolution X (NA)", "World
+Series Baseball II (NA)", "Clockwork Knight (NA)", "Rayman (NA)" — whose top
+pick flipped from the retail art to that game's *Beta*/*Demo* art. Token
+dump showed exact ties: the retail art carries a Saturn media marker
+("(1S)", "(3S)", "(R2)") that is unclassified and weighed 0.75, the same as
+`preview:beta`, so candidate order decided. Lowering the unclassified weight
+to 0.5 restored all four (and "Twinkle Star Sprites (JP)" onto its *Game
+Disc* rather than its *Omake Disc*, once a bare "Game Disc" clause — a
+role, not an index — stopped being classified as a Disc token at 1.0).
+Re-run on NES and PSX after the tuning: 3 and 4 top picks changed
+respectively, all ties between equally-unclassified siblings or the
+Game-Disc fix again ("Psychic Force Puzzle Taisen (JP)").
+
 ### Not measured
 
-Saturn and other multi-disc systems (Sega CD, TurboGrafx-CD) were not run;
-PSX is the largest and should be representative. Homebrew-heavy systems
-(C64 EasyFlash) were not run and have their own tag conventions.
+Sega CD and TurboGrafx-CD were not run; PSX and Saturn together cover the
+multi-disc conventions. Homebrew-heavy systems (C64 EasyFlash) were not run
+and have their own tag conventions.

@@ -110,7 +110,7 @@ v1.2	Revision	36	30	6
 En,Fr,De,Es,It,Pt	Language	35	0	35
 Mega Drive 4	NeedsReview	34	0	34
 Fr	Region	33	14	19
-Game Disc	Disc	33	0	33
+Game Disc	NeedsReview	33	0	33
 Rumble Version	NeedsReview	33	0	33
 Beta 10	Preview	32	0	32
 Kiosk	Preview	32	1	31
@@ -2363,7 +2363,7 @@ Digital Monastery - 2019	NeedsReview	1	1	0
 Digital Monastery - 2022	NeedsReview	1	1	0
 Digital Video	NeedsReview	1	0	1
 Dino Sorcerer, The Adventures of Captain Comic, Blob, Missile Base, and Crossword - EU	NeedsReview	1	1	0
-Disc	Disc	1	1	0
+Disc	NeedsReview	1	1	0
 Disc 1 - English Translated by A Murder of Crows and Shadowmask, Rev 0.2j RC	Disc+TranslationCredit	1	1	0
 Disc 1 - English Translated by Aishsha, Paul_met, and Pennywise, Rev 1.1	Disc+TranslationCredit	1	1	0
 Disc 1 - English Translated by Arjak and MossstarMoon	Disc+TranslationCredit	1	1	0

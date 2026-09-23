@@ -178,8 +178,12 @@ public static class TagCategorizer
     private static readonly Regex RevisionPattern = new(
         @"^(Rev\.?\s*\S+|v\d[\w\.]*|Alt(\s*\d+)?)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
+    // Requires a value after the medium word: "Disc 1", "Disk 2", "Disc-B", "Side A".
+    // A bare "Disc" or "Game Disc" (Redump's label for the non-bonus disc of a set)
+    // names a disc's ROLE, not its index, and is left unclassified — as a Disc token
+    // it weighed 1.0 and made "(Disc 1) (Game Disc)" lose to "(Disc 2) (Omake Disc)".
     private static readonly Regex DiscPattern = new(
-        @"^(Disc|Disk|Side|Tape|Game Disc)\s*\S*$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        @"^(?:Game Disc|Disc|Disk|Side|Tape)[\s-]+\S+$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
     private static readonly Regex DatePattern = new(@"^\d{4}-\d{2}-\d{2}$", RegexOptions.Compiled);
 

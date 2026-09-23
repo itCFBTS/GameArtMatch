@@ -26,8 +26,12 @@ public static class TagTokenizer
     /// <summary>Weight of an unclassified (NeedsReview) clause — kept, not dropped,
     /// because that pile holds real both-sided signal ("Tengen", "Namcot Collection")
     /// alongside one-sided noise ("SGB Enhanced"); the catalog triage loop is how the
-    /// noise gets promoted into a real category and then dropped by its level.</summary>
-    public const double UnclassifiedWeight = 0.75;
+    /// noise gets promoted into a real category and then dropped by its level. Below
+    /// DistinguishingWeight on purpose: ADR-0007's Saturn validation had retail art
+    /// tagged with an unknown media marker ("1S", "3S", "RE") tie its own Beta art at
+    /// 0.75 and lose on candidate order — an unknown tag is more often descriptive
+    /// noise than a real "different box," so it should cost less than a known one.</summary>
+    public const double UnclassifiedWeight = 0.5;
 
     /// <summary>Prefix for an unclassified clause's token, so it's still marked as
     /// tag-derived rather than mistaken for a title word.</summary>
