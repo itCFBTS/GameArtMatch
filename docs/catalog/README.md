@@ -44,8 +44,8 @@ that happened to turn up during ADR-0003's validation.
   and `HackOrPatchCredit` (never get their own art — a patch is scored against
   the original's box). The same order also groups into four **significance**
   levels (`TagCategorizer.TagSignificance`, each a contiguous run of the rank):
-  *Decisive* (Disc, Region), *Distinguishing* (Unofficial, Preview, Revision),
-  *Descriptive* (Platform, Label, Language, Date), *Irrelevant* (TranslationCredit,
+  *Decisive* (Disc, Region), *Distinguishing* (Unofficial, Preview, Revision, Platform),
+  *Descriptive* (Label, Language, Date), *Irrelevant* (TranslationCredit,
   HackOrPatchCredit); a **combined label** for a compound tag where every
   comma/dash-separated clause resolved to a *known* category, just not all the
   same one — joined with `+` in rank order (most significant first) rather than

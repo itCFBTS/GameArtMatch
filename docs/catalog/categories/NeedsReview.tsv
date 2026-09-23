@@ -14,6 +14,7 @@ Namcot Collection	42	21	21
 EDC	40	0	40
 3M	37	0	37
 Mega Drive 4	34	0	34
+Game Disc	33	0	33
 Rumble Version	33	0	33
 Whirlwind Manu	32	19	13
 Family BASIC	31	19	12
@@ -50,7 +51,6 @@ Animal Crossing	17	0	17
 Music Program	16	16	0
 Othello Multivision	16	0	16
 2S	15	0	15
-Alt 2	15	2	13
 Collection of Mana	15	0	15
 QUByte Classics	15	0	15
 Taikenban	15	0	15
@@ -84,7 +84,6 @@ Marvel MaXimum Collection	11	0	11
 Sly Dog Studios	11	11	0
 Special Disc	11	0	11
 11M	10	0	10
-Alt 1	10	0	10
 Atari Anthology	10	0	10
 Cowabunga Collection, The	10	0	10
 IE Institute	10	0	10
@@ -181,8 +180,6 @@ set 1	6	6	0
 5S	5	0	5
 7S	5	0	5
 Aladdin Compact Cartridge	5	3	2
-Alt2	5	5	0
-Alt3	5	5	0
 BIOS	5	5	0
 BNROM	5	5	0
 Byte-Off 2020	5	5	0
@@ -528,6 +525,7 @@ Meinu Quan	2	1	1
 Menu	2	0	2
 Midway Classics	2	0	2
 Mr Micro	2	2	0
+NA - Content Restoration Patch by RealGaea, Rev 1.2 3b - Arcade Remix Version	2	2	0
 NA - Disc 1 - Allies	2	2	0
 NA - Disc 1 - GDI	2	2	0
 NA - Disc 2 - NOD	2	2	0
@@ -1035,6 +1033,12 @@ Digital Monastery - 2019	1	1	0
 Digital Monastery - 2022	1	1	0
 Digital Video	1	0	1
 Dino Sorcerer, The Adventures of Captain Comic, Blob, Missile Base, and Crossword - EU	1	1	0
+Disc	1	1	0
+Disc 1 - English Translated by John Osborne, Rev 2 - Subbed Version	1	1	0
+Disc 1 - Tower of Doom - English Translated by Lirinica	1	1	0
+Disc 1 - What's Going On - English Translated by SnowyAria	1	1	0
+Disc 2 - English Translated by John Osborne, Rev 2 - Subbed Version	1	1	0
+Disc 2 - Fears Behind - English Translated by SnowyAria	1	1	0
 Disk 1 - Bishoujo Connection - JP	1	1	0
 Disk 1 - Mahjong Game Hontai - JP	1	1	0
 Disk 1 - Tokimeki Gals - JP	1	1	0
@@ -1071,6 +1075,7 @@ EB4-3 X	1	1	0
 EB4-4 A	1	1	0
 ECTS 2000	1	0	1
 EGS	1	0	1
+EU - 4-in-1 Hack Patch by Meduza Team, Rev 1.5 - NDS Style Version	1	1	0
 EU - Disc 1 - Magical Drop III	1	1	0
 EU - Disc 1 - Wings of Destiny	1	1	0
 EU - Disc 2 - Chronicles of Arthur	1	1	0
@@ -1117,6 +1122,12 @@ Endurance Course	1	1	0
 Endurion - 2015	1	1	0
 Endurion - 2018	1	1	0
 Engagement Edition	1	1	0
+English Retranslated and Content Restoration by The SAP Team - Reborn Version, Rev 2	1	1	0
+English Retranslated by Rodimus Primal, Rev 1.99 - Namingway Edition	1	1	0
+English Retranslated by Rodimus Primal, Rev 3.06 With Bug Fixes, Updated Opera, and Add-Ons - Woolsey Uncensored Edition	1	1	0
+English Retranslation and Fixes by Sarah Shinespark, Rev 3 - Seal of Rimsala Version	1	1	0
+English Translated by TrekkiesUnite118, Rev 1.5.1a - Dubbed Version	1	1	0
+English Translated by Wonder-inc, Rev 1.01 - NTSC Version	1	1	0
 Enhanced Soundtrack Disc	1	0	1
 Enterbrain Collection	1	0	1
 Ep-MyCard	1	0	1
@@ -1274,8 +1285,10 @@ JF-002	1	1	0
 JJ-01	1	1	0
 JMHWANG	1	0	1
 JP - Disc 1 - English Dubbed by John Osborne, Rev 2	1	1	0
+JP - Disc 1 - English Translated by KBLO, Rev 20251010 - Dubbed Version	1	1	0
 JP - Disc 1 - Ichigo	1	1	0
 JP - Disc 1 - Kamen Rider	1	1	0
+JP - Disc 1 - Langrisser IV - English Translated by Kil, Rev 1.3	1	1	0
 JP - Disc 1 - Thunder Storm	1	1	0
 JP - Disc 1 - Thunder Storm LX-3	1	1	0
 JP - Disc 1 - Vol. 1 - Toki no Maigo	1	1	0
@@ -1291,9 +1304,17 @@ JP - Disc 2 - Sengoku Kawaraban - Digital Edition	1	1	0
 JP - Disc 2 - Shadow Over Mystara	1	1	0
 JP - Disc 2 - Vol. 2 - Inochigake no Tabi	1	1	0
 JP - Disc 3 - Vol. 3 - Watashi ni Sayonara wo	1	1	0
+JP - English Translated by Bulk Slash English Localization Team, Rev 1.001 - Dubbed Version	1	1	0
+JP - English Translated by Exxistance - Dubbed Version	1	1	0
+JP - English Translated by Hilltop, Rev 1.1 - Classic Arale Version	1	1	0
+JP - English Translated by KoolFiller, Rev 2025-06-14 - Dubbed Version	1	1	0
+JP - English Translated by Malenko, Rev 2024.02.04-01 - Revised Version	1	1	0
+JP - English Translated by Meduza Team, Rev 1.1 - Ultimate Fork PSX Script Version	1	1	0
+JP - English Translated by Meduza Team, Rev 1.1 - Ultimate PSP Script Version	1	1	0
 JP - Hybrid Version	1	1	0
 JP - Kisekae Disc Kanzenban	1	1	0
 JP - SRAM, Scroll Speed, and Stereo Patches by Blizzz, Rev 1b	1	1	0
+JP - Wizardry VI - Bane of the Cosmic Forge - English Translated by Remisse, Rev 0.51 - Enhanced Version	1	1	0
 JR Nishi-Nihon Presents	1	0	1
 JY-011	1	1	0
 JY-035	1	1	0
@@ -1305,6 +1326,7 @@ JY-609	1	1	0
 JY010	1	1	0
 JY039	1	1	0
 Janky Multiplayer	1	1	0
+Japanese Original Version - English Translated With Save Fix by John Osborne	1	1	0
 Jet Set SAM, Bee Bopping, Addiction, and Last Stand II - EU	1	1	0
 Jeu	1	0	1
 Jim Roof	1	1	0
@@ -1548,22 +1570,28 @@ Music v1	1	1	0
 Music v2	1	1	0
 Myth Struggle	1	1	0
 N-32	1	1	0
+NA - Additional Features and Improvements Patch by Manoel Messias, Rev PB4 - Plus Version	1	1	0
 NA - Bugfixes by SCD, Rev Final	1	1	0
 NA - Bugfixes by Upsilandre	1	1	0
 NA - Centipede Color Fix by 125scratch	1	1	0
 NA - Color Fixes by Dex909, Rev 1.1	1	1	0
 NA - Color Fixes by Mister Man, Rev 1.1	1	1	0
+NA - Content Restoration Patch by SCD, Rev Final - Victory Drink Plus! Version	1	1	0
 NA - Content Restoration and Bugfixes by Artemis, Rev 7 - Frue Lufia Version	1	1	0
+NA - Content Restoration and Color Fix Patch by RealGaea, Rev 1.2 - Arcade Edition Version	1	1	0
 NA - Disc 1 - Perfect Works Build, Rev 0.10.1 With All Patches, 1.5x EXP, Story Mode, and Script Changes	1	1	0
 NA - Disc 1 - Shockwave - Invasion Earth	1	1	0
 NA - Disc 2 - Evolution Disc	1	1	0
 NA - Disc 2 - Perfect Works Build, Rev 0.10.1 With All Patches, 1.5x EXP, Story Mode, and Script Changes	1	1	0
 NA - Disc 2 - Shockwave - Operation Jumpgate	1	1	0
 NA - Disc 2 - Turbo Mode Disc	1	1	0
+NA - Eyedol Unlocked Patch by NinjAkira - Deluxe Version	1	1	0
 NA - Graphical Overhaul by Gagarin, Rev 1.1 - Lennus Revival Version	1	1	0
 NA - Level 6-1 Bugfix by Sluffy, Rev 20181102	1	1	0
 NA - Restored Content and Additions by Lucas Dext5r, Rev 2.3 - Deluxe Version	1	1	0
 NA - Secret Characters Unlocked by Snark-4918, Rev 2 - Champion Edition Version	1	1	0
+NA - True Director's Cut Patch by Deli295, Rev 0.4 - Original Soundtrack Version	1	1	0
+NA - Uncensored and Restored Patch by FlamePurge, Rev 3.1 - Always Retry Mode Version	1	1	0
 NA, Rev 2 - Simulation Mode	1	1	0
 NA, Rev 5R, 6R	1	1	0
 NC-80	1	1	0
@@ -1596,6 +1624,7 @@ Nanjin	1	1	0
 Nantong	1	1	0
 Nearly Final	1	1	0
 Neo Organic Bioform	1	0	1
+Neunzehn - English Translated by MrRichard999	1	1	0
 New Generation Software	1	1	0
 New Version	1	1	0
 Nickelodeon Movies	1	0	1
@@ -1724,6 +1753,7 @@ Recalled	1	0	1
 Red Disc	1	0	1
 Red Door - EU	1	1	0
 Reflect, Heavier Than Metal, Reverse, GFX, M Driver, and Fishinvaders - EU	1	1	0
+Relocalized and Uncensored Patch by CoolGuyBrendyn, Rev 1.5 - Perfect Edition Version	1	1	0
 Remastered	1	1	0
 Rental	1	0	1
 Retream - 2022	1	1	0
@@ -1775,6 +1805,7 @@ SLUS-00612	1	0	1
 SM4-4 E	1	1	0
 SNS-NA	1	0	1
 SPC009	1	1	0
+Sailor Moon Fighter S Hack by Metaquarius, Rev 1.67 - Purist Edition	1	1	0
 Samar Productions - 2007	1	1	0
 Sample-ban	1	0	1
 Samsung	1	0	1
@@ -2045,6 +2076,7 @@ Winter	1	0	1
 With Bugfixes - EU	1	1	0
 With Question Editor - EU	1	1	0
 Wiz 'n' Liz - EU	1	1	0
+Wizardry VI - Bane of the Cosmic Forge - English Translated by Remisse, Rev 0.51	1	1	0
 WonderWitch	1	0	1
 Wop Gamma, Kreuzen, and New York Game - EU	1	1	0
 X	1	1	0
@@ -2063,6 +2095,7 @@ Yarudora Series Vol. 1 - Double Cast	1	0	1
 Yellow Disc	1	0	1
 Yoko	1	0	1
 Yokokuban	1	0	1
+Ys - Ancient Ys Vanished Omen Saturn Mode - English Translated by Murzik and CrawdKenny, Rev 0.763	1	1	0
 Ys - The Oath of Felghana	1	1	0
 Ys Origin - Hugo	1	1	0
 Ys Origin - Yunica	1	1	0

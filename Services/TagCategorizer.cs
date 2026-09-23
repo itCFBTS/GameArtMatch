@@ -15,9 +15,10 @@ namespace GameArtMatch.Services;
 ///
 /// Many real tag strings are compound (e.g. "NA, Rev 1", "EU - 4-in-1 Hack Patch by
 /// Meduza Team, Rev 1.5") because ROM/art naming conventions cram everything into one
-/// "(...)" group separated by commas or " - ". Categorize splits on both before
-/// classifying each clause, so a tag only lands in NeedsReview when it has at least
-/// one clause nothing here recognizes — not just because it happens to combine two
+/// "(...)" group separated by commas or " - ". ClassifyClauses splits on both before
+/// classifying each clause (folding a credit's trailing "by X"/"Rev N" clauses into
+/// the credit), so a tag only lands in NeedsReview when it has at least one clause
+/// nothing here recognizes — not just because it happens to combine two
 /// already-understood concepts.
 /// </summary>
 public static class TagCategorizer
@@ -96,13 +97,17 @@ public static class TagCategorizer
         /// every time: Disc, Region.</summary>
         Decisive,
 
-        /// <summary>A mismatch means a different product or build — Unl/Pirate
-        /// cart, Beta/Proto, Rev/Alt — whose art usually still resembles the
-        /// original's: Unofficial, Preview, Revision.</summary>
+        /// <summary>A mismatch means a different product, build, or reissue —
+        /// Unl/Pirate cart, Beta/Proto, Rev/Alt, Virtual Console/e-Reader — whose
+        /// art usually still resembles the original's: Unofficial, Preview,
+        /// Revision, Platform. Platform started in Descriptive; ADR-0007's NES
+        /// validation moved it here because dropping it made "Foo (Europe)
+        /// (Virtual Console)" tie "Foo (Europe)" and win on filename order, and
+        /// in one case let a short e-Reader name overtake the right box.</summary>
         Distinguishing,
 
         /// <summary>Describes the release without usually changing which box it
-        /// is: Platform, Label, Language, Date.</summary>
+        /// is: Label, Language, Date.</summary>
         Descriptive,
 
         /// <summary>Carries no art signal at all — a patch is scored against the
@@ -113,8 +118,8 @@ public static class TagCategorizer
     public static TagSignificance SignificanceOf(TagCategory category) => category switch
     {
         TagCategory.Disc or TagCategory.Region => TagSignificance.Decisive,
-        TagCategory.Unofficial or TagCategory.Preview or TagCategory.Revision => TagSignificance.Distinguishing,
-        TagCategory.Platform or TagCategory.Label or TagCategory.Language or TagCategory.Date => TagSignificance.Descriptive,
+        TagCategory.Unofficial or TagCategory.Preview or TagCategory.Revision or TagCategory.Platform => TagSignificance.Distinguishing,
+        TagCategory.Label or TagCategory.Language or TagCategory.Date => TagSignificance.Descriptive,
         TagCategory.TranslationCredit or TagCategory.HackOrPatchCredit => TagSignificance.Irrelevant,
         TagCategory.NeedsReview => throw new ArgumentOutOfRangeException(nameof(category),
             "NeedsReview is a triage bucket, not a category — it has no significance level."),
@@ -169,11 +174,16 @@ public static class TagCategorizer
         RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
     // "Alt" folded in here, not Unofficial — see Unofficial's doc comment.
+    // "Alt 1"/"Alt 2" (No-Intro's numbered alternate dumps) alongside bare "Alt".
     private static readonly Regex RevisionPattern = new(
-        @"^(Rev\.?\s*\S+|v\d[\w\.]*|Alt)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        @"^(Rev\.?\s*\S+|v\d[\w\.]*|Alt(\s*\d+)?)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
+    // Requires a value after the medium word: "Disc 1", "Disk 2", "Disc-B", "Side A".
+    // A bare "Disc" or "Game Disc" (Redump's label for the non-bonus disc of a set)
+    // names a disc's ROLE, not its index, and is left unclassified — as a Disc token
+    // it weighed 1.0 and made "(Disc 1) (Game Disc)" lose to "(Disc 2) (Omake Disc)".
     private static readonly Regex DiscPattern = new(
-        @"^(Disc|Disk|Side|Tape|Game Disc)\s*\S*$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        @"^(?:Game Disc|Disc|Disk|Side|Tape)[\s-]+\S+$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
     private static readonly Regex DatePattern = new(@"^\d{4}-\d{2}-\d{2}$", RegexOptions.Compiled);
 
@@ -181,8 +191,6 @@ public static class TagCategorizer
 
     private static readonly Regex HackOrPatchPattern = new(
         @"\b(Hack|Patch|Trainer|Cheat)\b", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-
-    private static readonly Regex ClauseSplitPattern = new(@",|\s-\s", RegexOptions.Compiled);
 
     /// <summary>Returns a single TagCategory name for a clean tag, or, for a compound
     /// one where every clause resolved to a known category but not all to the SAME
@@ -192,34 +200,8 @@ public static class TagCategorizer
     /// exactly what's being combined, not just that something was.</summary>
     public static string Categorize(string tag)
     {
-        // Checked against the WHOLE tag, before splitting into clauses: a translation
-        // or hack/patch credit is one semantic unit even when it also drags along a
-        // region/revision clause ("EU - 4-in-1 Hack Patch by Meduza Team, Rev 1.5") —
-        // splitting first would just strand "by Meduza Team" as an unrecognized clause
-        // and lose the more useful, specific label.
-        if (TranslationPattern.IsMatch(tag)) return nameof(TagCategory.TranslationCredit);
-        if (HackOrPatchPattern.IsMatch(tag)) return nameof(TagCategory.HackOrPatchCredit);
-
-        var clauses = ClauseSplitPattern.Split(tag)
-            .Select(c => c.Trim())
-            .Where(c => c.Length > 0)
-            .ToList();
-
-        if (clauses.Count == 0)
-            return nameof(TagCategory.NeedsReview);
-
-        // Region and Language overlap: several real language codes (Fr, De, Es, It,
-        // Ca) are also, case-insensitively, a RegionCatalog synonym (France, Germany,
-        // Spain, Italy, Canada respectively). A single-clause tag like "Fr" alone is
-        // read as the region — but the SAME word inside a multi-clause list
-        // ("En,Fr,De,Es,It") is unambiguously a language list, not four different
-        // regions. So which reading wins depends on whether this tag has other
-        // clauses alongside it, not on the word alone. ("Ja" used to be in this
-        // overlap set as a Japan synonym; it's a language code only now — see
-        // RegionCatalog — so it classifies as Language in either position.)
-        var preferLanguage = clauses.Count > 1;
-        var classified = clauses.Select(c => ClassifyClause(c, preferLanguage)).ToList();
-        if (classified.Any(c => c is null))
+        var clauses = ClassifyClauses(tag);
+        if (clauses.Count == 0 || clauses.Any(c => c.Category == TagCategory.NeedsReview))
             return nameof(TagCategory.NeedsReview);
 
         // Sorted into a fixed order (enum declaration order = rank, see TagCategory)
@@ -227,9 +209,73 @@ public static class TagCategorizer
         // "Disc+Region" regardless of which clause happened to come first in the
         // source string — otherwise the same real combination would silently split
         // across two category names.
-        var distinct = classified.Cast<TagCategory>().Distinct().OrderBy(c => (int)c).ToList();
+        var distinct = clauses.Select(c => c.Category).Distinct().OrderBy(c => (int)c).ToList();
         return distinct.Count == 1 ? distinct[0].ToString() : string.Join("+", distinct);
     }
+
+    /// <summary>The per-clause view Categorize summarizes and TagTokenizer emits
+    /// tokens from: each clause of the tag with the category it resolved to, in
+    /// source order, NeedsReview for any clause nothing here recognizes.
+    ///
+    /// Splits on " - " first (the convention's major separator), then on commas
+    /// within each segment. A translation or hack/patch credit usually spans a whole
+    /// comma-separated segment — "English Translated, Rev A, by DvD Translations",
+    /// "Reforged Patch by Mziab, FlamePurge, and Kevan33, Rev 1.01", "Tweaks,
+    /// Localization, and Custom Art Patch by Acediez, Rev 2.6" — where the other
+    /// parts are the credit's own words: author lists, the patch's revision, the
+    /// front half of a patch name that happened to contain commas. So once a
+    /// segment contains a credit part, every part after it and every UNRECOGNIZED
+    /// part before it fold into the credit; a recognized part before it ("Rev 1" in
+    /// "Rev 1, English Translated by X") is the game's and keeps its category. Parts
+    /// in OTHER segments are never touched: in "NA - Disc 2 - Undub Patch by Etsuna,
+    /// Rev 2" the region and disc are the game's and must survive (ADR-0007's PSX
+    /// validation found 18 multi-disc ROMs landing on the wrong disc when an earlier
+    /// version classified the WHOLE tag as a credit and dropped them).</summary>
+    public static IReadOnlyList<(TagCategory Category, string Clause)> ClassifyClauses(string tag)
+    {
+        var segments = SegmentSplitPattern.Split(tag)
+            .Select(seg => CommaSplitPattern.Split(seg).Select(c => c.Trim()).Where(c => c.Length > 0).ToList())
+            .Where(seg => seg.Count > 0)
+            .ToList();
+
+        // Region and Language overlap: several real language codes (Ja, Fr, De, Es,
+        // It, Ca) are also, case-insensitively, a RegionCatalog synonym (Japan,
+        // France, Germany, Spain, Italy, Canada respectively). A single-clause tag
+        // like "Ja" alone really does mean the Japan region in this corpus's own
+        // convention (see RegionCatalog's own history) — but the SAME word inside a
+        // multi-clause list ("En,Ja,Fr,De,Es,It") is unambiguously a language list,
+        // not five different regions. So which reading wins depends on whether this
+        // tag has other clauses alongside it, not on the word alone.
+        var preferLanguage = segments.Sum(seg => seg.Count) > 1;
+
+        var result = new List<(TagCategory, string)>();
+        foreach (var parts in segments)
+        {
+            var creditIndex = parts.FindIndex(IsCreditClause);
+            for (var i = 0; i < parts.Count; i++)
+            {
+                var part = parts[i];
+                TagCategory category;
+                if (creditIndex < 0)
+                    category = ClassifyClause(part, preferLanguage) ?? TagCategory.NeedsReview;
+                else if (i >= creditIndex)
+                    category = CreditCategory(parts[creditIndex]);
+                else
+                    category = ClassifyClause(part, preferLanguage) ?? CreditCategory(parts[creditIndex]);
+                result.Add((category, part));
+            }
+        }
+        return result;
+    }
+
+    private static bool IsCreditClause(string clause) =>
+        TranslationPattern.IsMatch(clause) || HackOrPatchPattern.IsMatch(clause);
+
+    private static TagCategory CreditCategory(string creditClause) =>
+        TranslationPattern.IsMatch(creditClause) ? TagCategory.TranslationCredit : TagCategory.HackOrPatchCredit;
+
+    private static readonly Regex SegmentSplitPattern = new(@"\s-\s", RegexOptions.Compiled);
+    private static readonly Regex CommaSplitPattern = new(@",", RegexOptions.Compiled);
 
     private static TagCategory? ClassifyClause(string clause, bool preferLanguage)
     {
