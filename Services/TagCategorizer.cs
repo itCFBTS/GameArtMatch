@@ -15,9 +15,10 @@ namespace GameArtMatch.Services;
 ///
 /// Many real tag strings are compound (e.g. "NA, Rev 1", "EU - 4-in-1 Hack Patch by
 /// Meduza Team, Rev 1.5") because ROM/art naming conventions cram everything into one
-/// "(...)" group separated by commas or " - ". Categorize splits on both before
-/// classifying each clause, so a tag only lands in NeedsReview when it has at least
-/// one clause nothing here recognizes — not just because it happens to combine two
+/// "(...)" group separated by commas or " - ". ClassifyClauses splits on both before
+/// classifying each clause (folding a credit's trailing "by X"/"Rev N" clauses into
+/// the credit), so a tag only lands in NeedsReview when it has at least one clause
+/// nothing here recognizes — not just because it happens to combine two
 /// already-understood concepts.
 /// </summary>
 public static class TagCategorizer
@@ -187,8 +188,6 @@ public static class TagCategorizer
     private static readonly Regex HackOrPatchPattern = new(
         @"\b(Hack|Patch|Trainer|Cheat)\b", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-    private static readonly Regex ClauseSplitPattern = new(@",|\s-\s", RegexOptions.Compiled);
-
     /// <summary>Returns a single TagCategory name for a clean tag, or, for a compound
     /// one where every clause resolved to a known category but not all to the SAME
     /// one (e.g. "NA, Rev 2" = Region + Revision), the actual combination joined with
@@ -212,20 +211,27 @@ public static class TagCategorizer
 
     /// <summary>The per-clause view Categorize summarizes and TagTokenizer emits
     /// tokens from: each clause of the tag with the category it resolved to, in
-    /// source order, NeedsReview for any clause nothing here recognizes. A
-    /// translation or hack/patch credit is one semantic unit even when it drags
-    /// along a region/revision clause ("EU - 4-in-1 Hack Patch by Meduza Team, Rev
-    /// 1.5"), so it's checked against the WHOLE tag first and returned as a single
-    /// clause — splitting first would just strand "by Meduza Team" as unrecognized
-    /// and lose the more useful, specific label.</summary>
+    /// source order, NeedsReview for any clause nothing here recognizes.
+    ///
+    /// Splits on " - " first (the convention's major separator), then on commas
+    /// within each segment. A translation or hack/patch credit usually spans a whole
+    /// comma-separated segment — "English Translated, Rev A, by DvD Translations",
+    /// "Reforged Patch by Mziab, FlamePurge, and Kevan33, Rev 1.01", "Tweaks,
+    /// Localization, and Custom Art Patch by Acediez, Rev 2.6" — where the other
+    /// parts are the credit's own words: author lists, the patch's revision, the
+    /// front half of a patch name that happened to contain commas. So once a
+    /// segment contains a credit part, every part after it and every UNRECOGNIZED
+    /// part before it fold into the credit; a recognized part before it ("Rev 1" in
+    /// "Rev 1, English Translated by X") is the game's and keeps its category. Parts
+    /// in OTHER segments are never touched: in "NA - Disc 2 - Undub Patch by Etsuna,
+    /// Rev 2" the region and disc are the game's and must survive (ADR-0007's PSX
+    /// validation found 18 multi-disc ROMs landing on the wrong disc when an earlier
+    /// version classified the WHOLE tag as a credit and dropped them).</summary>
     public static IReadOnlyList<(TagCategory Category, string Clause)> ClassifyClauses(string tag)
     {
-        if (TranslationPattern.IsMatch(tag)) return [(TagCategory.TranslationCredit, tag.Trim())];
-        if (HackOrPatchPattern.IsMatch(tag)) return [(TagCategory.HackOrPatchCredit, tag.Trim())];
-
-        var clauses = ClauseSplitPattern.Split(tag)
-            .Select(c => c.Trim())
-            .Where(c => c.Length > 0)
+        var segments = SegmentSplitPattern.Split(tag)
+            .Select(seg => CommaSplitPattern.Split(seg).Select(c => c.Trim()).Where(c => c.Length > 0).ToList())
+            .Where(seg => seg.Count > 0)
             .ToList();
 
         // Region and Language overlap: several real language codes (Ja, Fr, De, Es,
@@ -236,9 +242,36 @@ public static class TagCategorizer
         // multi-clause list ("En,Ja,Fr,De,Es,It") is unambiguously a language list,
         // not five different regions. So which reading wins depends on whether this
         // tag has other clauses alongside it, not on the word alone.
-        var preferLanguage = clauses.Count > 1;
-        return clauses.Select(c => (ClassifyClause(c, preferLanguage) ?? TagCategory.NeedsReview, c)).ToList();
+        var preferLanguage = segments.Sum(seg => seg.Count) > 1;
+
+        var result = new List<(TagCategory, string)>();
+        foreach (var parts in segments)
+        {
+            var creditIndex = parts.FindIndex(IsCreditClause);
+            for (var i = 0; i < parts.Count; i++)
+            {
+                var part = parts[i];
+                TagCategory category;
+                if (creditIndex < 0)
+                    category = ClassifyClause(part, preferLanguage) ?? TagCategory.NeedsReview;
+                else if (i >= creditIndex)
+                    category = CreditCategory(parts[creditIndex]);
+                else
+                    category = ClassifyClause(part, preferLanguage) ?? CreditCategory(parts[creditIndex]);
+                result.Add((category, part));
+            }
+        }
+        return result;
     }
+
+    private static bool IsCreditClause(string clause) =>
+        TranslationPattern.IsMatch(clause) || HackOrPatchPattern.IsMatch(clause);
+
+    private static TagCategory CreditCategory(string creditClause) =>
+        TranslationPattern.IsMatch(creditClause) ? TagCategory.TranslationCredit : TagCategory.HackOrPatchCredit;
+
+    private static readonly Regex SegmentSplitPattern = new(@"\s-\s", RegexOptions.Compiled);
+    private static readonly Regex CommaSplitPattern = new(@",", RegexOptions.Compiled);
 
     private static TagCategory? ClassifyClause(string clause, bool preferLanguage)
     {

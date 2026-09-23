@@ -3,12 +3,16 @@
 ## Status
 
 Implemented on `experiment/tag-clause-tokens` (2026-09-23) and validated
-against the real NES library — see "Validation" below. Net effect on top
-picks: 9 improvements, 6 neutral reorders, 2 ambiguous, 0 regressions; and
-the validation surfaced a pre-existing bug that had left the old tag-inclusive
-score broken for every multi-region tag. One placement changed during
-validation: **Platform moved from Descriptive to Distinguishing** (the
-tables below show the final state). Decided in discussion 2026-09-23.
+against the real NES and PSX libraries — see "Validation" below. NES: 17 top
+picks changed, 9 improvements, 6 neutral, 2 ambiguous, 0 regressions. PSX
+(2,839 ROMs, multi-disc): 303 top picks changed, 238 of them now exact 100,
+every one of 275 disc-tagged ROMs now lands on its own disc number (was
+221), 0 regressions. The validation surfaced a pre-existing bug that had
+left the old tag-inclusive score broken for every multi-region tag. Two
+things changed during validation: **Platform moved from Descriptive to
+Distinguishing**, and **credits are now recognized per segment rather than
+per whole tag** (the tables and §1 below show the final state). Decided in
+discussion 2026-09-23.
 **Absorbs ADR-0004**: "omit translation-credit tag phrases" is the
 Irrelevant-level case of the general rule below, so 0004 is not picked up
 separately. Composes with ADR-0006 (title structure) — see "Relationship to
@@ -61,10 +65,10 @@ via `SignificanceOf`). Until this ADR, nothing consumed either.
 ### 1. One token per tag clause, labeled with its category
 
 In the ForceInclude path, each `(...)`/`[...]` group is split into clauses
-(`TagCategorizer`'s comma / `" - "` split, with the same whole-tag
-translation/hack check first so a credit stays one unit), each clause is
-classified, canonicalized, and emitted as a **single token of the form
-`<category>:<canonical clause>`** — never split into words:
+(`TagCategorizer.ClassifyClauses`: on `" - "` first, then on commas within
+each segment), each clause is classified, canonicalized, and emitted as a
+**single token of the form `<category>:<canonical clause>`** — never split
+into words:
 
 | Raw tag | Emitted tokens |
 |---|---|
@@ -75,7 +79,20 @@ classified, canonicalized, and emitted as a **single token of the form
 | `(Proto)` / `(Prototype)` | `preview:proto` |
 | `(NA - Disc 2)` | `region:usa`, `disc:2` |
 | `(English Translated by X)` | *(nothing — see §2)* |
+| `(NA - Disc 2 - Undub Patch by Etsuna, Rev 2)` | `region:usa`, `disc:2` *(credit and its Rev dropped)* |
 | `(Tengen)` *(NeedsReview)* | `tag:tengen` |
+
+**Credits are recognized per segment, not per whole tag.** A translation or
+hack/patch credit spans a comma-separated segment — "English Translated,
+Rev A, by DvD Translations", "Reforged Patch by Mziab, FlamePurge, and
+Kevan33, Rev 1.01" — whose other parts are the credit's own words (author
+lists, the *patch's* revision, the front half of a comma-containing patch
+name). So within a segment containing a credit, every part after it and every
+unrecognized part before it fold into the credit; a recognized part before it
+("Rev 1" in "Rev 1, English Translated by X") is the game's and keeps its
+category. Parts in other `" - "` segments are never touched. The original
+design checked the *whole tag* for a credit first, which dropped the game's
+Region and Disc along with it — see "Validation (PSX)" for what that cost.
 
 Canonicalization reuses `RegionCatalog.TryCanonicalize` and
 `TagWordCatalog.TryCanonicalize`; the category prefix comes from the
@@ -275,7 +292,63 @@ are (a) the region-mismatched pirates above, where the tie is correct, and
 being Descriptive. If (b) turns out to matter, Language is the next
 candidate for promotion, by the same evidence rule Platform followed.
 
+## Validation (PSX, 2,839 ROMs with candidates, 14,251 candidate pairs)
+
+Same method, with `--include-existing` (added for this) so ROMs that already
+have art are scanned too — PSX art is mostly done, and skipping it left only
+107 ROMs. 275 of the ROMs carry a Disc tag, which NES couldn't exercise.
+
+### Headline numbers (before → final)
+
+| | Before | Final |
+|---|---|---|
+| Top picks that are an exact 100 | 1,854 | 2,433 |
+| Disc-tagged ROMs whose top pick has the same disc number | 221 of 275 | 271 of 275 |
+| … a *different* disc number | 23 | 0 |
+| … an untagged image | 31 | 4 |
+| ROMs whose top candidates tie | 245 | 64 |
+| Pairs whose score moved | — | 8,092 (8,027 up, 65 down) |
+| Top picks changed | — | 303 |
+
+The 65 drops are all correct: "Demo 1" / "Rev 1" / "Disc 2 (Rev 1)" art
+used to share a bare "1" or "2" word token with a "(NA - Disc 1)" ROM and
+no longer does.
+
+### Top-candidate changes (303 ROMs)
+
+| Verdict | Count | What happened |
+|---|---|---|
+| Now exact 100 | 238 | Mostly "(EU)" / "(NA)" ROMs against "(Europe) (En,Fr,De,Es,It)" / "(USA, Canada)" art — the bracket bug plus dropped language lists |
+| Disc now matches | 18 | e.g. "Aconcagua (Disc 2 - English Translated by Hilltop)" *Disc 1* → *Disc 2* |
+| Region now matches | 16 | e.g. "Armored Core (NA, Rev 1)" *(Japan) (Demo 1)* → *(USA)* |
+| Title now matches | 7 | e.g. "Destruction Derby 2 (NA)" *Destruction Derby* → *Destruction Derby 2* |
+| Same-title sibling swap | 11 | All onto the better sibling: "Final Fantasy IX (NA, Rev 1 - Disc N)" now *(Disc N) (Rev 1)*; "Persona 2 (Rev 1 - English Translated…)" now *(Rev 1)* |
+| Other | 11 | All improvements: NA ROMs onto *(USA)* Disney art instead of Italy/Denmark/Europe |
+| Neutral | 2 | "Beatmania (JP - Disc 1 - Arcade)" *(Europe)* → *Beatmania Best Hits (Japan)*; no plain Japan art exists |
+| REGRESSION | 0 | |
+
+### What PSX caught that NES couldn't: whole-tag credit detection
+
+The first PSX run still had 13 disc-tagged ROMs on the wrong disc, and 5
+that had been right went wrong. Every one had its Disc (and often Region)
+inside the same tag as a credit — "(Disc 2 - English Translated by
+Hilltop)", "(NA - Disc 2 - Undub Patch by Etsuna, Rev 2)". The original
+rule checked the whole tag for a credit first, so those tags emitted nothing
+at all; "Disc 1" and "Disc 2" art then tied and filename order picked Disc 1.
+"PoPoLoCrois Monogatari II (Disc 1 - English Translated by …)" even
+preferred *(Japan) (Demo)* over *(Japan) (Disc 1)*, because the Demo
+image's unmatched token weighs 0.75 and the Disc image's weighs 1.0.
+
+Fixing this per clause (a credit clause plus its "by X" / "Rev N" tail)
+resolved all 18 and moved ~90 more patched "(NA - … Patch by …)" ROMs onto
+their *(USA)* art at 100. A further refinement — per *segment*, so
+comma-separated author lists and comma-containing patch names ("Tweaks,
+Localization, and Custom Art Patch by Acediez") don't strand `tag:` tokens
+— changed no top pick on either system but cleaned the emitted sets. The
+rule as it stands is described in §1.
+
 ### Not measured
 
-Only NES. Disc tokens (`disc:1`) were checked by token dump, not by a
-multi-disc system scan; PSX/Saturn is the obvious next validation set.
+Saturn and other multi-disc systems (Sega CD, TurboGrafx-CD) were not run;
+PSX is the largest and should be representative. Homebrew-heavy systems
+(C64 EasyFlash) were not run and have their own tag conventions.

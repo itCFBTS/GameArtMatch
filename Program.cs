@@ -155,7 +155,7 @@ sealed class Program
     /// matching options — and writes one TSV row per candidate, in display order, plus a
     /// row per ROM with no candidates. ROMs/Images default to the GUI's last-used folders
     /// (LastRomsPath/LastImagesPath in settings.json); --roms/--images/--threshold/--out
-    /// override. ADR-0003's run used a temporary version of this that was reverted; it's
+    /// override; --include-existing scans ROMs that already have art too. ADR-0003's run used a temporary version of this that was reverted; it's
     /// kept this time because every scoring ADR needs it.</summary>
     private static void RunScan(string[] args)
     {
@@ -175,6 +175,10 @@ sealed class Program
         foreach (var folder in persisted.IgnoredRomFolders ?? []) settings.IgnoredRomFolders.Add(folder);
         if (GetArgValue(args, "--threshold") is { } t && int.TryParse(t, out var threshold))
             settings.AccuracyThreshold = threshold;
+        // Scan every ROM, even ones that already have art in media/ — a system whose
+        // art is mostly done (e.g. PSX) otherwise leaves too few ROMs to validate on.
+        if (args.Contains("--include-existing"))
+            settings.SkipExistingArt = false;
 
         var outPath = GetArgValue(args, "--out") ?? "scan.tsv";
 
