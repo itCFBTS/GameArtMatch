@@ -22,6 +22,12 @@ sealed class Program
             return;
         }
 
+        if (args.Contains("--scan"))
+        {
+            RunScan(args);
+            return;
+        }
+
         BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
     }
 
@@ -129,6 +135,54 @@ sealed class Program
         ]);
 
         Console.WriteLine($"Wrote {outDir}/raw-tags.txt, raw-tags-counts.tsv, categories/*.tsv, scan-info.txt");
+    }
+
+    /// <summary>Dev CLI mode for before/after validation of matcher changes (the diff
+    /// discipline ADR-0003 established and ADR-0006/0007 call for): runs the exact same
+    /// FindMatchesAsync the GUI runs — same ListRoms filtering (Console Mode existing-art
+    /// skip, ignore list, ignored folders), same compiled MatchSettings defaults for the
+    /// matching options — and writes one TSV row per candidate, in display order, plus a
+    /// row per ROM with no candidates. ROMs/Images default to the GUI's last-used folders
+    /// (LastRomsPath/LastImagesPath in settings.json); --roms/--images/--threshold/--out
+    /// override. ADR-0003's run used a temporary version of this that was reverted; it's
+    /// kept this time because every scoring ADR needs it.</summary>
+    private static void RunScan(string[] args)
+    {
+        var persisted = new SettingsStore().Load();
+
+        var settings = new Models.MatchSettings
+        {
+            RomsRootPath = persisted.RomsRootPath ?? "",
+            ImagesRootPath = persisted.ImagesRootPath ?? "",
+            IsConsoleMode = persisted.IsConsoleMode, // also sets SkipExistingArt, as in the GUI
+            RomsPath = GetArgValue(args, "--roms") ?? persisted.LastRomsPath ?? "",
+            ImagesPath = GetArgValue(args, "--images") ?? persisted.LastImagesPath ?? "",
+        };
+        if (persisted.RomsIncludeSubfolders.HasValue) settings.RomsIncludeSubfolders = persisted.RomsIncludeSubfolders.Value;
+        if (persisted.ImagesIncludeSubfolders.HasValue) settings.ImagesIncludeSubfolders = persisted.ImagesIncludeSubfolders.Value;
+        foreach (var path in persisted.IgnoredRomPaths ?? []) settings.IgnoredRomPaths.Add(path);
+        foreach (var folder in persisted.IgnoredRomFolders ?? []) settings.IgnoredRomFolders.Add(folder);
+        if (GetArgValue(args, "--threshold") is { } t && int.TryParse(t, out var threshold))
+            settings.AccuracyThreshold = threshold;
+
+        var outPath = GetArgValue(args, "--out") ?? "scan.tsv";
+
+        Console.WriteLine($"ROMs:   {settings.RomsPath}");
+        Console.WriteLine($"Images: {settings.ImagesPath}");
+        Console.WriteLine($"Console Mode: {settings.IsConsoleMode}, Skip existing art: {settings.SkipExistingArt}, Threshold: {settings.AccuracyThreshold}");
+
+        var result = new MatchingService().FindMatchesAsync(settings, null, null, System.Threading.CancellationToken.None)
+            .GetAwaiter().GetResult();
+
+        var lines = new List<string> { "rom	image	score	exact" };
+        foreach (var group in result.Candidates.GroupBy(c => c.RomFileName))
+            foreach (var c in group)
+                lines.Add($"{c.RomFileName}	{c.ImageFileName}	{c.ScorePercent:F1}	{(c.IsExactMatch ? 1 : 0)}");
+        foreach (var missing in result.Missing)
+            lines.Add($"{missing.RomFileName}			");
+
+        File.WriteAllLines(outPath, lines);
+        Console.WriteLine($"Wrote {outPath}: {result.Candidates.Count} candidates, {result.Missing.Count} ROMs with none");
     }
 
     private static string? GetArgValue(string[] args, string flag)
