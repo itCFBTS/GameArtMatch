@@ -35,13 +35,18 @@ public static partial class RegionCatalog
     {
         ["USA"] = ["USA", "US", "NA", "NTSC-U"],
         ["Europe"] = ["Europe", "EU", "PAL"],
-        ["Japan"] = ["Japan", "JP", "JPN", "NTSC-J", "Ja"],
+        // "Ja" is deliberately NOT here: it's the No-Intro language code (Japanese),
+        // a sibling of "En"/"Fr"/"De" — see TagCategorizer.LanguageCodes — not a
+        // region abbreviation, even though it turns up on its own in this library
+        // (see docs/catalog). Treating it as Japan made the Region: Japan filter
+        // sweep in Japanese-language releases from anywhere.
+        ["Japan"] = ["Japan", "JP", "JPN", "NTSC-J"],
         ["World"] = ["World", "W"],
         ["Asia"] = ["Asia"],
         ["Australia"] = ["Australia", "AUS", "AU"],
         // "Korean" (adjective) appears in the real corpus as a stand-in for a Korea
-        // release, the same "region word vs. language word" overlap "Ja" already has
-        // for Japan above.
+        // release — a region word, unlike the two-letter language codes (which stay
+        // out of this catalog entirely; see "Ja" above).
         ["Korea"] = ["Korea", "KOR", "KR", "Korean"],
         ["China"] = ["China", "CHN", "CN"],
         ["Brazil"] = ["Brazil", "BRA", "BR"],

@@ -157,14 +157,15 @@ public static class TagCategorizer
         if (clauses.Count == 0)
             return nameof(TagCategory.NeedsReview);
 
-        // Region and Language overlap: several real language codes (Ja, Fr, De, Es,
-        // It, Ca) are also, case-insensitively, a RegionCatalog synonym (Japan,
-        // France, Germany, Spain, Italy, Canada respectively). A single-clause tag
-        // like "Ja" alone really does mean the Japan region in this corpus's own
-        // convention (see RegionCatalog's own history) — but the SAME word inside a
-        // multi-clause list ("En,Ja,Fr,De,Es,It") is unambiguously a language list,
-        // not five different regions. So which reading wins depends on whether this
-        // tag has other clauses alongside it, not on the word alone.
+        // Region and Language overlap: several real language codes (Fr, De, Es, It,
+        // Ca) are also, case-insensitively, a RegionCatalog synonym (France, Germany,
+        // Spain, Italy, Canada respectively). A single-clause tag like "Fr" alone is
+        // read as the region — but the SAME word inside a multi-clause list
+        // ("En,Fr,De,Es,It") is unambiguously a language list, not four different
+        // regions. So which reading wins depends on whether this tag has other
+        // clauses alongside it, not on the word alone. ("Ja" used to be in this
+        // overlap set as a Japan synonym; it's a language code only now — see
+        // RegionCatalog — so it classifies as Language in either position.)
         var preferLanguage = clauses.Count > 1;
         var classified = clauses.Select(c => ClassifyClause(c, preferLanguage)).ToList();
         if (classified.Any(c => c is null))

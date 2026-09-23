@@ -16,13 +16,10 @@ a commit log. See `git log` or compare tags on GitHub for full detail.
 
 ## v0.4.0 - 2026-09-19
 
-- Improved match scoring to weight rare, distinguishing words more heavily than
-  common ones (e.g. a shared sequel number no longer counts as much as a shared
-  title word) — fixes titles matching unrelated box art off a coincidental
-  shared word alone.
-- Recognized several previously-missed regions in ROM/art tags: Taiwan, Russia,
-  UK, Scandinavia, Denmark, Norway, Finland, Argentina, Hong Kong, Portugal,
-  Greece, Belgium, Ireland, Israel, India, Mexico, Peru, and "Ja" as Japan.
+- Improved match scoring: rare, distinguishing words now count more than common
+  ones, so a title no longer matches unrelated box art on one shared word.
+- Recognized 17 more region tags, including UK, Scandinavia, Taiwan, Russia,
+  and Hong Kong.
 
 ## v0.3.0 - 2026-09-16
 
