@@ -49,367 +49,384 @@
                 <BlurEffect Radius="10" />
             </Setter>
         </Style>
+        <!-- Level 0 backdrop: 45% behind the empty state, easing to 20% once there are
+             rows over it — the most that keeps muted text at WCAG AA (4.5:1) against
+             the darkest pixel of the scene blended over the theme background. -->
+        <Style Selector="views|BackroomsView.backdrop">
+            <Setter Property="Opacity" Value="0.45" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.6" />
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="views|BackroomsView.backdrop.faint">
+            <Setter Property="Opacity" Value="0.2" />
+        </Style>
         <Style Selector="TextBlock.renameProblem">
             <Setter Property="Foreground" Value="{DynamicResource WarningBrush}" />
         </Style>
     </UserControl.Styles>
 
-    <!-- Horizontal-only margin: the results/image-pane divider (see ResultsLayout) is
-         meant to run edge to edge, from the selection toolbar right down to the footer,
-         so the vertical breathing room lives on the individual rows instead of out here. -->
-    <DockPanel Margin="12,0">
-        <!-- Selection toolbar — acts on the results, so it sits on them rather than in the
-             sidebar (which is for setting a scan up). Search and Expand/Collapse All on
-             the right; the expand icon shows what a click will do next. Everything but
-             the search box waits for results — the search box is always live (it also
-             happens to be where "noclip" gets typed). -->
-        <DockPanel DockPanel.Dock="Top" Margin="0,10,0,0">
-            <Button DockPanel.Dock="Right" Classes="icon" Command="{Binding ToggleExpandCollapseCommand}"
-                    IsEnabled="{Binding HasResults}"
-                    ToolTip.Tip="{Binding ExpandCollapseButtonText, StringFormat='{}{0} (Ctrl+E)'}">
-                <Panel>
-                    <!-- Material "unfold less" / "unfold more". -->
-                    <PathIcon Width="16" Height="16" IsVisible="{Binding AreGroupsExpanded}"
-                              Data="M16.59,5.41L15.17,4L12,7.17L8.83,4L7.41,5.41L12,10L16.59,5.41M7.41,18.59L8.83,20L12,16.83L15.17,20L16.59,18.59L12,14L7.41,18.59Z" />
-                    <PathIcon Width="16" Height="16" IsVisible="{Binding !AreGroupsExpanded}"
-                              Data="M12,18.17L8.83,15L7.41,16.41L12,21L16.59,16.41L15.17,15M12,5.83L15.17,9L16.59,7.59L12,3L7.41,7.59L8.83,9L12,5.83Z" />
-                </Panel>
-            </Button>
-            <!-- Delay: the tree is rebuilt per search change, so wait for a pause in typing.
-                 Esc clears it (MatchView.axaml.cs); Ctrl+F focuses it (MainWindow). -->
-            <TextBox DockPanel.Dock="Right" Name="SearchBox" Width="220" Margin="0,0,6,0"
-                     PlaceholderText="Search ROMs (Ctrl+F)"
-                     Text="{Binding SearchText, Delay=250}" KeyDown="OnSearchBoxKeyDown" />
-            <StackPanel Orientation="Horizontal" Spacing="{DynamicResource SpaceXs}"
-                        IsEnabled="{Binding HasResults}">
-                <Button Content="Select Best" Command="{Binding SelectBestMatchedCommand}"
-                        ToolTip.Tip="Tick the best-scoring image for every ROM shown" />
-                <Button Content="Select Singles" Command="{Binding SelectSingleMatchesCommand}"
-                        ToolTip.Tip="Tick the image for every ROM shown that has exactly one" />
-                <Button Content="Deselect All" Command="{Binding DeselectAllCommand}" />
-            </StackPanel>
-        </DockPanel>
+    <Panel>
+        <!-- Level 0 only (the theme's ShowBackroomsBackdrop): the Backrooms scene behind the
+             whole Match page — empty state, mid-scan and with results alike; its dead panel
+             still flickers now and then. First child, so everything draws over it. -->
+        <Panel IsVisible="{DynamicResource ShowBackroomsBackdrop}">
+            <views:BackroomsView Classes="backdrop" Classes.faint="{Binding !IsEmptyStateVisible}" />
+        </Panel>
 
-        <!-- Footer: the live results summary on the left (follows filters/checkboxes),
-             the last rename's outcome and the Rename button on the right. The negative
-             margin lets the hairline run the full width past the DockPanel's 12px inset. -->
-        <Border DockPanel.Dock="Bottom" Margin="-12,0" Padding="12,0" Height="{DynamicResource FooterHeight}"
-                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0">
-            <DockPanel>
-                <Button DockPanel.Dock="Right" Classes="accent" Content="{Binding RenameButtonText}"
-                        Command="{Binding RenameFilesCommand}" ToolTip.Tip="Ctrl+Enter" />
-                <!-- A clean rename fades out after a few seconds (MatchView.axaml.cs); one
-                     with skips/failures stays, in the warning color, until dismissed. -->
-                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Margin="0,0,12,0"
-                            Spacing="{DynamicResource SpaceXs}"
-                            IsVisible="{Binding RenameNotice, Converter={x:Static ObjectConverters.IsNotNull}}">
-                    <TextBlock Text="{Binding RenameNotice}" VerticalAlignment="Center"
-                               Classes.renameProblem="{Binding RenameNoticeHasProblems}" />
-                    <Button Classes="icon" Command="{Binding DismissRenameNoticeCommand}" ToolTip.Tip="Dismiss">
-                        <PathIcon Width="12" Height="12"
-                                  Data="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
-                    </Button>
+        <!-- Horizontal-only margin: the results/image-pane divider (see ResultsLayout) is
+             meant to run edge to edge, from the selection toolbar right down to the footer,
+             so the vertical breathing room lives on the individual rows instead of out here. -->
+        <DockPanel Margin="12,0">
+            <!-- Selection toolbar — acts on the results, so it sits on them rather than in the
+                 sidebar (which is for setting a scan up). Search and Expand/Collapse All on
+                 the right; the expand icon shows what a click will do next. Everything but
+                 the search box waits for results — the search box is always live (it also
+                 happens to be where "noclip" gets typed). -->
+            <DockPanel DockPanel.Dock="Top" Margin="0,10,0,0">
+                <Button DockPanel.Dock="Right" Classes="icon" Command="{Binding ToggleExpandCollapseCommand}"
+                        IsEnabled="{Binding HasResults}"
+                        ToolTip.Tip="{Binding ExpandCollapseButtonText, StringFormat='{}{0} (Ctrl+E)'}">
+                    <Panel>
+                        <!-- Material "unfold less" / "unfold more". -->
+                        <PathIcon Width="16" Height="16" IsVisible="{Binding AreGroupsExpanded}"
+                                  Data="M16.59,5.41L15.17,4L12,7.17L8.83,4L7.41,5.41L12,10L16.59,5.41M7.41,18.59L8.83,20L12,16.83L15.17,20L16.59,18.59L12,14L7.41,18.59Z" />
+                        <PathIcon Width="16" Height="16" IsVisible="{Binding !AreGroupsExpanded}"
+                                  Data="M12,18.17L8.83,15L7.41,16.41L12,21L16.59,16.41L15.17,15M12,5.83L15.17,9L16.59,7.59L12,3L7.41,7.59L8.83,9L12,5.83Z" />
+                    </Panel>
+                </Button>
+                <!-- Delay: the tree is rebuilt per search change, so wait for a pause in typing.
+                     Esc clears it (MatchView.axaml.cs); Ctrl+F focuses it (MainWindow). -->
+                <TextBox DockPanel.Dock="Right" Name="SearchBox" Width="220" Margin="0,0,6,0"
+                         PlaceholderText="Search ROMs (Ctrl+F)"
+                         Text="{Binding SearchText, Delay=250}" KeyDown="OnSearchBoxKeyDown" />
+                <StackPanel Orientation="Horizontal" Spacing="{DynamicResource SpaceXs}"
+                            IsEnabled="{Binding HasResults}">
+                    <Button Content="Select Best" Command="{Binding SelectBestMatchedCommand}"
+                            ToolTip.Tip="Tick the best-scoring image for every ROM shown" />
+                    <Button Content="Select Singles" Command="{Binding SelectSingleMatchesCommand}"
+                            ToolTip.Tip="Tick the image for every ROM shown that has exactly one" />
+                    <Button Content="Deselect All" Command="{Binding DeselectAllCommand}" />
                 </StackPanel>
-                <TextBlock Text="{Binding ResultsSummaryText}" Classes="muted" VerticalAlignment="Center"
-                           TextTrimming="CharacterEllipsis" IsVisible="{Binding HasResults}" />
             </DockPanel>
-        </Border>
 
-        <Panel>
-            <!-- The preview pane's two right-hand columns (gap + pane) are collapsed to zero
-                 width from code-behind whenever nothing is selected, so the results tree
-                 gets the full width until there's actually art to show (see
-                 MatchView.SetPreviewPaneVisible). .scanning blurs it behind the overlay. -->
-            <Grid x:Name="ResultsLayout" ColumnDefinitions="2*,8,1*" Classes.scanning="{Binding IsMatchRunning}">
-                <Grid.Transitions>
-                    <Transitions>
-                        <EffectTransition Property="Effect" Duration="0:0:0.25" />
-                    </Transitions>
-                </Grid.Transitions>
-                <DockPanel Grid.Column="0" Margin="0,0,0,8">
-                    <Grid DockPanel.Dock="Top" ColumnDefinitions="46,100,*" Margin="4,12,4,4">
-                        <TextBlock Grid.Column="1" Text="Score %" Classes="columnHeader" />
-                        <TextBlock Grid.Column="2" Text="ROM / Image" Classes="columnHeader" />
-                    </Grid>
+            <!-- Footer: the live results summary on the left (follows filters/checkboxes),
+                 the last rename's outcome and the Rename button on the right. The negative
+                 margin lets the hairline run the full width past the DockPanel's 12px inset. -->
+            <Border DockPanel.Dock="Bottom" Margin="-12,0" Padding="12,0" Height="{DynamicResource FooterHeight}"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0">
+                <DockPanel>
+                    <Button DockPanel.Dock="Right" Classes="accent" Content="{Binding RenameButtonText}"
+                            Command="{Binding RenameFilesCommand}" ToolTip.Tip="Ctrl+Enter" />
+                    <!-- A clean rename fades out after a few seconds (MatchView.axaml.cs); one
+                         with skips/failures stays, in the warning color, until dismissed. -->
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Margin="0,0,12,0"
+                                Spacing="{DynamicResource SpaceXs}"
+                                IsVisible="{Binding RenameNotice, Converter={x:Static ObjectConverters.IsNotNull}}">
+                        <TextBlock Text="{Binding RenameNotice}" VerticalAlignment="Center"
+                                   Classes.renameProblem="{Binding RenameNoticeHasProblems}" />
+                        <Button Classes="icon" Command="{Binding DismissRenameNoticeCommand}" ToolTip.Tip="Dismiss">
+                            <PathIcon Width="12" Height="12"
+                                      Data="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
+                        </Button>
+                    </StackPanel>
+                    <TextBlock Text="{Binding ResultsSummaryText}" Classes="muted" VerticalAlignment="Center"
+                               TextTrimming="CharacterEllipsis" IsVisible="{Binding HasResults}" />
+                </DockPanel>
+            </Border>
 
-                    <!-- Two-level tree: each ROM is a node, its candidate images nest underneath —
-                         mirrors FatMatch's own results tree instead of a flat per-pair list. -->
-                    <!-- SelectionMode="Multiple" enables ctrl/shift-click natively; Ctrl+A is
-                         custom (see OnResultsTreeKeyDown) since TreeView has no built-in
-                         "select all" keybinding, and is scoped to Groups (the already-filtered
-                         collection) rather than every ROM the last scan found, so it only ever
-                         selects what's actually visible under the current filters. -->
-                    <!-- HorizontalScrollBarVisibility="Disabled" — TreeView defaults to "Auto",
-                         which measures rows at their natural (unclipped) width and lets them
-                         scroll sideways instead of constraining to the visible column width.
-                         That let long filenames size to their full natural width rather than
-                         actually clip, which broke MarqueeOnHoverBehavior's overflow math (it
-                         reads each TextBlock's real arranged Bounds.Width, so if nothing ever
-                         clips, there's nothing to reveal) and meant ROM/image names simply
-                         extended into scrollable space instead of visibly truncating at all. -->
-                    <TreeView Name="ResultsTree" ItemsSource="{Binding Groups}" SelectedItem="{Binding SelectedTreeItem}"
-                              SelectionMode="Multiple" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                        <TreeView.ItemTemplate>
-                            <TreeDataTemplate DataType="vm:RomMatchGroup" ItemsSource="{Binding VisibleCandidates}">
-                                <Grid ColumnDefinitions="28,100,*">
-                                    <Grid.ContextFlyout>
-                                        <!-- Click (not Command) deliberately — a MenuItem inside a
-                                             Flyout inherits this row's DataContext (RomMatchGroup)
-                                             reliably via normal DataContext inheritance, but reaching
-                                             MatchViewModel's command from here would need an
-                                             #ElementName/NameScope lookup across the flyout's popup
-                                             boundary, which is less certain to resolve. Code-behind
-                                             just reads sender's DataContext instead, and also decides
-                                             there whether to act on just this row or the whole current
-                                             multi-selection — see OnIgnoreRomClick. -->
-                                        <MenuFlyout>
-                                            <MenuItem Header="Open File Path" Click="OnOpenRomFilePathClick" />
-                                            <MenuItem Header="Ignore Selected ROM(s)" Click="OnIgnoreRomClick" />
-                                            <!-- Sub-items come from IgnorableAncestorFolders (nearest
-                                                 folder first, RomsPath itself never included — see
-                                                 that property's doc comment). BottomSubmenuMenuItemTheme
-                                                 (see Styles.axaml) makes this submenu open centered
-                                                 below rather than Fluent's default side-flyout
-                                                 placement. One handler on this parent item catches
-                                                 Click bubbling up from whichever auto-generated child
-                                                 was actually clicked (see OnIgnoreFolderClick, which
-                                                 reads e.Source, not sender, for exactly that reason).
-                                                 Disabled entirely when the ROM sits directly in
-                                                 RomsPath with no folder to offer. -->
-                                            <MenuItem Header="Ignore Folder" Click="OnIgnoreFolderClick"
-                                                      Theme="{StaticResource BottomSubmenuMenuItemTheme}"
-                                                      ItemsSource="{Binding IgnorableAncestorFolders}"
-                                                      IsEnabled="{Binding HasIgnorableAncestorFolders}" />
-                                        </MenuFlyout>
-                                    </Grid.ContextFlyout>
-                                    <CheckBox Grid.Column="0" IsThreeState="True" IsChecked="{Binding IsAllSelected}" />
-                                    <TextBlock Grid.Column="1" Text="{Binding VisibleCandidates.Count}" Classes="muted" VerticalAlignment="Center" />
-                                    <!-- Border clips (ClipToBounds="True"); Canvas gives the
-                                         TextBlock inside it truly unconstrained measurement
-                                         (Canvas.MeasureOverride always measures children at
-                                         Infinity — see MarqueeOnHoverBehavior's doc comment)
-                                         so its Bounds.Width reflects the real, full filename
-                                         width regardless of this column's visible size. -->
-                                    <Border Grid.Column="2" ClipToBounds="True" Height="20">
-                                        <Canvas>
-                                            <TextBlock Text="{Binding RomFileName}" FontWeight="Bold"
-                                                       behaviors:MarqueeOnHoverBehavior.IsEnabled="True" />
-                                        </Canvas>
-                                    </Border>
-                                </Grid>
-                            </TreeDataTemplate>
-                        </TreeView.ItemTemplate>
-                        <TreeView.DataTemplates>
-                            <DataTemplate x:DataType="model:MatchCandidate">
-                                <Grid ColumnDefinitions="28,100,*"
-                                      Classes.shadeA="{Binding IsContentShadeA}"
-                                      Classes.shadeB="{Binding IsContentShadeB}">
-                                    <Grid.ContextFlyout>
-                                        <MenuFlyout>
-                                            <MenuItem Header="Open File Path" Click="OnOpenImageFilePathClick" />
-                                        </MenuFlyout>
-                                    </Grid.ContextFlyout>
-                                    <CheckBox Grid.Column="0" IsChecked="{Binding IsSelected}" />
-                                    <TextBlock Grid.Column="1" Text="{Binding ScorePercent}" VerticalAlignment="Center" />
-                                    <!-- Grid, not the StackPanel this used to be — StackPanel gives
-                                         each child its full natural width instead of constraining
-                                         it, which left the filename with no real clip boundary to
-                                         scroll within. "*" for the filename (clippable, scrollable),
-                                         "Auto" for the fixed-size "Same as above" suffix next to it. -->
-                                    <Grid Grid.Column="2" ColumnDefinitions="*,Auto">
-                                        <Border Grid.Column="0" ClipToBounds="True" Height="20">
+            <Panel>
+                <!-- The preview pane's two right-hand columns (gap + pane) are collapsed to zero
+                     width from code-behind whenever nothing is selected, so the results tree
+                     gets the full width until there's actually art to show (see
+                     MatchView.SetPreviewPaneVisible). .scanning blurs it behind the overlay. -->
+                <Grid x:Name="ResultsLayout" ColumnDefinitions="2*,8,1*" Classes.scanning="{Binding IsMatchRunning}">
+                    <Grid.Transitions>
+                        <Transitions>
+                            <EffectTransition Property="Effect" Duration="0:0:0.25" />
+                        </Transitions>
+                    </Grid.Transitions>
+                    <DockPanel Grid.Column="0" Margin="0,0,0,8">
+                        <Grid DockPanel.Dock="Top" ColumnDefinitions="46,100,*" Margin="4,12,4,4">
+                            <TextBlock Grid.Column="1" Text="Score %" Classes="columnHeader" />
+                            <TextBlock Grid.Column="2" Text="ROM / Image" Classes="columnHeader" />
+                        </Grid>
+
+                        <!-- Two-level tree: each ROM is a node, its candidate images nest underneath —
+                             mirrors FatMatch's own results tree instead of a flat per-pair list. -->
+                        <!-- SelectionMode="Multiple" enables ctrl/shift-click natively; Ctrl+A is
+                             custom (see OnResultsTreeKeyDown) since TreeView has no built-in
+                             "select all" keybinding, and is scoped to Groups (the already-filtered
+                             collection) rather than every ROM the last scan found, so it only ever
+                             selects what's actually visible under the current filters. -->
+                        <!-- HorizontalScrollBarVisibility="Disabled" — TreeView defaults to "Auto",
+                             which measures rows at their natural (unclipped) width and lets them
+                             scroll sideways instead of constraining to the visible column width.
+                             That let long filenames size to their full natural width rather than
+                             actually clip, which broke MarqueeOnHoverBehavior's overflow math (it
+                             reads each TextBlock's real arranged Bounds.Width, so if nothing ever
+                             clips, there's nothing to reveal) and meant ROM/image names simply
+                             extended into scrollable space instead of visibly truncating at all. -->
+                        <TreeView Name="ResultsTree" ItemsSource="{Binding Groups}" SelectedItem="{Binding SelectedTreeItem}"
+                                  SelectionMode="Multiple" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                            <TreeView.ItemTemplate>
+                                <TreeDataTemplate DataType="vm:RomMatchGroup" ItemsSource="{Binding VisibleCandidates}">
+                                    <Grid ColumnDefinitions="28,100,*">
+                                        <Grid.ContextFlyout>
+                                            <!-- Click (not Command) deliberately — a MenuItem inside a
+                                                 Flyout inherits this row's DataContext (RomMatchGroup)
+                                                 reliably via normal DataContext inheritance, but reaching
+                                                 MatchViewModel's command from here would need an
+                                                 #ElementName/NameScope lookup across the flyout's popup
+                                                 boundary, which is less certain to resolve. Code-behind
+                                                 just reads sender's DataContext instead, and also decides
+                                                 there whether to act on just this row or the whole current
+                                                 multi-selection — see OnIgnoreRomClick. -->
+                                            <MenuFlyout>
+                                                <MenuItem Header="Open File Path" Click="OnOpenRomFilePathClick" />
+                                                <MenuItem Header="Ignore Selected ROM(s)" Click="OnIgnoreRomClick" />
+                                                <!-- Sub-items come from IgnorableAncestorFolders (nearest
+                                                     folder first, RomsPath itself never included — see
+                                                     that property's doc comment). BottomSubmenuMenuItemTheme
+                                                     (see Styles.axaml) makes this submenu open centered
+                                                     below rather than Fluent's default side-flyout
+                                                     placement. One handler on this parent item catches
+                                                     Click bubbling up from whichever auto-generated child
+                                                     was actually clicked (see OnIgnoreFolderClick, which
+                                                     reads e.Source, not sender, for exactly that reason).
+                                                     Disabled entirely when the ROM sits directly in
+                                                     RomsPath with no folder to offer. -->
+                                                <MenuItem Header="Ignore Folder" Click="OnIgnoreFolderClick"
+                                                          Theme="{StaticResource BottomSubmenuMenuItemTheme}"
+                                                          ItemsSource="{Binding IgnorableAncestorFolders}"
+                                                          IsEnabled="{Binding HasIgnorableAncestorFolders}" />
+                                            </MenuFlyout>
+                                        </Grid.ContextFlyout>
+                                        <CheckBox Grid.Column="0" IsThreeState="True" IsChecked="{Binding IsAllSelected}" />
+                                        <TextBlock Grid.Column="1" Text="{Binding VisibleCandidates.Count}" Classes="muted" VerticalAlignment="Center" />
+                                        <!-- Border clips (ClipToBounds="True"); Canvas gives the
+                                             TextBlock inside it truly unconstrained measurement
+                                             (Canvas.MeasureOverride always measures children at
+                                             Infinity — see MarqueeOnHoverBehavior's doc comment)
+                                             so its Bounds.Width reflects the real, full filename
+                                             width regardless of this column's visible size. -->
+                                        <Border Grid.Column="2" ClipToBounds="True" Height="20">
                                             <Canvas>
-                                                <TextBlock Text="{Binding ImageFileName}"
-                                                           Classes.duplicate="{Binding IsDuplicate}"
-                                                           Classes.exactMatch="{Binding IsExactMatch}"
+                                                <TextBlock Text="{Binding RomFileName}" FontWeight="Bold"
                                                            behaviors:MarqueeOnHoverBehavior.IsEnabled="True" />
                                             </Canvas>
                                         </Border>
-                                        <TextBlock Grid.Column="1" Text=" · Same as above" VerticalAlignment="Center"
-                                                   Classes="muted"
-                                                   IsVisible="{Binding IsSameAsAbove}" />
                                     </Grid>
-                                </Grid>
-                            </DataTemplate>
-                        </TreeView.DataTemplates>
-                    </TreeView>
-                </DockPanel>
-
-                <!-- Preview pane: a vertical coverflow-style carousel of the highlighted ROM's
-                     DISTINCT candidate images (see PreviewCarouselViewModel / PreviewSlide) —
-                     current image large in the middle, the previous/next ones peeking above
-                     and below. Independent of each row's own checkbox (that's the rename-batch
-                     selection). Hidden entirely (not just emptied) while nothing is highlighted;
-                     IsPreviewVisible is also what MatchView.SetPreviewPaneVisible keys the
-                     column collapse off. -->
-                <!-- Hairline divider between the results column and the image pane — its own
-                     element, centred in the 8px gap column, rather than a border on either
-                     neighbour. Spans the grid's full height (tree + status line). Bound to
-                     IsPreviewVisible explicitly: the gap column does collapse to 0 when the
-                     pane hides (see SetPreviewPaneVisible), but an explicit Width="1" child
-                     can still paint past a zero-width column, so it's hidden outright too. -->
-                <Border Grid.Column="1" Width="1" HorizontalAlignment="Center"
-                        Background="{DynamicResource BorderBrush}"
-                        IsVisible="{Binding IsPreviewVisible}" />
-
-                <!-- Not a card: no background of its own (it shares the main area's), no
-                     border, no corner radius — Discord-member-list style. -->
-                <Border Grid.Column="2" Name="PreviewPane" Padding="8,12,0,12"
-                        IsVisible="{Binding IsPreviewVisible}">
-                    <Grid RowDefinitions="*,Auto">
-                        <!-- The wheel steps the carousel (and, through it, the tree's highlight)
-                             anywhere over the pane, scrollbar included. -->
-                        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" PointerWheelChanged="OnCarouselPointerWheelChanged">
-                            <!-- ClipToBounds so slides parked beyond the top/bottom edge (see
-                                 PreviewCarouselViewModel.Relayout) stay invisible until they animate
-                                 in. SizeChanged feeds the real viewport (excluding the scrollbar's
-                                 column) back to the ViewModel, which does all the layout math in
-                                 pixels. -->
-                            <Panel Grid.Column="0" Name="CarouselViewport" ClipToBounds="True"
-                                   SizeChanged="OnCarouselViewportSizeChanged">
-                                <ItemsControl Name="CarouselItems" ItemsSource="{Binding Carousel.Slides}"
-                                              ContainerPrepared="OnCarouselContainerPrepared">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <Canvas />
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                    <!-- Positioned via the generated ContentPresenter, NOT the
-                                         DataTemplate's root: ItemsControl wraps each item in a
-                                         ContentPresenter and that wrapper is the Canvas's actual child,
-                                         the only thing Canvas.Left/Top are read from (avalonia-patterns
-                                         skill, "ItemsControl + Canvas positioning"). The Style needs its
-                                         own x:DataType because it lives outside the DataTemplate and
-                                         would otherwise bind against MatchViewModel. Transitions sit on
-                                         this same element so they animate the properties the Canvas
-                                         actually reads. ZIndex is deliberately NOT transitioned — it's
-                                         swapped at the transition's midpoint from code-behind instead
-                                         (see MatchView._zIndexTimer).
-
-                                         The Transitions live in a separate ".animated" style that
-                                         code-behind adds to each container only AFTER its first
-                                         layout (see OnCarouselContainerPrepared). With them in the
-                                         base style, a freshly-created container animated from its
-                                         defaults — zero size at the corner — to its first real
-                                         position: every newly shown image zoomed in from the corner
-                                         of the pane. -->
-                                    <ItemsControl.Styles>
-                                        <Style Selector="ContentPresenter" x:DataType="vm:PreviewSlide">
-                                            <Setter Property="Canvas.Left" Value="{Binding Left}" />
-                                            <Setter Property="Canvas.Top" Value="{Binding Top}" />
-                                            <Setter Property="Width" Value="{Binding Width}" />
-                                            <Setter Property="Height" Value="{Binding Height}" />
-                                            <Setter Property="Opacity" Value="{Binding Opacity}" />
-                                            <Setter Property="ZIndex" Value="{Binding ZIndex}" />
-                                        </Style>
-                                        <Style Selector="ContentPresenter.animated">
-                                            <Setter Property="Transitions">
-                                                <Transitions>
-                                                    <!-- Duration must stay in step with MatchView.ZIndexSwapDelay
-                                                         (half of this). -->
-                                                    <DoubleTransition Property="Canvas.Left" Duration="0:0:0.35" Easing="CubicEaseInOut" />
-                                                    <DoubleTransition Property="Canvas.Top" Duration="0:0:0.35" Easing="CubicEaseInOut" />
-                                                    <DoubleTransition Property="Width" Duration="0:0:0.35" Easing="CubicEaseInOut" />
-                                                    <DoubleTransition Property="Height" Duration="0:0:0.35" Easing="CubicEaseInOut" />
-                                                    <DoubleTransition Property="Opacity" Duration="0:0:0.35" Easing="CubicEaseInOut" />
-                                                </Transitions>
-                                            </Setter>
-                                        </Style>
-                                    </ItemsControl.Styles>
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate x:DataType="vm:PreviewSlide">
-                                            <!-- PointerPressed (code-behind) rather than a Button: a Fluent
-                                                 Button's own hover/pressed chrome would fight the image.
-                                                 No frame, fill, or margin of its own — the image is shown
-                                                 as-is at its natural aspect ratio (Uniform: fit inside the
-                                                 slide's square box, never cropped or stretched), and whatever
-                                                 the image doesn't cover is simply see-through, not a
-                                                 letterbox bar. Background="Transparent" (not none) keeps the
-                                                 whole box clickable, not just the painted pixels. -->
-                                            <Border Background="Transparent" Cursor="Hand" PointerPressed="OnSlidePointerPressed">
-                                                <Panel>
-                                                    <Image Source="{Binding Image}" Stretch="Uniform"
-                                                           IsVisible="{Binding Image, Converter={x:Static ObjectConverters.IsNotNull}}" />
-                                                    <TextBlock Text="{Binding Error}"
-                                                               IsVisible="{Binding Error, Converter={x:Static ObjectConverters.IsNotNull}}"
-                                                               Foreground="{DynamicResource ErrorBrush}" TextWrapping="Wrap"
-                                                               HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                                </Panel>
+                                </TreeDataTemplate>
+                            </TreeView.ItemTemplate>
+                            <TreeView.DataTemplates>
+                                <DataTemplate x:DataType="model:MatchCandidate">
+                                    <Grid ColumnDefinitions="28,100,*"
+                                          Classes.shadeA="{Binding IsContentShadeA}"
+                                          Classes.shadeB="{Binding IsContentShadeB}">
+                                        <Grid.ContextFlyout>
+                                            <MenuFlyout>
+                                                <MenuItem Header="Open File Path" Click="OnOpenImageFilePathClick" />
+                                            </MenuFlyout>
+                                        </Grid.ContextFlyout>
+                                        <CheckBox Grid.Column="0" IsChecked="{Binding IsSelected}" />
+                                        <TextBlock Grid.Column="1" Text="{Binding ScorePercent}" VerticalAlignment="Center" />
+                                        <!-- Grid, not the StackPanel this used to be — StackPanel gives
+                                             each child its full natural width instead of constraining
+                                             it, which left the filename with no real clip boundary to
+                                             scroll within. "*" for the filename (clippable, scrollable),
+                                             "Auto" for the fixed-size "Same as above" suffix next to it. -->
+                                        <Grid Grid.Column="2" ColumnDefinitions="*,Auto">
+                                            <Border Grid.Column="0" ClipToBounds="True" Height="20">
+                                                <Canvas>
+                                                    <TextBlock Text="{Binding ImageFileName}"
+                                                               Classes.duplicate="{Binding IsDuplicate}"
+                                                               Classes.exactMatch="{Binding IsExactMatch}"
+                                                               behaviors:MarqueeOnHoverBehavior.IsEnabled="True" />
+                                                </Canvas>
                                             </Border>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </Panel>
+                                            <TextBlock Grid.Column="1" Text=" · Same as above" VerticalAlignment="Center"
+                                                       Classes="muted"
+                                                       IsVisible="{Binding IsSameAsAbove}" />
+                                        </Grid>
+                                    </Grid>
+                                </DataTemplate>
+                            </TreeView.DataTemplates>
+                        </TreeView>
+                    </DockPanel>
 
-                            <!-- Same Fluent ScrollBar the results tree shows, but standalone: one
-                                 notch per distinct image (see PreviewCarouselViewModel's scrollbar
-                                 adapter properties). Hidden — and its Auto column collapsed — while
-                                 there's only one image, just as the tree's bar hides when nothing
-                                 overflows. -->
-                            <ScrollBar Grid.Column="1" Orientation="Vertical" Margin="4,0,0,0"
-                                       Minimum="0" Maximum="{Binding Carousel.ScrollMaximum}"
-                                       Value="{Binding Carousel.ScrollPosition, Mode=TwoWay}"
-                                       ViewportSize="1" SmallChange="1" LargeChange="1"
-                                       IsVisible="{Binding Carousel.CanScroll}" />
+                    <!-- Preview pane: a vertical coverflow-style carousel of the highlighted ROM's
+                         DISTINCT candidate images (see PreviewCarouselViewModel / PreviewSlide) —
+                         current image large in the middle, the previous/next ones peeking above
+                         and below. Independent of each row's own checkbox (that's the rename-batch
+                         selection). Hidden entirely (not just emptied) while nothing is highlighted;
+                         IsPreviewVisible is also what MatchView.SetPreviewPaneVisible keys the
+                         column collapse off. -->
+                    <!-- Hairline divider between the results column and the image pane — its own
+                         element, centred in the 8px gap column, rather than a border on either
+                         neighbour. Spans the grid's full height (tree + status line). Bound to
+                         IsPreviewVisible explicitly: the gap column does collapse to 0 when the
+                         pane hides (see SetPreviewPaneVisible), but an explicit Width="1" child
+                         can still paint past a zero-width column, so it's hidden outright too. -->
+                    <Border Grid.Column="1" Width="1" HorizontalAlignment="Center"
+                            Background="{DynamicResource BorderBrush}"
+                            IsVisible="{Binding IsPreviewVisible}" />
+
+                    <!-- Not a card: no background of its own (it shares the main area's), no
+                         border, no corner radius — Discord-member-list style. -->
+                    <Border Grid.Column="2" Name="PreviewPane" Padding="8,12,0,12"
+                            IsVisible="{Binding IsPreviewVisible}">
+                        <Grid RowDefinitions="*,Auto">
+                            <!-- The wheel steps the carousel (and, through it, the tree's highlight)
+                                 anywhere over the pane, scrollbar included. -->
+                            <Grid Grid.Row="0" ColumnDefinitions="*,Auto" PointerWheelChanged="OnCarouselPointerWheelChanged">
+                                <!-- ClipToBounds so slides parked beyond the top/bottom edge (see
+                                     PreviewCarouselViewModel.Relayout) stay invisible until they animate
+                                     in. SizeChanged feeds the real viewport (excluding the scrollbar's
+                                     column) back to the ViewModel, which does all the layout math in
+                                     pixels. -->
+                                <Panel Grid.Column="0" Name="CarouselViewport" ClipToBounds="True"
+                                       SizeChanged="OnCarouselViewportSizeChanged">
+                                    <ItemsControl Name="CarouselItems" ItemsSource="{Binding Carousel.Slides}"
+                                                  ContainerPrepared="OnCarouselContainerPrepared">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <Canvas />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <!-- Positioned via the generated ContentPresenter, NOT the
+                                             DataTemplate's root: ItemsControl wraps each item in a
+                                             ContentPresenter and that wrapper is the Canvas's actual child,
+                                             the only thing Canvas.Left/Top are read from (avalonia-patterns
+                                             skill, "ItemsControl + Canvas positioning"). The Style needs its
+                                             own x:DataType because it lives outside the DataTemplate and
+                                             would otherwise bind against MatchViewModel. Transitions sit on
+                                             this same element so they animate the properties the Canvas
+                                             actually reads. ZIndex is deliberately NOT transitioned — it's
+                                             swapped at the transition's midpoint from code-behind instead
+                                             (see MatchView._zIndexTimer).
+
+                                             The Transitions live in a separate ".animated" style that
+                                             code-behind adds to each container only AFTER its first
+                                             layout (see OnCarouselContainerPrepared). With them in the
+                                             base style, a freshly-created container animated from its
+                                             defaults — zero size at the corner — to its first real
+                                             position: every newly shown image zoomed in from the corner
+                                             of the pane. -->
+                                        <ItemsControl.Styles>
+                                            <Style Selector="ContentPresenter" x:DataType="vm:PreviewSlide">
+                                                <Setter Property="Canvas.Left" Value="{Binding Left}" />
+                                                <Setter Property="Canvas.Top" Value="{Binding Top}" />
+                                                <Setter Property="Width" Value="{Binding Width}" />
+                                                <Setter Property="Height" Value="{Binding Height}" />
+                                                <Setter Property="Opacity" Value="{Binding Opacity}" />
+                                                <Setter Property="ZIndex" Value="{Binding ZIndex}" />
+                                            </Style>
+                                            <Style Selector="ContentPresenter.animated">
+                                                <Setter Property="Transitions">
+                                                    <Transitions>
+                                                        <!-- Duration must stay in step with MatchView.ZIndexSwapDelay
+                                                             (half of this). -->
+                                                        <DoubleTransition Property="Canvas.Left" Duration="0:0:0.35" Easing="CubicEaseInOut" />
+                                                        <DoubleTransition Property="Canvas.Top" Duration="0:0:0.35" Easing="CubicEaseInOut" />
+                                                        <DoubleTransition Property="Width" Duration="0:0:0.35" Easing="CubicEaseInOut" />
+                                                        <DoubleTransition Property="Height" Duration="0:0:0.35" Easing="CubicEaseInOut" />
+                                                        <DoubleTransition Property="Opacity" Duration="0:0:0.35" Easing="CubicEaseInOut" />
+                                                    </Transitions>
+                                                </Setter>
+                                            </Style>
+                                        </ItemsControl.Styles>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="vm:PreviewSlide">
+                                                <!-- PointerPressed (code-behind) rather than a Button: a Fluent
+                                                     Button's own hover/pressed chrome would fight the image.
+                                                     No frame, fill, or margin of its own — the image is shown
+                                                     as-is at its natural aspect ratio (Uniform: fit inside the
+                                                     slide's square box, never cropped or stretched), and whatever
+                                                     the image doesn't cover is simply see-through, not a
+                                                     letterbox bar. Background="Transparent" (not none) keeps the
+                                                     whole box clickable, not just the painted pixels. -->
+                                                <Border Background="Transparent" Cursor="Hand" PointerPressed="OnSlidePointerPressed">
+                                                    <Panel>
+                                                        <Image Source="{Binding Image}" Stretch="Uniform"
+                                                               IsVisible="{Binding Image, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                                                        <TextBlock Text="{Binding Error}"
+                                                                   IsVisible="{Binding Error, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                                                   Foreground="{DynamicResource ErrorBrush}" TextWrapping="Wrap"
+                                                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                    </Panel>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </Panel>
+
+                                <!-- Same Fluent ScrollBar the results tree shows, but standalone: one
+                                     notch per distinct image (see PreviewCarouselViewModel's scrollbar
+                                     adapter properties). Hidden — and its Auto column collapsed — while
+                                     there's only one image, just as the tree's bar hides when nothing
+                                     overflows. -->
+                                <ScrollBar Grid.Column="1" Orientation="Vertical" Margin="4,0,0,0"
+                                           Minimum="0" Maximum="{Binding Carousel.ScrollMaximum}"
+                                           Value="{Binding Carousel.ScrollPosition, Mode=TwoWay}"
+                                           ViewportSize="1" SmallChange="1" LargeChange="1"
+                                           IsVisible="{Binding Carousel.CanScroll}" />
+                            </Grid>
+
+                            <!-- Just "3 / 5" — deliberately no filename: the highlighted tree row
+                                 already shows it, and the carousel always tracks that highlight. The
+                                 count is the one thing the tree can't tell you, since identical files
+                                 collapse into a single slide here. -->
+                            <TextBlock Grid.Row="1" Text="{Binding Carousel.PositionText}" Classes="muted"
+                                       FontSize="{DynamicResource FontSizeSmall}" HorizontalAlignment="Right" Margin="0,8,0,0" />
                         </Grid>
+                    </Border>
+                </Grid>
 
-                        <!-- Just "3 / 5" — deliberately no filename: the highlighted tree row
-                             already shows it, and the carousel always tracks that highlight. The
-                             count is the one thing the tree can't tell you, since identical files
-                             collapse into a single slide here. -->
-                        <TextBlock Grid.Row="1" Text="{Binding Carousel.PositionText}" Classes="muted"
-                                   FontSize="{DynamicResource FontSizeSmall}" HorizontalAlignment="Right" Margin="0,8,0,0" />
-                    </Grid>
-                </Border>
-            </Grid>
+                <!-- What to do next / why there's nothing here — in place of the tree rather
+                     than in a status line. Wording comes from MatchViewModel.EmptyStateText. -->
+                <TextBlock Text="{Binding EmptyStateText}" Classes="hint" FontSize="{DynamicResource FontSizeDefault}"
+                           TextAlignment="Center" MaxWidth="360"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                           IsVisible="{Binding IsEmptyStateVisible}" />
 
-            <!-- Level 0 only (the theme's ShowBackroomsBackdrop): the Backrooms scene,
-                 faint, behind the empty state — its dead panel still flickers now and then. -->
-            <Panel IsVisible="{DynamicResource ShowBackroomsBackdrop}">
-                <views:BackroomsView Opacity="0.45" IsVisible="{Binding IsEmptyStateVisible}" />
-            </Panel>
-
-            <!-- What to do next / why there's nothing here — in place of the tree rather
-                 than in a status line. Wording comes from MatchViewModel.EmptyStateText. -->
-            <TextBlock Text="{Binding EmptyStateText}" Classes="hint" FontSize="{DynamicResource FontSizeDefault}"
-                       TextAlignment="Center" MaxWidth="360"
-                       HorizontalAlignment="Center" VerticalAlignment="Center"
-                       IsVisible="{Binding IsEmptyStateVisible}" />
-
-            <!-- Scan overlay, floating over the blurred results. The transparent full-size
-                 Panel swallows clicks so nothing half-streamed gets ticked mid-scan. Single
-                 bar spanning MatchPhase.Indexing and MatchPhase.Matching (see
-                 MatchViewModel.IndexingPhaseWeight) rather than an indeterminate/determinate
-                 swap, so it's always visibly moving instead of appearing to freeze during the
-                 indexing pass. Stays at 0% through MatchPhase.Listing — a directory walk has
-                 no meaningful percentage, only the live counts and activity dots below it. -->
-            <Panel Background="Transparent" IsVisible="{Binding IsMatchRunning}">
-                <Border Width="380" HorizontalAlignment="Center" VerticalAlignment="Center"
-                        Background="{DynamicResource SurfaceBrush}"
-                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-                        CornerRadius="{DynamicResource CornerRadiusBase}" Padding="20"
-                        BoxShadow="{DynamicResource FloatingShadow}">
-                    <StackPanel Spacing="{DynamicResource SpaceMd}">
-                        <Grid>
-                            <ProgressBar Minimum="0" Maximum="100" Value="{Binding ProgressPercent}" Height="28" />
-                            <TextBlock Text="{Binding ProgressPercent, StringFormat={}{0:0}%}"
-                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </Grid>
-                        <!-- Cycled by a DispatcherTimer in code-behind (see MatchView.axaml.cs) —
-                             Avalonia's Style.Animations has no built-in animator for string
-                             properties like Text (confirmed: attempting it throws "No animator
-                             registered for the property Text"). Shown through MatchPhase.Listing
-                             and MatchPhase.Indexing, both otherwise-silent passes. Fixed width so
-                             the counts don't shuffle sideways as the dots grow. -->
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock Text="{Binding ScanProgressText}" />
-                            <TextBlock Name="ActivityDotsText" Text="." Width="24" IsVisible="{Binding IsIndexing}" />
+                <!-- Scan overlay, floating over the blurred results. The transparent full-size
+                     Panel swallows clicks so nothing half-streamed gets ticked mid-scan. Single
+                     bar spanning MatchPhase.Indexing and MatchPhase.Matching (see
+                     MatchViewModel.IndexingPhaseWeight) rather than an indeterminate/determinate
+                     swap, so it's always visibly moving instead of appearing to freeze during the
+                     indexing pass. Stays at 0% through MatchPhase.Listing — a directory walk has
+                     no meaningful percentage, only the live counts and activity dots below it. -->
+                <Panel Background="Transparent" IsVisible="{Binding IsMatchRunning}">
+                    <Border Width="380" HorizontalAlignment="Center" VerticalAlignment="Center"
+                            Background="{DynamicResource SurfaceBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                            CornerRadius="{DynamicResource CornerRadiusBase}" Padding="20"
+                            BoxShadow="{DynamicResource FloatingShadow}">
+                        <StackPanel Spacing="{DynamicResource SpaceMd}">
+                            <Grid>
+                                <ProgressBar Minimum="0" Maximum="100" Value="{Binding ProgressPercent}" Height="28" />
+                                <TextBlock Text="{Binding ProgressPercent, StringFormat={}{0:0}%}"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Grid>
+                            <!-- Cycled by a DispatcherTimer in code-behind (see MatchView.axaml.cs) —
+                                 Avalonia's Style.Animations has no built-in animator for string
+                                 properties like Text (confirmed: attempting it throws "No animator
+                                 registered for the property Text"). Shown through MatchPhase.Listing
+                                 and MatchPhase.Indexing, both otherwise-silent passes. Fixed width so
+                                 the counts don't shuffle sideways as the dots grow. -->
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <TextBlock Text="{Binding ScanProgressText}" />
+                                <TextBlock Name="ActivityDotsText" Text="." Width="24" IsVisible="{Binding IsIndexing}" />
+                            </StackPanel>
+                            <Button Content="Cancel" Command="{Binding ToggleStartCancelCommand}"
+                                    HorizontalAlignment="Center" />
                         </StackPanel>
-                        <Button Content="Cancel" Command="{Binding ToggleStartCancelCommand}"
-                                HorizontalAlignment="Center" />
-                    </StackPanel>
-                </Border>
+                    </Border>
+                </Panel>
             </Panel>
-        </Panel>
-    </DockPanel>
+        </DockPanel>
+    </Panel>
 </UserControl>

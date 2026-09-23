@@ -1,8 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Linq;
 using GameArtMatch.Models;
 using GameArtMatch.Services;
 using GameArtMatch.Themes;
@@ -53,59 +52,43 @@ public partial class OptionsViewModel : ViewModelBase
         _ => "About",
     };
 
-    /// <summary>What the Appearance page lists: every regular theme, plus any hidden one
-    /// that's been unlocked — in catalog order either way.</summary>
-    public ObservableCollection<AppTheme> Themes { get; } = [];
+    /// <summary>What the Appearance page lists — every theme except hidden (easter-egg)
+    /// ones, which are only ever reached their own way (Level 0: "noclip").</summary>
+    public IReadOnlyList<AppTheme> Themes { get; } = ThemeCatalog.All.Where(t => !t.IsHidden).ToList();
 
-    private readonly HashSet<string> _unlockedThemeIds = new(StringComparer.OrdinalIgnoreCase);
-
-    public IReadOnlyCollection<string> UnlockedThemeIds => _unlockedThemeIds;
-
-    /// <summary>Lists a hidden theme on the Appearance page from now on. Returns whether
-    /// it was newly unlocked (MainViewModel persists when it was).</summary>
-    public bool UnlockTheme(AppTheme theme)
+    /// <summary>The Appearance list's selection — SelectedTheme when it's a listed theme,
+    /// otherwise nothing (a hidden theme is active). Separate from SelectedTheme so the
+    /// ListBox, which can only select what it lists, never pushes null back into the
+    /// active theme; picking a listed theme from Level 0 simply switches out of it.</summary>
+    public AppTheme? ListedSelection
     {
-        if (!theme.IsHidden || !_unlockedThemeIds.Add(theme.Id))
-            return false;
-        RebuildThemeList();
-        return true;
-    }
-
-    private void RebuildThemeList()
-    {
-        Themes.Clear();
-        foreach (var theme in ThemeCatalog.All)
-            if (!theme.IsHidden || _unlockedThemeIds.Contains(theme.Id))
-                Themes.Add(theme);
+        get => SelectedTheme.IsHidden ? null : SelectedTheme;
+        set
+        {
+            if (value is not null)
+                SelectedTheme = value;
+        }
     }
 
     /// <summary>The active colour theme — applied live the moment it changes (the
     /// Appearance page's list binds straight to it). MainViewModel persists it.</summary>
-    [ObservableProperty] public partial AppTheme SelectedTheme { get; set; }
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ListedSelection))]
+    public partial AppTheme SelectedTheme { get; set; }
 
     partial void OnSelectedThemeChanged(AppTheme value) => ThemeService.Apply(value);
 
     public OptionsViewModel(MatchSettings settings, IgnoredRomsViewModel ignoredRomsVm, string settingsFolderPath,
-        string? themeId, IEnumerable<string>? unlockedThemeIds)
+        string? themeId)
     {
         Settings = settings;
         IgnoredRomsVm = ignoredRomsVm;
         SettingsFolderPath = settingsFolderPath;
-
-        foreach (var id in unlockedThemeIds ?? [])
-            _unlockedThemeIds.Add(id);
-        RebuildThemeList();
-
-        // A saved hidden theme that somehow isn't unlocked (hand-edited settings) still
-        // applies, and unlocks itself so it's listed.
-        var saved = ThemeCatalog.Find(themeId);
-        if (saved.IsHidden)
-            UnlockTheme(saved);
-        SelectedTheme = saved; // applies the saved theme at startup
+        SelectedTheme = ThemeCatalog.Find(themeId); // applies the saved theme (hidden ones too) at startup
     }
 
     /// <summary>Design-time only (XAML previewer's Design.DataContext).</summary>
-    public OptionsViewModel() : this(new MatchSettings(), new IgnoredRomsViewModel(), "", null, null)
+    public OptionsViewModel() : this(new MatchSettings(), new IgnoredRomsViewModel(), "", null)
     {
     }
 

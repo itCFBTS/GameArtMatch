@@ -107,8 +107,7 @@ public partial class MainViewModel : ViewModelBase
         MatchVm = new MatchViewModel(Settings, matchingService, renameService);
         ReportVm = new ReportViewModel(Settings, MatchVm);
         IgnoredRomsVm = new IgnoredRomsViewModel(Settings);
-        OptionsVm = new OptionsViewModel(Settings, IgnoredRomsVm, SettingsFolderPath, persisted.ThemeId,
-            persisted.UnlockedThemeIds);
+        OptionsVm = new OptionsViewModel(Settings, IgnoredRomsVm, SettingsFolderPath, persisted.ThemeId);
         OptionsVm.PropertyChanged += (_, e) =>
         {
             if (e.PropertyName == nameof(OptionsViewModel.SelectedTheme))
@@ -168,7 +167,6 @@ public partial class MainViewModel : ViewModelBase
             IgnoredRomPaths = new List<string>(Settings.IgnoredRomPaths),
             IgnoredRomFolders = new List<string>(Settings.IgnoredRomFolders),
             ThemeId = OptionsVm?.SelectedTheme.Id,
-            UnlockedThemeIds = OptionsVm is null ? null : new List<string>(OptionsVm.UnlockedThemeIds),
         });
     }
 
@@ -181,9 +179,9 @@ public partial class MainViewModel : ViewModelBase
     /// after a restart it's the default theme.</summary>
     private Themes.AppTheme? _themeBeforeNoclip;
 
-    /// <summary>The easter egg: first time in, unlocks the hidden Level 0 theme (it then
-    /// stays on the Appearance page) and switches to it; typed again from Level 0, goes
-    /// back to whatever theme came before.</summary>
+    /// <summary>The easter egg: switches to the hidden Level 0 theme (never listed on the
+    /// Appearance page — this is the only way in); typed again from Level 0, goes back to
+    /// whatever theme came before.</summary>
     private void OnNoclip()
     {
         if (Themes.ThemeCatalog.TryFind(Themes.ThemeCatalog.NoclipThemeId) is not { } level0)
@@ -192,10 +190,7 @@ public partial class MainViewModel : ViewModelBase
         var entering = !ReferenceEquals(OptionsVm.SelectedTheme, level0);
         var target = entering ? level0 : _themeBeforeNoclip ?? Themes.ThemeCatalog.Default;
         if (entering)
-        {
             _themeBeforeNoclip = OptionsVm.SelectedTheme;
-            OptionsVm.UnlockTheme(level0);
-        }
 
         NoclipTransition?.Invoke(this, new NoclipEventArgs(entering, () => OptionsVm.SelectedTheme = target));
     }

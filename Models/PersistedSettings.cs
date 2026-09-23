@@ -56,8 +56,4 @@ public sealed class PersistedSettings
     /// <summary>Id of the chosen colour theme (see Themes/ThemeCatalog.cs). Null or an
     /// unknown id means the default theme.</summary>
     public string? ThemeId { get; set; }
-
-    /// <summary>Ids of hidden (easter-egg) themes the user has unlocked, so they stay on
-    /// the Appearance page across launches.</summary>
-    public List<string>? UnlockedThemeIds { get; set; }
 }

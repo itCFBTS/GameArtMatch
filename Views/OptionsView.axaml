@@ -225,7 +225,7 @@
                     <DockPanel IsVisible="{Binding IsAppearancePage}">
                         <TextBlock DockPanel.Dock="Top" Classes="hint" Margin="0,0,0,12"
                                    Text="Colour theme. Changes apply immediately and are remembered." />
-                        <ListBox ItemsSource="{Binding Themes}" SelectedItem="{Binding SelectedTheme, Mode=TwoWay}"
+                        <ListBox ItemsSource="{Binding Themes}" SelectedItem="{Binding ListedSelection, Mode=TwoWay}"
                                  Background="Transparent">
                             <ListBox.ItemTemplate>
                                 <DataTemplate x:DataType="themes:AppTheme">

@@ -25,8 +25,8 @@ public sealed class AppTheme(string id, string name, string description, ThemeVa
     /// on (see the theme files' header comment).</summary>
     public ThemeVariant BaseVariant { get; } = baseVariant;
 
-    /// <summary>Easter-egg themes: left off the Appearance page until unlocked (see
-    /// OptionsViewModel.UnlockTheme), after which they stay listed.</summary>
+    /// <summary>Easter-egg themes: never listed on the Appearance page (see
+    /// OptionsViewModel.Themes); reachable only their own way.</summary>
     public bool IsHidden { get; } = isHidden;
 
     public ResourceDictionary Resources =>
@@ -49,7 +49,7 @@ public sealed class AppTheme(string id, string name, string description, ThemeVa
 /// Every colour theme the app ships. To add one: copy a Themes/*.axaml file (same keys,
 /// new values — keep text at least 4.5:1 against BackgroundBrush), then add a line here
 /// whose id is the file's name. That's all; the Appearance page lists it automatically
-/// (unless it's marked isHidden — then only once unlocked).
+/// (unless it's marked isHidden — then never; it needs its own way in).
 /// </summary>
 public static class ThemeCatalog
 {
@@ -58,7 +58,7 @@ public static class ThemeCatalog
         new("Snes", "SNES", "Warm charcoal with Super Famicom lavender.", ThemeVariant.Dark),
         new("MegaDrive", "Mega Drive", "Near-black console plastic with Sega blue.", ThemeVariant.Dark),
         new("GameBoy", "Game Boy", "Pale DMG screen green, dark-green ink.", ThemeVariant.Light),
-        // Unlocked by typing "noclip" into the Match page's search box (MainViewModel.OnNoclip).
+        // Only reachable by typing "noclip" into the Match page's search box (MainViewModel.OnNoclip).
         new("Level0", "Level 0", "You noclipped out of reality.", ThemeVariant.Light, isHidden: true),
     ];
 
