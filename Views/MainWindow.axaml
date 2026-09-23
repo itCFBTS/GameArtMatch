@@ -7,7 +7,7 @@
         mc:Ignorable="d" d:DesignWidth="1060" d:DesignHeight="700"
         x:Class="GameArtMatch.Views.MainWindow"
         x:DataType="vm:MainViewModel"
-        Icon="/Assets/avalonia-logo.ico"
+        Icon="/Assets/Icon/gameartmatch.ico"
         Title="GameArtMatch"
         Width="1060" Height="700" MinWidth="720" MinHeight="480"
         WindowDecorations="BorderOnly"
@@ -36,7 +36,7 @@
 
     <Window.Resources>
         <!-- Fluent's drawn border/shadow, with the shadow width pinned to our own token so
-             X11FrameExtents reports exactly what's drawn (see MainWindow.axaml.cs). -->
+             X11WindowHints reports exactly what's drawn (see MainWindow.axaml.cs). -->
         <ControlTheme x:Key="AppWindowDecorationsTheme" TargetType="WindowDrawnDecorations"
                       BasedOn="{StaticResource {x:Type WindowDrawnDecorations}}">
             <Setter Property="DefaultShadowThickness" Value="{DynamicResource WindowShadowThickness}" />

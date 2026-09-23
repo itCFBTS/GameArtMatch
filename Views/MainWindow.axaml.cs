@@ -33,7 +33,13 @@ public partial class MainWindow : Window
                 vm.NoclipTransition += async (_, e) => await PlayNoclipAsync(e);
         };
 
-        Opened += (_, _) => UpdateFrameExtents();
+        Opened += (_, _) =>
+        {
+            UpdateFrameExtents();
+            // Every icon size as exact pixels — see X11WindowHints.SetIcons for why the
+            // .ico alone isn't enough on Linux. (Windows reads the .ico natively.)
+            X11WindowHints.SetIcons(this, IconSizes.Select(s => new Uri($"avares://GameArtMatch/Assets/Icon/png/gameartmatch-{s}.png")));
+        };
         ScalingChanged += (_, _) => UpdateFrameExtents();
     }
 
@@ -85,6 +91,8 @@ public partial class MainWindow : Window
         }
     }
 
+    private static readonly int[] IconSizes = [16, 24, 32, 48, 64, 128, 256];
+
     // Keeps the WM's idea of our shadow in step with what Avalonia draws: the shadow
     // exists only in the normal state (Avalonia drops it when maximized/fullscreen), so
     // report zero extents then, or a maximized window would be inset by the shadow width.
@@ -95,7 +103,7 @@ public partial class MainWindow : Window
                      && this.TryFindResource("WindowShadowThickness", out var value) && value is Thickness t
             ? t
             : default;
-        X11FrameExtents.Apply(this, shadow);
+        X11WindowHints.SetFrameExtents(this, shadow);
     });
 
     private const string MaximizeGlyph = "M4,4H20V20H4V4M6,6V18H18V6H6Z";

@@ -33,7 +33,7 @@
 
     <!-- Width of the drop shadow Avalonia draws around the borderless main window (see
          MainWindow's WindowDecorationsTheme) — Fluent's own default, pinned here because
-         X11FrameExtents also reports it to the window manager, and the two must agree
+         X11WindowHints also reports it to the window manager, and the two must agree
          or edge snapping lands off the visible border. -->
     <Thickness x:Key="WindowShadowThickness">8</Thickness>
 

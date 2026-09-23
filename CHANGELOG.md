@@ -11,6 +11,7 @@ a commit log. See `git log` or compare tags on GitHub for full detail.
 - Custom title bar with built-in minimize, maximize, and close buttons.
 - Colour themes (SNES, Mega Drive, Game Boy), chosen under Options > Appearance.
 - Search box to filter results by ROM name (Ctrl+F).
+- New app icon.
 
 ## v0.5.0 - 2026-09-23
 
