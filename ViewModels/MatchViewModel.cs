@@ -78,8 +78,9 @@ public partial class MatchViewModel : ViewModelBase
     /// FindMatchesAsync/MatchScanResult), read directly by ReportViewModel for the
     /// Report page's Missing list instead of that window running its own separate,
     /// redundant re-scan just to reproduce the same list. Empty until the first scan
-    /// ever completes.</summary>
-    public IReadOnlyList<ReportEntry> MissingRoms { get; private set; } = [];
+    /// ever completes. Observable so the Report page follows it live — a finished scan
+    /// or an ignore from the Match page updates that list without a Refresh button.</summary>
+    [ObservableProperty] public partial IReadOnlyList<ReportEntry> MissingRoms { get; private set; } = [];
 
     // --- What used to be one StatusText, split by job so no message overwrites another:
     // live scan counts (the centered progress overlay), a permanent results summary
@@ -225,9 +226,9 @@ public partial class MatchViewModel : ViewModelBase
     /// filtered out by region/exact-score stays out regardless of this setting.</summary>
     [ObservableProperty] public partial bool HideSameImages { get; set; }
 
-    // The sidebar's ComboBoxes push null back through their TwoWay SelectedItem binding
-    // whenever their list is cleared (StartAsync resets AvailableFileTypes/Regions) —
-    // snap that back to "All" instead of filtering on a null type/region.
+    // Belt and braces: a ComboBox pushes null back through its TwoWay SelectedItem
+    // binding if its selected item ever leaves the list — snap that back to "All"
+    // instead of filtering on a null type/region.
     partial void OnSelectedFileTypeChanged(string value)
     {
         if (value is null)
@@ -247,6 +248,27 @@ public partial class MatchViewModel : ViewModelBase
     partial void OnShowOnlyExactScoreMatchesChanged(bool value) => ApplyFilters();
 
     partial void OnHideSameImagesChanged(bool value) => ApplyFilters();
+
+    /// <summary>The toolbar's search box — narrows the tree to ROMs whose file name
+    /// contains it (case-insensitive), on top of the other filters. Bound with a short
+    /// delay (see MatchView.axaml) so a fast typist doesn't rebuild the tree per key.</summary>
+    [ObservableProperty] public partial string SearchText { get; set; } = "";
+
+    /// <summary>Raised when the search box reads "noclip" — MainViewModel takes it from
+    /// there (the Level 0 easter egg). The search is cleared, not applied.</summary>
+    public event EventHandler? Noclipped;
+
+    partial void OnSearchTextChanged(string value)
+    {
+        if (string.Equals(value?.Trim(), "noclip", StringComparison.OrdinalIgnoreCase))
+        {
+            SearchText = "";
+            Noclipped?.Invoke(this, EventArgs.Empty);
+            return;
+        }
+
+        ApplyFilters();
+    }
 
     /// <summary>File type only ever restricts ROMs (never images). Region restricts both
     /// — except English Translated, which by design shows every image and only narrows
@@ -325,9 +347,11 @@ public partial class MatchViewModel : ViewModelBase
         var romTypeOk = SelectedFileType == FileTypeAll ||
                          string.Equals(Path.GetExtension(group.RomFileName), SelectedFileType, StringComparison.OrdinalIgnoreCase);
         var romRegionOk = RegionFilter.Matches(group.RomFileName, SelectedRegion, isImage: false);
+        var romSearchOk = string.IsNullOrWhiteSpace(SearchText)
+                          || group.RomFileName.Contains(SearchText.Trim(), StringComparison.OrdinalIgnoreCase);
 
         group.VisibleCandidates.Clear();
-        if (romTypeOk && romRegionOk)
+        if (romTypeOk && romRegionOk && romSearchOk)
         {
             var candidatesPassingBasicFilters = new List<MatchCandidate>();
             foreach (var candidate in group.Candidates)
@@ -539,14 +563,18 @@ public partial class MatchViewModel : ViewModelBase
         // live (see OnRomMatched), so the filter dropdowns/selections need to already be
         // in their "fresh scan" state before the first result arrives, not after the last
         // one does.
-        AvailableFileTypes.Clear();
-        AvailableFileTypes.Add(FileTypeAll);
-        AvailableRegions.Clear();
-        AvailableRegions.Add(RegionFilter.All);
+        // Trim back to just "All" rather than Clear() + re-add: clearing empties the
+        // sidebar ComboBoxes' lists out from under their SelectedItem, which then stays
+        // blank even once "All" is back (it's set while the list is still empty).
+        while (AvailableFileTypes.Count > 1)
+            AvailableFileTypes.RemoveAt(AvailableFileTypes.Count - 1);
+        while (AvailableRegions.Count > 1)
+            AvailableRegions.RemoveAt(AvailableRegions.Count - 1);
         SelectedFileType = FileTypeAll;
         SelectedRegion = RegionFilter.All;
         ShowOnlyExactScoreMatches = false;
         HideSameImages = false;
+        SearchText = "";
         AreGroupsExpanded = true; // matches RomMatchGroup's own default — see its doc comment for why expanding one group at a time as a scan streams in is cheap
 
         _cts = new CancellationTokenSource();

@@ -126,6 +126,23 @@ public partial class MatchView : UserControl
     {
         if (DataContext is MatchViewModel vm)
             vm.Carousel.SetViewport(e.NewSize.Width, e.NewSize.Height);
+        UpdatePreviewPaneMaxWidth(e.NewSize);
+    }
+
+    // The current slide is a square no wider than CenterHeightFraction of the viewport's
+    // height, so any pane width past that (plus the pane's own padding and scrollbar,
+    // i.e. whatever the pane has that the viewport doesn't) is just empty space beside
+    // the image — cap the star column there and let the results tree have the rest.
+    // Stable, not a feedback loop: narrowing the column changes the viewport's width,
+    // never its height, so the next SizeChanged computes the same cap.
+    private void UpdatePreviewPaneMaxWidth(Size viewport)
+    {
+        if (viewport.Height <= 0)
+            return;
+
+        var chrome = PreviewPane.Bounds.Width - viewport.Width;
+        ResultsLayout.ColumnDefinitions[2].MaxWidth =
+            viewport.Height * PreviewCarouselViewModel.CenterHeightFraction + Math.Max(0, chrome);
     }
 
     private void OnCarouselPointerWheelChanged(object? sender, PointerWheelEventArgs e)
@@ -266,6 +283,22 @@ public partial class MatchView : UserControl
     {
         if (e.Source is MenuItem { DataContext: string folderPath } && DataContext is MatchViewModel vm)
             vm.IgnoreFolderCommand.Execute(folderPath);
+    }
+
+    private void OnSearchBoxKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (e.Key != Key.Escape || string.IsNullOrEmpty(SearchBox.Text))
+            return;
+
+        SearchBox.Text = "";
+        e.Handled = true;
+    }
+
+    /// <summary>For MainWindow's Ctrl+F.</summary>
+    public void FocusSearch()
+    {
+        SearchBox.Focus();
+        SearchBox.SelectAll();
     }
 
     private void OnOpenImageFilePathClick(object? sender, RoutedEventArgs e)

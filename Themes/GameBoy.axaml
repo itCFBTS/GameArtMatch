@@ -1,0 +1,52 @@
+<!--
+  Game Boy — pale DMG screen green with the dark-green ink and the A/B buttons' magenta.
+  One of the app's colour themes (see Themes/ThemeCatalog.cs). Every theme file
+  defines exactly the same keys; ThemeService swaps the whole dictionary in and out of
+  Application.Resources, so views reference these with DynamicResource and never a hex
+  literal. To add a theme: copy this file, change the values, add one line to
+  ThemeCatalog.
+
+  Base variant: Light — ThemeService sets Application.RequestedThemeVariant to it,
+  which decides Fluent's own control chrome (TextBox/ComboBox/ScrollBar backgrounds)
+  and whether Fluent puts black (Dark) or white (Light) text on AccentBrush-coloured
+  buttons. Fluent's accent itself is overridden from AccentBrush by ThemeService, so
+  it never follows the OS accent colour.
+
+  Contrast (WCAG): text 11.3:1, muted 5.4:1, accent 5.4:1 on the background; white on accent 7.2:1.
+-->
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Layers: window background, then one step "up" for panels (sidebars, Options
+         nav, floating cards), then hairlines. -->
+    <SolidColorBrush x:Key="BackgroundBrush" Color="#FFDCE3C4" />
+    <SolidColorBrush x:Key="SurfaceBrush" Color="#FFCDD6B0" />
+    <SolidColorBrush x:Key="BorderBrush" Color="#FFA7B386" />
+
+    <SolidColorBrush x:Key="ForegroundBrush" Color="#FF1F2A12" />
+    <SolidColorBrush x:Key="ForegroundMutedBrush" Color="#FF505C3A" />
+
+    <!-- DMG dark green (the screen's darkest shade). Also fed to Fluent as its accent (buttons, selection, progress,
+         toggles, checkboxes — see ThemeService). -->
+    <SolidColorBrush x:Key="AccentBrush" Color="#FF306230" />
+    <!-- A/B-button magenta secondary. Used by the identical-image row shading below. -->
+    <SolidColorBrush x:Key="AccentSecondaryBrush" Color="#FF8E2A5E" />
+
+    <SolidColorBrush x:Key="ErrorBrush" Color="#FFB3261E" />
+    <SolidColorBrush x:Key="WarningBrush" Color="#FF7A5200" />
+
+    <!-- Alternating row tints for clusters of byte-identical candidate images (see
+         MatchCandidate.IsContentShadeA/B): the two accents at ~15% opacity, so the
+         pair always belongs to the theme and stays distinct from Warning/Error. -->
+    <SolidColorBrush x:Key="ContentGroupShadeABrush" Color="#268E2A5E" />
+    <SolidColorBrush x:Key="ContentGroupShadeBBrush" Color="#26306230" />
+
+    <!-- Dimmed backdrop behind the floating Options pane, and the drop shadow under
+         floating cards (Options pane, scan-progress overlay). -->
+    <SolidColorBrush x:Key="ScrimBrush" Color="#66000000" />
+    <BoxShadows x:Key="FloatingShadow">0 12 40 0 #40000000</BoxShadows>
+
+    <!-- Whether the Match page shows the Backrooms scene (Assets/Backrooms, see
+         BackroomsView) faintly behind its empty state. Only Level 0 turns it on. -->
+    <x:Boolean x:Key="ShowBackroomsBackdrop">False</x:Boolean>
+</ResourceDictionary>

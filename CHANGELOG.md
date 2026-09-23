@@ -7,6 +7,10 @@ a commit log. See `git log` or compare tags on GitHub for full detail.
 
 - Menu bar replaced by a sidebar; Report is now a page there, not a window.
 - Scan progress floats over the results while they load.
+- Options opens as a floating pane over the app instead of a separate window.
+- Custom title bar with built-in minimize, maximize, and close buttons.
+- Colour themes (SNES, Mega Drive, Game Boy), chosen under Options > Appearance.
+- Search box to filter results by ROM name (Ctrl+F).
 
 ## v0.5.0 - 2026-09-23
 

@@ -3,32 +3,42 @@
              x:Class="GameArtMatch.App"
              xmlns:local="using:GameArtMatch"
              RequestedThemeVariant="Dark">
-             <!-- Pinned to Dark for the retro theme (see Tokens.axaml) rather than "Default"
-                  (follow OS theme) — Fluent's own built-in control chrome (TextBox/ComboBox/
-                  ScrollBar/MenuFlyout backgrounds, etc.) comes from FluentTheme's own Light/Dark
-                  dictionaries, not from our tokens, so this app is dark-only right now, not
-                  theme-variant-aware. -->
+             <!-- Never "Default" (follow the OS): the variant belongs to the app's colour
+                  theme, not the desktop — ThemeService sets it from the active theme's base
+                  variant (Dark for SNES, the startup default here). -->
 
     <Application.DataTemplates>
         <local:ViewLocator />
     </Application.DataTemplates>
 
     <Application.Styles>
-        <FluentTheme />
+        <!-- Empty palettes on purpose: ThemeService sets each one's Accent from the
+             active theme's AccentBrush. Without an Accent here, Fluent's accent (buttons,
+             selection, progress bars, toggles) follows the OS accent colour instead. -->
+        <FluentTheme>
+            <FluentTheme.Palettes>
+                <ColorPaletteResources x:Key="Dark" />
+                <ColorPaletteResources x:Key="Light" />
+            </FluentTheme.Palettes>
+        </FluentTheme>
         <!-- Shared style classes (see Styles.axaml) — after FluentTheme so they
              can override its defaults where a class sets a property. -->
         <StyleInclude Source="avares://GameArtMatch/Styles.axaml" />
     </Application.Styles>
 
     <!-- Merged after FluentTheme (above) so our design tokens take precedence over
-         Fluent's own defaults app-wide — see Tokens.axaml, the single place to edit
-         the app's look. Application.Resources resolves ahead of resources merely
+         Fluent's own defaults app-wide — Tokens.axaml for shape/spacing/fonts, the
+         Themes/ file for colours. Application.Resources resolves ahead of resources merely
          contributed by a Styles entry like FluentTheme, regardless of declaration
          order, but this is placed textually after it to read the same way. -->
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="avares://GameArtMatch/Tokens.axaml" />
+                <!-- The startup/default colour theme, so the first frame and the XAML
+                     previewer are already themed. ThemeService replaces this entry (it
+                     finds it by its /Themes/ path) when another theme is chosen. -->
+                <ResourceInclude Source="avares://GameArtMatch/Themes/Snes.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

@@ -4,8 +4,8 @@ using GameArtMatch.Models;
 
 namespace GameArtMatch.ViewModels;
 
-/// <summary>One folder's worth of ignored ROMs — a tree node in the Options window's
-/// Ignored ROMs tab, analogous to RomMatchGroup but grouped by containing folder
+/// <summary>One folder's worth of ignored ROMs — a tree node in the Options pane's
+/// Ignored ROMs page, analogous to RomMatchGroup but grouped by containing folder
 /// instead of by ROM (see IgnoredRomsViewModel.Refresh). Only groups exact directories
 /// together — e.g. "/roms/Saturn" and "/roms/Saturn/discs" are two separate groups, not
 /// one collapsed under a shared prefix.</summary>

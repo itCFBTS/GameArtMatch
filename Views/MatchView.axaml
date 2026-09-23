@@ -3,6 +3,7 @@
              xmlns:vm="using:GameArtMatch.ViewModels"
              xmlns:model="using:GameArtMatch.Models"
              xmlns:behaviors="using:GameArtMatch.Behaviors"
+             xmlns:views="using:GameArtMatch.Views"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
@@ -58,10 +59,13 @@
          so the vertical breathing room lives on the individual rows instead of out here. -->
     <DockPanel Margin="12,0">
         <!-- Selection toolbar — acts on the results, so it sits on them rather than in the
-             sidebar (which is for setting a scan up). Expand/Collapse All on the right,
-             icon-only with a tooltip; the icon shows what a click will do next. -->
-        <DockPanel DockPanel.Dock="Top" Margin="0,10,0,0" IsEnabled="{Binding HasResults}">
+             sidebar (which is for setting a scan up). Search and Expand/Collapse All on
+             the right; the expand icon shows what a click will do next. Everything but
+             the search box waits for results — the search box is always live (it also
+             happens to be where "noclip" gets typed). -->
+        <DockPanel DockPanel.Dock="Top" Margin="0,10,0,0">
             <Button DockPanel.Dock="Right" Classes="icon" Command="{Binding ToggleExpandCollapseCommand}"
+                    IsEnabled="{Binding HasResults}"
                     ToolTip.Tip="{Binding ExpandCollapseButtonText, StringFormat='{}{0} (Ctrl+E)'}">
                 <Panel>
                     <!-- Material "unfold less" / "unfold more". -->
@@ -71,7 +75,13 @@
                               Data="M12,18.17L8.83,15L7.41,16.41L12,21L16.59,16.41L15.17,15M12,5.83L15.17,9L16.59,7.59L12,3L7.41,7.59L8.83,9L12,5.83Z" />
                 </Panel>
             </Button>
-            <StackPanel Orientation="Horizontal" Spacing="{DynamicResource SpaceXs}">
+            <!-- Delay: the tree is rebuilt per search change, so wait for a pause in typing.
+                 Esc clears it (MatchView.axaml.cs); Ctrl+F focuses it (MainWindow). -->
+            <TextBox DockPanel.Dock="Right" Name="SearchBox" Width="220" Margin="0,0,6,0"
+                     PlaceholderText="Search ROMs (Ctrl+F)"
+                     Text="{Binding SearchText, Delay=250}" KeyDown="OnSearchBoxKeyDown" />
+            <StackPanel Orientation="Horizontal" Spacing="{DynamicResource SpaceXs}"
+                        IsEnabled="{Binding HasResults}">
                 <Button Content="Select Best" Command="{Binding SelectBestMatchedCommand}"
                         ToolTip.Tip="Tick the best-scoring image for every ROM shown" />
                 <Button Content="Select Singles" Command="{Binding SelectSingleMatchesCommand}"
@@ -83,7 +93,7 @@
         <!-- Footer: the live results summary on the left (follows filters/checkboxes),
              the last rename's outcome and the Rename button on the right. The negative
              margin lets the hairline run the full width past the DockPanel's 12px inset. -->
-        <Border DockPanel.Dock="Bottom" Margin="-12,0" Padding="12,10"
+        <Border DockPanel.Dock="Bottom" Margin="-12,0" Padding="12,0" Height="{DynamicResource FooterHeight}"
                 BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0">
             <DockPanel>
                 <Button DockPanel.Dock="Right" Classes="accent" Content="{Binding RenameButtonText}"
@@ -95,8 +105,10 @@
                             IsVisible="{Binding RenameNotice, Converter={x:Static ObjectConverters.IsNotNull}}">
                     <TextBlock Text="{Binding RenameNotice}" VerticalAlignment="Center"
                                Classes.renameProblem="{Binding RenameNoticeHasProblems}" />
-                    <Button Classes="icon" Content="×" Command="{Binding DismissRenameNoticeCommand}"
-                            ToolTip.Tip="Dismiss" />
+                    <Button Classes="icon" Command="{Binding DismissRenameNoticeCommand}" ToolTip.Tip="Dismiss">
+                        <PathIcon Width="12" Height="12"
+                                  Data="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
+                    </Button>
                 </StackPanel>
                 <TextBlock Text="{Binding ResultsSummaryText}" Classes="muted" VerticalAlignment="Center"
                            TextTrimming="CharacterEllipsis" IsVisible="{Binding HasResults}" />
@@ -242,7 +254,7 @@
 
                 <!-- Not a card: no background of its own (it shares the main area's), no
                      border, no corner radius — Discord-member-list style. -->
-                <Border Grid.Column="2" Padding="8,12,0,12"
+                <Border Grid.Column="2" Name="PreviewPane" Padding="8,12,0,12"
                         IsVisible="{Binding IsPreviewVisible}">
                     <Grid RowDefinitions="*,Auto">
                         <!-- The wheel steps the carousel (and, through it, the tree's highlight)
@@ -351,6 +363,12 @@
                 </Border>
             </Grid>
 
+            <!-- Level 0 only (the theme's ShowBackroomsBackdrop): the Backrooms scene,
+                 faint, behind the empty state — its dead panel still flickers now and then. -->
+            <Panel IsVisible="{DynamicResource ShowBackroomsBackdrop}">
+                <views:BackroomsView Opacity="0.45" IsVisible="{Binding IsEmptyStateVisible}" />
+            </Panel>
+
             <!-- What to do next / why there's nothing here — in place of the tree rather
                  than in a status line. Wording comes from MatchViewModel.EmptyStateText. -->
             <TextBlock Text="{Binding EmptyStateText}" Classes="hint" FontSize="{DynamicResource FontSizeDefault}"
@@ -370,7 +388,7 @@
                         Background="{DynamicResource SurfaceBrush}"
                         BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
                         CornerRadius="{DynamicResource CornerRadiusBase}" Padding="20"
-                        BoxShadow="0 8 32 0 #80000000">
+                        BoxShadow="{DynamicResource FloatingShadow}">
                     <StackPanel Spacing="{DynamicResource SpaceMd}">
                         <Grid>
                             <ProgressBar Minimum="0" Maximum="100" Value="{Binding ProgressPercent}" Height="28" />

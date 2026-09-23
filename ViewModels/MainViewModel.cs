@@ -32,7 +32,7 @@ public partial class MainViewModel : ViewModelBase
     public IgnoredRomsViewModel IgnoredRomsVm { get; }
 
     /// <summary>Folder the persisted settings.json lives in — backs Options' "Open
-    /// Settings Folder" button (see OptionsWindow.axaml.cs).</summary>
+    /// Settings Folder" button (see OptionsView.axaml.cs).</summary>
     public string SettingsFolderPath => _settingsStore.FolderPath;
 
     /// <summary>Which sidebar destination is showing — Match (false) or Report (true).
@@ -40,24 +40,24 @@ public partial class MainViewModel : ViewModelBase
     /// swapping ContentControl.Content, so flipping pages never rebuilds the results
     /// tree (ViewLocator would construct a fresh MatchView on every swap).</summary>
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsMatchPageActive))]
+    [NotifyPropertyChangedFor(nameof(IsMatchPageActive), nameof(PageTitle))]
     public partial bool IsReportPageActive { get; set; }
 
     public bool IsMatchPageActive => !IsReportPageActive;
 
-    /// <summary>Report is a snapshot of the last scan's missing list — re-copy it each
-    /// time the page is shown so it's never stale from an earlier scan.</summary>
-    partial void OnIsReportPageActiveChanged(bool value)
-    {
-        if (value)
-            ReportVm.RefreshCommand.Execute(null);
-    }
+    /// <summary>Shown at the left of the title strip.</summary>
+    public string PageTitle => IsReportPageActive ? "Report" : "Match";
 
     [ObservableProperty] public partial bool IsSidebarOpen { get; set; } = true;
 
-    /// <summary>Raised (via the view) to show the Options dialog — reached from the
-    /// sidebar's footer (or Ctrl+,), an Avalonia-idiomatic modal preferences window.</summary>
-    public event System.EventHandler? OptionsRequested;
+    /// <summary>The floating Options pane MainWindow shows over everything while
+    /// IsOptionsOpen — an in-window overlay (Claude-desktop-settings style) rather than
+    /// a separate OS window.</summary>
+    public OptionsViewModel OptionsVm { get; }
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(CloseOptionsCommand))]
+    public partial bool IsOptionsOpen { get; set; }
 
     public MainViewModel() : this(new MatchingService(), new RenameService(), new SettingsStore())
     {
@@ -107,7 +107,15 @@ public partial class MainViewModel : ViewModelBase
         MatchVm = new MatchViewModel(Settings, matchingService, renameService);
         ReportVm = new ReportViewModel(Settings, MatchVm);
         IgnoredRomsVm = new IgnoredRomsViewModel(Settings);
+        OptionsVm = new OptionsViewModel(Settings, IgnoredRomsVm, SettingsFolderPath, persisted.ThemeId,
+            persisted.UnlockedThemeIds);
+        OptionsVm.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(OptionsViewModel.SelectedTheme))
+                Persist();
+        };
 
+        MatchVm.Noclipped += (_, _) => OnNoclip();
         MatchVm.ScanStarting += OnMatchScanStarting;
         MatchVm.RomIgnored += OnRomIgnored;
         ReportVm.IgnoredRomPathsChanged += OnRomIgnored;
@@ -159,11 +167,51 @@ public partial class MainViewModel : ViewModelBase
             RomsToImagesPathMap = new Dictionary<string, string>(_romsToImagesPathMap, StringComparer.OrdinalIgnoreCase),
             IgnoredRomPaths = new List<string>(Settings.IgnoredRomPaths),
             IgnoredRomFolders = new List<string>(Settings.IgnoredRomFolders),
+            ThemeId = OptionsVm?.SelectedTheme.Id,
+            UnlockedThemeIds = OptionsVm is null ? null : new List<string>(OptionsVm.UnlockedThemeIds),
         });
     }
 
+    /// <summary>Raised when "noclip" is typed into the Match page's search box — MainWindow
+    /// plays the fluorescent-flicker transition and calls ApplyTheme at its darkest
+    /// moment, so the theme swaps while the screen is out.</summary>
+    public event EventHandler<NoclipEventArgs>? NoclipTransition;
+
+    /// <summary>Theme to return to when noclipping back out of Level 0 — in-memory only;
+    /// after a restart it's the default theme.</summary>
+    private Themes.AppTheme? _themeBeforeNoclip;
+
+    /// <summary>The easter egg: first time in, unlocks the hidden Level 0 theme (it then
+    /// stays on the Appearance page) and switches to it; typed again from Level 0, goes
+    /// back to whatever theme came before.</summary>
+    private void OnNoclip()
+    {
+        if (Themes.ThemeCatalog.TryFind(Themes.ThemeCatalog.NoclipThemeId) is not { } level0)
+            return;
+
+        var entering = !ReferenceEquals(OptionsVm.SelectedTheme, level0);
+        var target = entering ? level0 : _themeBeforeNoclip ?? Themes.ThemeCatalog.Default;
+        if (entering)
+        {
+            _themeBeforeNoclip = OptionsVm.SelectedTheme;
+            OptionsVm.UnlockTheme(level0);
+        }
+
+        NoclipTransition?.Invoke(this, new NoclipEventArgs(entering, () => OptionsVm.SelectedTheme = target));
+    }
+
     [RelayCommand]
-    private void OpenOptions() => OptionsRequested?.Invoke(this, System.EventArgs.Empty);
+    private void OpenOptions()
+    {
+        // Ignored ROMs can change (from the Match or Report page) while Options is
+        // closed — re-read before showing rather than relying on whatever IgnoredRomsVm
+        // last saw.
+        IgnoredRomsVm.Refresh();
+        IsOptionsOpen = true;
+    }
+
+    [RelayCommand(CanExecute = nameof(IsOptionsOpen))]
+    private void CloseOptions() => IsOptionsOpen = false;
 
     [RelayCommand]
     private void ShowMatchPage() => IsReportPageActive = false;
@@ -173,4 +221,12 @@ public partial class MainViewModel : ViewModelBase
 
     [RelayCommand]
     private void ToggleSidebar() => IsSidebarOpen = !IsSidebarOpen;
+}
+
+/// <summary>See MainViewModel.NoclipTransition.</summary>
+public sealed class NoclipEventArgs(bool entering, Action applyTheme) : EventArgs
+{
+    /// <summary>True going into Level 0, false coming back out.</summary>
+    public bool Entering { get; } = entering;
+    public Action ApplyTheme { get; } = applyTheme;
 }

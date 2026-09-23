@@ -1,0 +1,56 @@
+<!--
+  Level 0 — the Backrooms: wallpaper yellow, damp-carpet browns. Hidden: unlocked by
+  typing "noclip" in the Match page's search box (see MainViewModel.OnNoclip). Strictly
+  the Lospec Backrooms-22 palette (lospec.com/palette-list/backrooms-22), no outside
+  colours — so Error/Warning are browns, not red/amber.
+  One of the app's colour themes (see Themes/ThemeCatalog.cs). Every theme file
+  defines exactly the same keys; ThemeService swaps the whole dictionary in and out of
+  Application.Resources, so views reference these with DynamicResource and never a hex
+  literal. To add a theme: copy this file, change the values, add one line to
+  ThemeCatalog.
+
+  Base variant: Light — ThemeService sets Application.RequestedThemeVariant to it,
+  which decides Fluent's own control chrome (TextBox/ComboBox/ScrollBar backgrounds)
+  and whether Fluent puts black (Dark) or white (Light) text on AccentBrush-coloured
+  buttons. Fluent's accent itself is overridden from AccentBrush by ThemeService, so
+  it never follows the OS accent colour.
+
+  Contrast (WCAG): text 11.4:1, muted 6.6:1, accent 8.1:1, warning 5.1:1 on the background;
+  white on accent 11.1:1.
+-->
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Layers: window background, then one step "up" for panels (sidebars, Options
+         nav, floating cards), then hairlines. -->
+    <SolidColorBrush x:Key="BackgroundBrush" Color="#FFE0E0A3" />
+    <SolidColorBrush x:Key="SurfaceBrush" Color="#FFD3D381" />
+    <SolidColorBrush x:Key="BorderBrush" Color="#FFC3C07E" />
+
+    <SolidColorBrush x:Key="ForegroundBrush" Color="#FF2C211D" />
+    <SolidColorBrush x:Key="ForegroundMutedBrush" Color="#FF544738" />
+
+    <!-- Dark carpet brown — Level 0 is monotone on purpose; no bright accent. Also fed to Fluent as its accent (buttons, selection, progress,
+         toggles, checkboxes — see ThemeService). -->
+    <SolidColorBrush x:Key="AccentBrush" Color="#FF46392F" />
+    <!-- Mid brown secondary. Used by the identical-image row shading below. -->
+    <SolidColorBrush x:Key="AccentSecondaryBrush" Color="#FF786C4D" />
+
+    <SolidColorBrush x:Key="ErrorBrush" Color="#FF362A24" />
+    <SolidColorBrush x:Key="WarningBrush" Color="#FF655842" />
+
+    <!-- Alternating row tints for clusters of byte-identical candidate images (see
+         MatchCandidate.IsContentShadeA/B): the two accents at ~15% opacity, so the
+         pair always belongs to the theme and stays distinct from Warning/Error. -->
+    <SolidColorBrush x:Key="ContentGroupShadeABrush" Color="#26786C4D" />
+    <SolidColorBrush x:Key="ContentGroupShadeBBrush" Color="#2646392F" />
+
+    <!-- Dimmed backdrop behind the floating Options pane, and the drop shadow under
+         floating cards (Options pane, scan-progress overlay). -->
+    <SolidColorBrush x:Key="ScrimBrush" Color="#662C211D" />
+    <BoxShadows x:Key="FloatingShadow">0 12 40 0 #402C211D</BoxShadows>
+
+    <!-- Whether the Match page shows the Backrooms scene (Assets/Backrooms, see
+         BackroomsView) faintly behind its empty state. Only Level 0 turns it on. -->
+    <x:Boolean x:Key="ShowBackroomsBackdrop">True</x:Boolean>
+</ResourceDictionary>

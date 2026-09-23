@@ -166,6 +166,35 @@
         <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
 
+    <!-- Sidebar vocabulary, shared by MainWindow's app sidebar and the Options pane's
+         own nav so the two read as one design. .sidebarSection is the muted
+         "SOURCES"/"FILTERS" heading; .fieldLabel the small caption above a sidebar
+         field; Button.nav a flat, full-width, left-aligned row (Discord-channel-list
+         style rather than Fluent's raised chrome), with .active marking the current
+         page by a raised background plus accent text. -->
+    <Style Selector="TextBlock.sidebarSection">
+        <Setter Property="FontFamily" Value="{DynamicResource FontFamilyDisplay}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeDisplay}" />
+        <Setter Property="Foreground" Value="{DynamicResource ForegroundMutedBrush}" />
+        <Setter Property="Margin" Value="0,18,0,8" />
+    </Style>
+    <Style Selector="TextBlock.fieldLabel">
+        <Setter Property="Foreground" Value="{DynamicResource ForegroundMutedBrush}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeSmall}" />
+        <Setter Property="Margin" Value="0,0,0,4" />
+    </Style>
+    <Style Selector="Button.nav">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="Padding" Value="10,0" />
+    </Style>
+    <Style Selector="Button.nav.active">
+        <Setter Property="Background" Value="{DynamicResource BorderBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+    </Style>
+
     <!-- Square, chrome-less icon button — the sidebar's ☰ toggle, MatchView's
          Expand/Collapse All and rename-notice dismiss. Fluent's own pointer-over
          background still shows, so it reads as clickable on hover. -->
@@ -184,7 +213,7 @@
     </Style>
 
     <!-- Muted, small, wrapping explanatory caption underneath a control —
-         e.g. OptionsWindow's per-field help text, the About window's blurb. -->
+         e.g. OptionsView's per-field help text, its About page's blurb. -->
     <Style Selector="TextBlock.hint">
         <Setter Property="Foreground" Value="{DynamicResource ForegroundMutedBrush}" />
         <Setter Property="FontSize" Value="{DynamicResource FontSizeSmall}" />
@@ -200,7 +229,7 @@
     </Style>
 
     <!-- Short, single-line emphasis label in the display font — e.g. the About
-         window's version text, OptionsWindow's "Console Mode" section heading.
+         page's version text, OptionsView's "Console Mode" section heading.
          Same reasoning as .columnHeader: length-limited by design, so the pixel
          font's readability cost doesn't apply. -->
     <Style Selector="TextBlock.retroLabel">

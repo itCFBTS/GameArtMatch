@@ -9,7 +9,7 @@ using GameArtMatch.Models;
 
 namespace GameArtMatch.ViewModels;
 
-/// <summary>Backs the Options window's "Ignored ROMs" tab — lets the user see and
+/// <summary>Backs the Options pane's "Ignored ROMs" page — lets the user see and
 /// un-ignore ROMs previously excluded via "Ignore Selected ROM(s)" (the Match tab's
 /// results tree, or Report's Missing/Matched tabs), grouped by containing folder so an
 /// entire system's worth of ignores (e.g. everything directly under /roms/Saturn) can
@@ -51,7 +51,7 @@ public partial class IgnoredRomsViewModel : ObservableObject
     }
 
     /// <summary>Re-reads MatchSettings.IgnoredRomPaths — called at construction and again
-    /// each time the Options window opens (see MainWindow.axaml.cs), since paths can
+    /// each time the Options pane opens (see MainViewModel.OpenOptions), since paths can
     /// change from the Match or Report page's own "Ignore Selected ROM(s)" while
     /// this window was closed. Only paths that still exist on disk are shown — same
     /// "silently skip anything since deleted/moved" behavior the old Report Ignored tab

@@ -1,0 +1,270 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:model="using:GameArtMatch.Models"
+             xmlns:vm="using:GameArtMatch.ViewModels"
+             xmlns:behaviors="using:GameArtMatch.Behaviors"
+             xmlns:themes="using:GameArtMatch.Themes"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="780" d:DesignHeight="540"
+             x:Class="GameArtMatch.Views.OptionsView"
+             x:DataType="vm:OptionsViewModel">
+
+    <Design.DataContext>
+        <vm:OptionsViewModel />
+    </Design.DataContext>
+
+    <!-- The floating Options pane's card — MainWindow supplies the dimmed backdrop, the
+         centering, the close button, and Esc/click-outside to dismiss. Left: the same
+         sidebar vocabulary as the main window's (Styles.axaml's Button.nav etc.) on the
+         same Surface background; right: the selected page under its title. -->
+    <Border Background="{DynamicResource BackgroundBrush}"
+            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+            CornerRadius="{DynamicResource CornerRadiusLarge}" ClipToBounds="True">
+        <Grid ColumnDefinitions="200,*">
+            <Border Background="{DynamicResource SurfaceBrush}">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="Options" Classes="retroLabel" Margin="18,20,0,8" />
+
+                    <!-- Footer, like the app sidebar's: the one app-level action that
+                         isn't a settings page of its own. -->
+                    <Border DockPanel.Dock="Bottom" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0"
+                            Height="{DynamicResource FooterHeight}" Padding="8,0">
+                        <Button Classes="nav" Content="Settings Folder" Click="OnOpenSettingsFolderClick"
+                                ToolTip.Tip="Open the folder settings.json is saved in" />
+                    </Border>
+
+                    <StackPanel Margin="8,4,8,8" Spacing="2">
+                        <Button Classes="nav" Classes.active="{Binding IsPathsPage}" Content="Paths"
+                                Command="{Binding ShowPageCommand}" CommandParameter="{x:Static vm:OptionsPage.Paths}" />
+                        <Button Classes="nav" Classes.active="{Binding IsMatchingPage}" Content="Matching"
+                                Command="{Binding ShowPageCommand}" CommandParameter="{x:Static vm:OptionsPage.Matching}" />
+                        <Button Classes="nav" Classes.active="{Binding IsRenamingPage}" Content="Renaming"
+                                Command="{Binding ShowPageCommand}" CommandParameter="{x:Static vm:OptionsPage.Renaming}" />
+                        <Button Classes="nav" Classes.active="{Binding IsIgnoredRomsPage}" Content="Ignored ROMs"
+                                Command="{Binding ShowPageCommand}" CommandParameter="{x:Static vm:OptionsPage.IgnoredRoms}" />
+                        <Button Classes="nav" Classes.active="{Binding IsAppearancePage}" Content="Appearance"
+                                Command="{Binding ShowPageCommand}" CommandParameter="{x:Static vm:OptionsPage.Appearance}" />
+                        <Button Classes="nav" Classes.active="{Binding IsAboutPage}" Content="About"
+                                Command="{Binding ShowPageCommand}" CommandParameter="{x:Static vm:OptionsPage.About}" />
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <!-- Right margin leaves room for MainWindow's close button in the corner. -->
+            <DockPanel Grid.Column="1" Margin="24,20,20,20">
+                <TextBlock DockPanel.Dock="Top" Text="{Binding PageTitle}" Classes="retroLabel"
+                           FontSize="{DynamicResource FontSizeLarge}" Margin="0,0,40,16" />
+
+                <!-- Pages are all built up front and just toggle IsVisible (each page's own
+                     DataContext is the slice of state it edits) — cheap, and a page keeps
+                     its scroll position when you flip away and back. -->
+                <Panel>
+                    <Panel IsVisible="{Binding IsPathsPage}">
+                        <ScrollViewer DataContext="{Binding Settings}">
+                            <StackPanel x:DataType="model:MatchSettings" Spacing="{DynamicResource SpaceSm}">
+                                <TextBlock Text="Root folders are remembered between launches and used as the starting point when picking a ROMs/Images folder from the sidebar."
+                                           Classes="hint" />
+
+                                <TextBlock Text="ROMs root (e.g. the top of your games library)" />
+                                <DockPanel>
+                                    <Button DockPanel.Dock="Right" Content="..." Click="OnBrowseRomsRootClick" />
+                                    <TextBox Text="{Binding RomsRootPath}" PlaceholderText="Roms root folder" />
+                                </DockPanel>
+
+                                <TextBlock Text="Images root (e.g. the art pack's Covers folder)" />
+                                <DockPanel>
+                                    <Button DockPanel.Dock="Right" Content="..." Click="OnBrowseImagesRootClick" />
+                                    <TextBox Text="{Binding ImagesRootPath}" PlaceholderText="Images root folder" />
+                                </DockPanel>
+
+                                <DockPanel LastChildFill="False" Margin="0,4,0,0">
+                                    <TextBlock Text="ROMs extension(s):" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                    <TextBox Text="{Binding RomsExtensions}" Width="100" Margin="0,0,16,0" />
+                                    <CheckBox Content="Include subfolders" IsChecked="{Binding RomsIncludeSubfolders}" VerticalAlignment="Center" />
+                                </DockPanel>
+
+                                <DockPanel LastChildFill="False">
+                                    <TextBlock Text="Images extension(s):" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                    <TextBox Text="{Binding ImagesExtensions}" Width="100" Margin="0,0,16,0" />
+                                    <CheckBox Content="Include subfolders" IsChecked="{Binding ImagesIncludeSubfolders}" VerticalAlignment="Center" />
+                                </DockPanel>
+
+                                <Separator Margin="0,8" />
+
+                                <TextBlock Text="Console Mode" Classes="retroLabel" />
+                                <CheckBox Content="ROM root is MiSTer games folder using Console Mode media folders"
+                                          IsChecked="{Binding IsConsoleMode}" />
+                                <TextBlock Text="Each system folder has its own 'media' subfolder for box art (e.g. MegaCD/media/Sonic CD (USA).png)."
+                                           Classes="hint" Margin="24,-6,0,0" />
+
+                                <CheckBox Content="Skip ROMs that already have matching art"
+                                          IsChecked="{Binding SkipExistingArt}"
+                                          IsEnabled="{Binding IsConsoleMode}" Margin="0,4,0,0" />
+                                <TextBlock Text="Checks &lt;RomsPath&gt;/media/&lt;name&gt;.png/.jpg/.jpeg before matching."
+                                           Classes="hint" Margin="24,-6,0,0" />
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Panel>
+
+
+                    <Panel IsVisible="{Binding IsMatchingPage}">
+                        <ScrollViewer DataContext="{Binding Settings}">
+                            <StackPanel x:DataType="model:MatchSettings" Spacing="{DynamicResource SpaceSm}">
+                                <CheckBox Content="Disregard ROM tags, e.g. (USA)/(Rev 1)" IsChecked="{Binding DisregardRomTags}" />
+                                <CheckBox Content="Match standalone letters" IsChecked="{Binding MatchStandaloneLetters}" />
+                                <CheckBox Content="Try numbers as Roman numerals" IsChecked="{Binding TryRomanNumerals}" />
+                                <CheckBox Content="Match case" IsChecked="{Binding MatchCase}" />
+                                <CheckBox Content="Disregard common words" IsChecked="{Binding DisregardCommonWords}" />
+                                <TextBox Text="{Binding CommonWords}" IsEnabled="{Binding DisregardCommonWords}" />
+
+                                <DockPanel LastChildFill="False" Margin="0,8,0,0">
+                                    <TextBlock Text="Accuracy — matches greater than:" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                    <NumericUpDown Value="{Binding AccuracyThreshold}" Minimum="0" Maximum="100" Width="120" />
+                                    <TextBlock Text="%" VerticalAlignment="Center" Margin="4,0,0,0" />
+                                </DockPanel>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Panel>
+
+
+                    <Panel IsVisible="{Binding IsRenamingPage}">
+                        <ScrollViewer DataContext="{Binding Settings}">
+                            <StackPanel x:DataType="model:MatchSettings" Spacing="{DynamicResource SpaceSm}">
+                                <CheckBox Content="Delete original files" IsChecked="{Binding DeleteOriginalFiles}" />
+                                <CheckBox Content="Export backup script" IsChecked="{Binding ExportBackupScript}" />
+                                <CheckBox Content="Export copy script" IsChecked="{Binding ExportCopyScript}" />
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Panel>
+
+
+                    <!-- x:CompileBindings="False" — this page's ListBox/TreeView item
+                         templates bind reflectively (untyped DataTemplates), as they did
+                         when this was a tab in the old standalone Options window. -->
+                    <Panel IsVisible="{Binding IsIgnoredRomsPage}">
+                        <Grid x:CompileBindings="False" DataContext="{Binding IgnoredRomsVm}" RowDefinitions="Auto,Auto,Auto,*">
+                            <TextBlock Grid.Row="0" Text="ROMs excluded via &quot;Ignore Selected ROM(s)&quot;, grouped by folder — plus whole folders excluded via &quot;Ignore Folder&quot;, listed separately below."
+                                       Classes="hint" Margin="0,0,0,8" />
+
+                            <!-- Whole ignored folders — a separate MatchSettings.IgnoredRomFolders
+                                 setting, not the same thing as a folder that merely happens to
+                                 contain some individually-ignored files (the tree below), so kept
+                                 visually distinct rather than merged into that tree. -->
+                            <StackPanel Grid.Row="1" Spacing="{DynamicResource SpaceXs}" Margin="0,0,0,8"
+                                        IsVisible="{Binding HasIgnoredFolders}">
+                                <TextBlock Text="Ignored folders" Classes="retroLabel" />
+                                <!-- Height, not MaxHeight — a virtualizing ListBox placed in an
+                                     unbounded ("Auto" row) height often can't compute a
+                                     virtualization window and realizes zero items; MaxHeight
+                                     alone only caps a height, it doesn't force a real one. -->
+                                <ListBox Name="IgnoredFoldersList" ItemsSource="{Binding IgnoredFolders}"
+                                         SelectionMode="Multiple" Height="120">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <Grid.ContextFlyout>
+                                                    <MenuFlyout>
+                                                        <MenuItem Header="Open File Path" Click="OnOpenIgnoredFolderPathClick" />
+                                                        <MenuItem Header="Un-ignore Selected Folder(s)" Click="OnUnignoreFolderClick" />
+                                                    </MenuFlyout>
+                                                </Grid.ContextFlyout>
+                                                <Border ClipToBounds="True" Height="20">
+                                                    <Canvas>
+                                                        <TextBlock Text="{Binding}" behaviors:MarqueeOnHoverBehavior.IsEnabled="True" />
+                                                    </Canvas>
+                                                </Border>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </StackPanel>
+
+                            <TextBlock Grid.Row="2" Text="No individually-ignored ROMs." Classes="muted"
+                                       IsVisible="{Binding !HasEntries}" />
+
+                            <!-- Two-level tree, same shape as MatchView's ROM/candidate tree — a
+                                 folder is a node, the ignored ROMs directly inside it nest underneath.
+                                 HorizontalScrollBarVisibility="Disabled" — see MatchView.axaml's
+                                 ResultsTree for why (TreeView's "Auto" default breaks both plain
+                                 truncation and MarqueeOnHoverBehavior's overflow math). -->
+                            <TreeView Grid.Row="3" Name="IgnoredTree" ItemsSource="{Binding Groups}"
+                                      SelectionMode="Multiple" IsVisible="{Binding HasEntries}"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                <TreeView.ItemTemplate>
+                                    <TreeDataTemplate DataType="vm:IgnoredRomGroup" ItemsSource="{Binding Entries}">
+                                        <TextBlock Text="{Binding FolderPath}" FontWeight="Bold" />
+                                    </TreeDataTemplate>
+                                </TreeView.ItemTemplate>
+                                <TreeView.DataTemplates>
+                                    <DataTemplate DataType="model:IgnoredRomEntry">
+                                        <Grid>
+                                            <Grid.ContextFlyout>
+                                                <MenuFlyout>
+                                                    <MenuItem Header="Open File Path" Click="OnOpenIgnoredFilePathClick" />
+                                                    <MenuItem Header="Un-ignore Selected ROM(s)" Click="OnUnignoreClick" />
+                                                </MenuFlyout>
+                                            </Grid.ContextFlyout>
+                                            <Border ClipToBounds="True" Height="20">
+                                                <Canvas>
+                                                    <TextBlock Text="{Binding FileName}" behaviors:MarqueeOnHoverBehavior.IsEnabled="True" />
+                                                </Canvas>
+                                            </Border>
+                                        </Grid>
+                                    </DataTemplate>
+                                </TreeView.DataTemplates>
+                            </TreeView>
+                        </Grid>
+                    </Panel>
+
+
+                    <!-- Theme picker: one row per ThemeCatalog entry, each with a miniature of
+                         the app drawn in that theme's own colours (read from its dictionary,
+                         not the active one) so you can compare before switching. Selecting
+                         applies immediately (OptionsViewModel.SelectedTheme). -->
+                    <DockPanel IsVisible="{Binding IsAppearancePage}">
+                        <TextBlock DockPanel.Dock="Top" Classes="hint" Margin="0,0,0,12"
+                                   Text="Colour theme. Changes apply immediately and are remembered." />
+                        <ListBox ItemsSource="{Binding Themes}" SelectedItem="{Binding SelectedTheme, Mode=TwoWay}"
+                                 Background="Transparent">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate x:DataType="themes:AppTheme">
+                                    <Grid ColumnDefinitions="Auto,*" Margin="0,6">
+                                        <!-- Miniature: sidebar strip, two text lines, an accent button. -->
+                                        <Border Width="96" Height="52" ClipToBounds="True"
+                                                CornerRadius="{DynamicResource CornerRadiusBase}"
+                                                Background="{Binding Background}"
+                                                BorderBrush="{Binding Border}" BorderThickness="1">
+                                            <Grid ColumnDefinitions="26,*">
+                                                <Border Background="{Binding Surface}" />
+                                                <StackPanel Grid.Column="1" Margin="8,9,0,0" Spacing="5">
+                                                    <Border Width="42" Height="4" HorizontalAlignment="Left" Background="{Binding Foreground}" />
+                                                    <Border Width="30" Height="4" HorizontalAlignment="Left" Background="{Binding ForegroundMuted}" />
+                                                    <Border Width="34" Height="10" HorizontalAlignment="Left" CornerRadius="2"
+                                                            Background="{Binding Accent}" />
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                        <StackPanel Grid.Column="1" Margin="14,0,0,0" VerticalAlignment="Center" Spacing="4">
+                                            <TextBlock Text="{Binding Name}" Classes="retroLabel" />
+                                            <TextBlock Text="{Binding Description}" Classes="hint" />
+                                        </StackPanel>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </DockPanel>
+
+                    <StackPanel Spacing="{DynamicResource SpaceMd}" MaxWidth="440" HorizontalAlignment="Left"
+                                IsVisible="{Binding IsAboutPage}">
+                        <TextBlock Text="{Binding AboutVm.VersionText}" Classes="retroLabel" />
+                        <TextBlock Text="A cross-platform ROM/art filename matcher for Windows and Linux."
+                                   TextWrapping="Wrap" />
+                        <TextBlock Text="Heavily inspired by FatMatch (v0.3, 2009) by Fatone85, originally built for the GameEx frontend community. This project reimagines that tool's fuzzy-matching workflow as a single cross-platform app."
+                                   Classes="hint" />
+                    </StackPanel>
+                </Panel>
+            </DockPanel>
+        </Grid>
+    </Border>
+</UserControl>

@@ -15,12 +15,12 @@
 
     <DockPanel Margin="12">
         <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8" LastChildFill="False">
-            <Button Content="Refresh" Command="{Binding RefreshCommand}" Margin="0,0,8,0" />
-            <Button Content="Export..." Click="OnExportClick" />
+            <Button Content="Export..." Click="OnExportClick" IsEnabled="{Binding IsListVisible}" />
         </DockPanel>
 
-        <!-- Reflects whatever the Match page's last scan found — not re-scanned here, see
-             ReportViewModel; re-copied each time this page is shown. -->
+        <!-- Reflects whatever the Match page's last scan found — not re-scanned here; it
+             follows MatchViewModel.MissingRoms live (see ReportViewModel), so there's no
+             Refresh button. -->
         <TextBlock DockPanel.Dock="Top" Margin="0,0,0,8" Classes="hint"
                    Text="ROMs the last scan on the Match page found no art for." />
 
@@ -32,36 +32,46 @@
              that's part of the current selection acts on the whole selection;
              right-clicking one that isn't acts on just that row — same convention as the
              Match tab's ROM context menu. -->
-        <ListBox Name="MissingList" ItemsSource="{Binding Missing}" SelectionMode="Multiple">
-            <ListBox.ItemTemplate>
-                <DataTemplate x:DataType="model:ReportEntry">
-                    <Grid>
-                        <Grid.ContextFlyout>
-                            <MenuFlyout>
-                                <MenuItem Header="Open File Path" Click="OnOpenFilePathFromMissingClick" />
-                                <MenuItem Header="Ignore Selected ROM(s)" Click="OnIgnoreFromMissingClick" />
-                                <!-- Same shape as MatchView.axaml's ROM row: sub-items come
-                                     from IgnorableAncestorFolders, BottomSubmenuMenuItemTheme
-                                     (see Styles.axaml) opens this submenu centered below
-                                     rather than Fluent's default side placement, and one
-                                     handler catches Click bubbling up from whichever
-                                     auto-generated child was actually clicked (see
-                                     OnIgnoreFolderFromMissingClick, which reads e.Source, not
-                                     sender). -->
-                                <MenuItem Header="Ignore Folder" Click="OnIgnoreFolderFromMissingClick"
-                                          Theme="{StaticResource BottomSubmenuMenuItemTheme}"
-                                          ItemsSource="{Binding IgnorableAncestorFolders}"
-                                          IsEnabled="{Binding HasIgnorableAncestorFolders}" />
-                            </MenuFlyout>
-                        </Grid.ContextFlyout>
-                        <Border ClipToBounds="True" Height="20">
-                            <Canvas>
-                                <TextBlock Text="{Binding RomFileName}" behaviors:MarqueeOnHoverBehavior.IsEnabled="True" />
-                            </Canvas>
-                        </Border>
-                    </Grid>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+        <Panel>
+            <!-- No scan yet / nothing missing / scan in progress — the list's stale contents
+                 are hidden while a scan runs rather than passed off as current. -->
+            <TextBlock Text="{Binding EmptyStateText}" Classes="hint" FontSize="{DynamicResource FontSizeDefault}"
+                       TextAlignment="Center" MaxWidth="360"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                       IsVisible="{Binding IsEmptyStateVisible}" />
+
+            <ListBox Name="MissingList" ItemsSource="{Binding Missing}" SelectionMode="Multiple"
+                     IsVisible="{Binding IsListVisible}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="model:ReportEntry">
+                        <Grid>
+                            <Grid.ContextFlyout>
+                                <MenuFlyout>
+                                    <MenuItem Header="Open File Path" Click="OnOpenFilePathFromMissingClick" />
+                                    <MenuItem Header="Ignore Selected ROM(s)" Click="OnIgnoreFromMissingClick" />
+                                    <!-- Same shape as MatchView.axaml's ROM row: sub-items come
+                                         from IgnorableAncestorFolders, BottomSubmenuMenuItemTheme
+                                         (see Styles.axaml) opens this submenu centered below
+                                         rather than Fluent's default side placement, and one
+                                         handler catches Click bubbling up from whichever
+                                         auto-generated child was actually clicked (see
+                                         OnIgnoreFolderFromMissingClick, which reads e.Source, not
+                                         sender). -->
+                                    <MenuItem Header="Ignore Folder" Click="OnIgnoreFolderFromMissingClick"
+                                              Theme="{StaticResource BottomSubmenuMenuItemTheme}"
+                                              ItemsSource="{Binding IgnorableAncestorFolders}"
+                                              IsEnabled="{Binding HasIgnorableAncestorFolders}" />
+                                </MenuFlyout>
+                            </Grid.ContextFlyout>
+                            <Border ClipToBounds="True" Height="20">
+                                <Canvas>
+                                    <TextBlock Text="{Binding RomFileName}" behaviors:MarqueeOnHoverBehavior.IsEnabled="True" />
+                                </Canvas>
+                            </Border>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Panel>
     </DockPanel>
 </UserControl>
