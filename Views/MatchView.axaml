@@ -29,8 +29,8 @@
         <Style Selector="TextBlock.duplicate">
             <Setter Property="Foreground" Value="{DynamicResource WarningBrush}" />
         </Style>
+        <!-- Colour only: the data font has no bold weight, so bold here was faked. -->
         <Style Selector="TextBlock.exactMatch">
-            <Setter Property="FontWeight" Value="Bold" />
             <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
         </Style>
         <!-- Full-row background tint grouping a multi-member identical-content cluster
@@ -73,7 +73,7 @@
              whole Match page — empty state, mid-scan and with results alike; its dead panel
              still flickers now and then. First child, so everything draws over it. -->
         <Panel IsVisible="{DynamicResource ShowBackroomsBackdrop}">
-            <views:BackroomsView Classes="backdrop" Classes.faint="{Binding !IsEmptyStateVisible}" />
+            <views:BackroomsView Name="Backdrop" Classes="backdrop" Classes.faint="{Binding !IsEmptyStateVisible}" />
         </Panel>
 
         <!-- Horizontal-only margin: the results/image-pane divider (see ResultsLayout) is
@@ -100,15 +100,15 @@
                 <!-- Delay: the tree is rebuilt per search change, so wait for a pause in typing.
                      Esc clears it (MatchView.axaml.cs); Ctrl+F focuses it (MainWindow). -->
                 <TextBox DockPanel.Dock="Right" Name="SearchBox" Width="220" Margin="0,0,6,0"
-                         PlaceholderText="Search ROMs (Ctrl+F)"
+                         PlaceholderText="{Binding SearchPlaceholder}"
                          Text="{Binding SearchText, Delay=250}" KeyDown="OnSearchBoxKeyDown" />
                 <StackPanel Orientation="Horizontal" Spacing="{DynamicResource SpaceXs}"
                             IsEnabled="{Binding HasResults}">
-                    <Button Content="Select Best" Command="{Binding SelectBestMatchedCommand}"
+                    <Button Content="Select best" Command="{Binding SelectBestMatchedCommand}"
                             ToolTip.Tip="Tick the best-scoring image for every ROM shown" />
-                    <Button Content="Select Singles" Command="{Binding SelectSingleMatchesCommand}"
+                    <Button Content="Select singles" Command="{Binding SelectSingleMatchesCommand}"
                             ToolTip.Tip="Tick the image for every ROM shown that has exactly one" />
-                    <Button Content="Deselect All" Command="{Binding DeselectAllCommand}" />
+                    <Button Content="Deselect all" Command="{Binding DeselectAllCommand}" />
                 </StackPanel>
             </DockPanel>
 
@@ -132,7 +132,7 @@
                                       Data="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
                         </Button>
                     </StackPanel>
-                    <TextBlock Text="{Binding ResultsSummaryText}" Classes="muted" VerticalAlignment="Center"
+                    <TextBlock Text="{Binding ResultsSummaryText}" Classes="label" VerticalAlignment="Center"
                                TextTrimming="CharacterEllipsis" IsVisible="{Binding HasResults}" />
                 </DockPanel>
             </Border>
@@ -150,8 +150,8 @@
                     </Grid.Transitions>
                     <DockPanel Grid.Column="0" Margin="0,0,0,8">
                         <Grid DockPanel.Dock="Top" ColumnDefinitions="46,100,*" Margin="4,12,4,4">
-                            <TextBlock Grid.Column="1" Text="Score %" Classes="columnHeader" />
-                            <TextBlock Grid.Column="2" Text="ROM / Image" Classes="columnHeader" />
+                            <TextBlock Grid.Column="1" Text="Score %" Classes="label glitchable" />
+                            <TextBlock Grid.Column="2" Text="ROM / image" Classes="label glitchable" />
                         </Grid>
 
                         <!-- Two-level tree: each ROM is a node, its candidate images nest underneath —
@@ -185,8 +185,8 @@
                                                  there whether to act on just this row or the whole current
                                                  multi-selection — see OnIgnoreRomClick. -->
                                             <MenuFlyout>
-                                                <MenuItem Header="Open File Path" Click="OnOpenRomFilePathClick" />
-                                                <MenuItem Header="Ignore Selected ROM(s)" Click="OnIgnoreRomClick" />
+                                                <MenuItem Header="Open file path" Click="OnOpenRomFilePathClick" />
+                                                <MenuItem Header="Ignore selected ROM(s)" Click="OnIgnoreRomClick" />
                                                 <!-- Sub-items come from IgnorableAncestorFolders (nearest
                                                      folder first, RomsPath itself never included — see
                                                      that property's doc comment). BottomSubmenuMenuItemTheme
@@ -198,14 +198,14 @@
                                                      reads e.Source, not sender, for exactly that reason).
                                                      Disabled entirely when the ROM sits directly in
                                                      RomsPath with no folder to offer. -->
-                                                <MenuItem Header="Ignore Folder" Click="OnIgnoreFolderClick"
+                                                <MenuItem Header="Ignore folder" Click="OnIgnoreFolderClick"
                                                           Theme="{StaticResource BottomSubmenuMenuItemTheme}"
                                                           ItemsSource="{Binding IgnorableAncestorFolders}"
                                                           IsEnabled="{Binding HasIgnorableAncestorFolders}" />
                                             </MenuFlyout>
                                         </Grid.ContextFlyout>
                                         <CheckBox Grid.Column="0" IsThreeState="True" IsChecked="{Binding IsAllSelected}" />
-                                        <TextBlock Grid.Column="1" Text="{Binding VisibleCandidates.Count}" Classes="muted" VerticalAlignment="Center" />
+                                        <TextBlock Grid.Column="1" Text="{Binding VisibleCandidates.Count}" Classes="data muted" VerticalAlignment="Center" />
                                         <!-- Border clips (ClipToBounds="True"); Canvas gives the
                                              TextBlock inside it truly unconstrained measurement
                                              (Canvas.MeasureOverride always measures children at
@@ -214,7 +214,7 @@
                                              width regardless of this column's visible size. -->
                                         <Border Grid.Column="2" ClipToBounds="True" Height="20">
                                             <Canvas>
-                                                <TextBlock Text="{Binding RomFileName}" FontWeight="Bold"
+                                                <TextBlock Text="{Binding RomFileName}" Classes="data"
                                                            behaviors:MarqueeOnHoverBehavior.IsEnabled="True" />
                                             </Canvas>
                                         </Border>
@@ -228,11 +228,11 @@
                                           Classes.shadeB="{Binding IsContentShadeB}">
                                         <Grid.ContextFlyout>
                                             <MenuFlyout>
-                                                <MenuItem Header="Open File Path" Click="OnOpenImageFilePathClick" />
+                                                <MenuItem Header="Open file path" Click="OnOpenImageFilePathClick" />
                                             </MenuFlyout>
                                         </Grid.ContextFlyout>
                                         <CheckBox Grid.Column="0" IsChecked="{Binding IsSelected}" />
-                                        <TextBlock Grid.Column="1" Text="{Binding ScorePercent}" VerticalAlignment="Center" />
+                                        <TextBlock Grid.Column="1" Text="{Binding ScorePercent}" Classes="data" VerticalAlignment="Center" />
                                         <!-- Grid, not the StackPanel this used to be — StackPanel gives
                                              each child its full natural width instead of constraining
                                              it, which left the filename with no real clip boundary to
@@ -241,14 +241,14 @@
                                         <Grid Grid.Column="2" ColumnDefinitions="*,Auto">
                                             <Border Grid.Column="0" ClipToBounds="True" Height="20">
                                                 <Canvas>
-                                                    <TextBlock Text="{Binding ImageFileName}"
+                                                    <TextBlock Text="{Binding ImageFileName}" Classes="data"
                                                                Classes.duplicate="{Binding IsDuplicate}"
                                                                Classes.exactMatch="{Binding IsExactMatch}"
                                                                behaviors:MarqueeOnHoverBehavior.IsEnabled="True" />
                                                 </Canvas>
                                             </Border>
                                             <TextBlock Grid.Column="1" Text=" · Same as above" VerticalAlignment="Center"
-                                                       Classes="muted"
+                                                       Classes="label"
                                                        IsVisible="{Binding IsSameAsAbove}" />
                                         </Grid>
                                     </Grid>
@@ -274,14 +274,21 @@
                             Background="{DynamicResource BorderBrush}"
                             IsVisible="{Binding IsPreviewVisible}" />
 
-                    <!-- Not a card: no background of its own (it shares the main area's), no
-                         border, no corner radius — Discord-member-list style. -->
+                    <!-- Not a card: no border, corner radius or colour of its own —
+                         Discord-member-list style — so in Level 0 the backdrop shows through
+                         at the same strength as behind the results. Background="Transparent"
+                         (not none) keeps the whole pane hit-testable for the wheel. -->
                     <Border Grid.Column="2" Name="PreviewPane" Padding="8,12,0,12"
+                        Background="Transparent"
                             IsVisible="{Binding IsPreviewVisible}">
                         <Grid RowDefinitions="*,Auto">
                             <!-- The wheel steps the carousel (and, through it, the tree's highlight)
-                                 anywhere over the pane, scrollbar included. -->
-                            <Grid Grid.Row="0" ColumnDefinitions="*,Auto" PointerWheelChanged="OnCarouselPointerWheelChanged">
+                                 anywhere over the pane, scrollbar included. Background="Transparent"
+                                 is what makes "anywhere" true: without one, the gaps between
+                                 slides aren't hit-testable and the wheel went to whatever lay
+                                 behind (in Level 0, the backdrop). -->
+                            <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Background="Transparent"
+                              PointerWheelChanged="OnCarouselPointerWheelChanged">
                                 <!-- ClipToBounds so slides parked beyond the top/bottom edge (see
                                      PreviewCarouselViewModel.Relayout) stay invisible until they animate
                                      in. SizeChanged feeds the real viewport (excluding the scrollbar's
@@ -379,15 +386,15 @@
                                  already shows it, and the carousel always tracks that highlight. The
                                  count is the one thing the tree can't tell you, since identical files
                                  collapse into a single slide here. -->
-                            <TextBlock Grid.Row="1" Text="{Binding Carousel.PositionText}" Classes="muted"
-                                       FontSize="{DynamicResource FontSizeSmall}" HorizontalAlignment="Right" Margin="0,8,0,0" />
+                            <TextBlock Grid.Row="1" Text="{Binding Carousel.PositionText}" Classes="label"
+                                       HorizontalAlignment="Right" Margin="0,8,0,0" />
                         </Grid>
                     </Border>
                 </Grid>
 
                 <!-- What to do next / why there's nothing here — in place of the tree rather
                      than in a status line. Wording comes from MatchViewModel.EmptyStateText. -->
-                <TextBlock Text="{Binding EmptyStateText}" Classes="hint" FontSize="{DynamicResource FontSizeDefault}"
+                <TextBlock Text="{Binding EmptyStateText}" Classes="caption" FontSize="{DynamicResource FontSizeBody}"
                            TextAlignment="Center" MaxWidth="360"
                            HorizontalAlignment="Center" VerticalAlignment="Center"
                            IsVisible="{Binding IsEmptyStateVisible}" />
@@ -408,7 +415,7 @@
                         <StackPanel Spacing="{DynamicResource SpaceMd}">
                             <Grid>
                                 <ProgressBar Minimum="0" Maximum="100" Value="{Binding ProgressPercent}" Height="28" />
-                                <TextBlock Text="{Binding ProgressPercent, StringFormat={}{0:0}%}"
+                                <TextBlock Text="{Binding ProgressPercent, StringFormat={}{0:0}%}" Classes="data"
                                            HorizontalAlignment="Center" VerticalAlignment="Center" />
                             </Grid>
                             <!-- Cycled by a DispatcherTimer in code-behind (see MatchView.axaml.cs) —
@@ -418,8 +425,8 @@
                                  and MatchPhase.Indexing, both otherwise-silent passes. Fixed width so
                                  the counts don't shuffle sideways as the dots grow. -->
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <TextBlock Text="{Binding ScanProgressText}" />
-                                <TextBlock Name="ActivityDotsText" Text="." Width="24" IsVisible="{Binding IsIndexing}" />
+                                <TextBlock Text="{Binding ScanProgressText}" Classes="data" />
+                                <TextBlock Name="ActivityDotsText" Text="." Classes="data" Width="24" IsVisible="{Binding IsIndexing}" />
                             </StackPanel>
                             <Button Content="Cancel" Command="{Binding ToggleStartCancelCommand}"
                                     HorizontalAlignment="Center" />

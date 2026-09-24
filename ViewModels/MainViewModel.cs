@@ -40,13 +40,11 @@ public partial class MainViewModel : ViewModelBase
     /// swapping ContentControl.Content, so flipping pages never rebuilds the results
     /// tree (ViewLocator would construct a fresh MatchView on every swap).</summary>
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsMatchPageActive), nameof(PageTitle))]
+    [NotifyPropertyChangedFor(nameof(IsMatchPageActive))]
     public partial bool IsReportPageActive { get; set; }
 
     public bool IsMatchPageActive => !IsReportPageActive;
 
-    /// <summary>Shown at the left of the title strip.</summary>
-    public string PageTitle => IsReportPageActive ? "Report" : "Match";
 
     [ObservableProperty] public partial bool IsSidebarOpen { get; set; } = true;
 
@@ -166,9 +164,17 @@ public partial class MainViewModel : ViewModelBase
             RomsToImagesPathMap = new Dictionary<string, string>(_romsToImagesPathMap, StringComparer.OrdinalIgnoreCase),
             IgnoredRomPaths = new List<string>(Settings.IgnoredRomPaths),
             IgnoredRomFolders = new List<string>(Settings.IgnoredRomFolders),
-            ThemeId = OptionsVm?.SelectedTheme.Id,
+            ThemeId = PersistableThemeId(),
         });
     }
+
+    /// <summary>Hidden themes (Level 0) are never saved: while one is active, settings
+    /// keep the theme it was entered from, so the app never starts inside the easter
+    /// egg — it's something you find, not somewhere you wake up.</summary>
+    private string? PersistableThemeId() =>
+        OptionsVm is null ? null
+        : OptionsVm.SelectedTheme.IsHidden ? (_themeBeforeNoclip ?? Themes.ThemeCatalog.Default).Id
+        : OptionsVm.SelectedTheme.Id;
 
     /// <summary>Raised when "/noclip" is typed into the Match page's search box — MainWindow
     /// plays the fluorescent-flicker transition and calls ApplyTheme at its darkest

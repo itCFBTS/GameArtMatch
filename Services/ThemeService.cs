@@ -12,7 +12,7 @@ namespace GameArtMatch.Services;
 ///    current one — every {DynamicResource} colour in the app re-resolves.
 /// 2. Set Application.RequestedThemeVariant to the theme's base (Dark/Light), which
 ///    drives Fluent's own control chrome.
-/// 3. Set Fluent's palette Accent to the theme's AccentBrush colour. Fluent derives its
+/// 3. Set Fluent's palette Accent to the theme's AccentFillBrush (or AccentBrush) colour. Fluent derives its
 ///    accent shades (button fill, selection, progress, toggles) from that; left unset,
 ///    it follows the OS accent colour instead (e.g. KDE's blue), off-palette.</summary>
 public static class ThemeService
@@ -45,7 +45,10 @@ public static class ThemeService
 
         app.RequestedThemeVariant = theme.BaseVariant;
 
-        if (theme.Accent is ISolidColorBrush accent
+        // AccentFill (optional per theme) when set, else Accent: Fluent's accent paints
+        // fills — accent buttons, selection, progress, toggles — which carry white/black
+        // text on top, so a theme can use a brighter colour there than its text accent.
+        if (theme.AccentFill is ISolidColorBrush accent
             && app.Styles.OfType<FluentTheme>().FirstOrDefault() is { } fluent)
         {
             foreach (var palette in fluent.Palettes.Values)

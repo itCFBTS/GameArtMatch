@@ -30,15 +30,23 @@ public partial class MainWindow : Window
         DataContextChanged += (_, _) =>
         {
             if (DataContext is MainViewModel vm)
+            {
                 vm.NoclipTransition += async (_, e) => await PlayNoclipAsync(e);
+                _glitches?.Stop();
+                _glitches = new Level0Glitches(this, vm);
+                _glitches.Start();
+            }
         };
+        Closed += (_, _) => _glitches?.Stop();
 
         Opened += (_, _) =>
         {
             UpdateFrameExtents();
-            // Every icon size as exact pixels — see X11WindowHints.SetIcons for why the
-            // .ico alone isn't enough on Linux. (Windows reads the .ico natively.)
-            X11WindowHints.SetIcons(this, IconSizes.Select(s => new Uri($"avares://GameArtMatch/Assets/Icon/png/gameartmatch-{s}.png")));
+            // The window/taskbar icon is the one-colour glyph (the full-colour icon is the
+            // .exe's, for Start menus and shortcuts — see GameArtMatch.csproj). Every size
+            // as exact pixels — see X11WindowHints.SetIcons for why the .ico alone isn't
+            // enough on Linux. (Windows reads the .ico natively.)
+            X11WindowHints.SetIcons(this, IconSizes.Select(s => new Uri($"avares://GameArtMatch/Assets/Icon/glyph/gameartmatch-glyph-{s}.png")));
         };
         ScalingChanged += (_, _) => UpdateFrameExtents();
     }
@@ -52,6 +60,9 @@ public partial class MainWindow : Window
         Dispatcher.UIThread.Post(() => this.GetVisualDescendants().OfType<MatchView>().FirstOrDefault()?.FocusSearch(),
             DispatcherPriority.Loaded);
     }
+
+    /// <summary>Level 0's deliberate glitches — idle unless that theme is active.</summary>
+    private Level0Glitches? _glitches;
 
     private bool _noclipPlaying;
 
@@ -67,8 +78,12 @@ public partial class MainWindow : Window
             NoclipCaption.Text = e.Entering ? "You've noclipped out of reality." : "You clipped back into reality.";
             NoclipOverlay.IsVisible = true;
 
-            // Fluorescent stutter: the overlay blinks in over a few frames.
-            foreach (var (opacity, ms) in new[] { (0.9, 60), (0.15, 70), (1.0, 50), (0.35, 90), (1.0, 140) })
+            // Fluorescent stutter: the overlay blinks in, then steadies. Paced for WCAG
+            // 2.3.1 (at most three flashes a second — rapid full-screen flashing can
+            // trigger photosensitive seizures): each step holds 170ms+, so the whole
+            // stutter is ~2.5 flashes over a second, and the dips only dim (to 35% / 65%)
+            // rather than blacking out.
+            foreach (var (opacity, ms) in new[] { (0.8, 200), (0.35, 200), (1.0, 250), (0.65, 180), (1.0, 170) })
             {
                 NoclipOverlay.Opacity = opacity;
                 await Task.Delay(ms);
@@ -92,6 +107,7 @@ public partial class MainWindow : Window
     }
 
     private static readonly int[] IconSizes = [16, 24, 32, 48, 64, 128, 256];
+
 
     // Keeps the WM's idea of our shadow in step with what Avalonia draws: the shadow
     // exists only in the normal state (Avalonia drops it when maximized/fullscreen), so

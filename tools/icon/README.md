@@ -22,6 +22,13 @@ only passes along one resampled 128px image.
 | 48 | The 32 enlarged 1.5x (slightly uneven) | — |
 | 64/128/256 | The 32 enlarged exactly 2x/4x/8x | — |
 
+The full-colour icon above is the Windows `.exe` icon (Explorer, Start menu, shortcuts,
+pinned taskbar buttons). Running windows — the taskbar, title bar, Alt+Tab — use a
+one-colour **glyph** instead: `glyph.svg`, a vector, rendered at every size into
+`Assets/Icon/glyph/` and `Assets/Icon/gameartmatch-glyph.ico` (needs `rsvg-convert`).
+The sidebar's toggle button draws the same shape; its `Path Data` in `MainWindow.axaml`
+must match `glyph.svg`.
+
 Pixel icons don't shrink well, so the small sizes are separate designs, not
 downscales — change a detail in one and check the others still match.
 `python small.py` / `small24.py` / `vapor.py` also write preview sheets (including a

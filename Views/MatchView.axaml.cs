@@ -6,6 +6,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using GameArtMatch.Models;
@@ -77,12 +78,29 @@ public partial class MatchView : UserControl
                 SubscribeCarousel(vm.Carousel);
             }
         };
+        // Level 0 glitch: the preview image jolts a couple of pixels as the ceiling light
+        // sputters, then snaps back. Backdrop only flickers while it's visible — i.e. in
+        // Level 0 — so this needs no theme check of its own.
+        Backdrop.BurstStarted += (_, _) => JoltCarousel();
+
         DetachedFromVisualTree += (_, _) =>
         {
             _zIndexTimer.Stop();
             _activityDotsTimer.Stop();
             _renameNoticeTimer.Stop();
         };
+    }
+
+    private readonly Random _joltRandom = new();
+
+    private void JoltCarousel()
+    {
+        if (DataContext is not MatchViewModel { IsPreviewVisible: true, IsBusy: false })
+            return;
+
+        CarouselViewport.RenderTransform = new TranslateTransform(
+            _joltRandom.Next(2) == 0 ? -2 : 2, _joltRandom.Next(-1, 2));
+        DispatcherTimer.RunOnce(() => CarouselViewport.RenderTransform = null, TimeSpan.FromMilliseconds(110));
     }
 
     private void SubscribeCarousel(PreviewCarouselViewModel? carousel)

@@ -7,7 +7,7 @@
         mc:Ignorable="d" d:DesignWidth="1060" d:DesignHeight="700"
         x:Class="GameArtMatch.Views.MainWindow"
         x:DataType="vm:MainViewModel"
-        Icon="/Assets/Icon/gameartmatch.ico"
+        Icon="/Assets/Icon/gameartmatch-glyph.ico"
         Title="GameArtMatch"
         Width="1060" Height="700" MinWidth="720" MinHeight="480"
         WindowDecorations="BorderOnly"
@@ -84,13 +84,19 @@
                     <!-- Doubles as the title bar's left half: drag it to move the window. -->
                     <DockPanel DockPanel.Dock="Top" Height="44" Margin="8,0" Background="Transparent"
                                PointerPressed="OnTitleBarPointerPressed">
+                        <!-- The app glyph is the sidebar toggle (in place of a ☰), and the only
+                             branding in the window: a one-colour, Steam/Discord-style take on the
+                             app icon — solid cartridge with its groove, opening along the diagonal
+                             into a window with the striped sun on the horizon. Vector (24-unit
+                             grid, even-odd fill so the window is a hole), so it's sharp at any
+                             scaling. The full-colour pixel icon stays the taskbar/.exe icon. -->
                         <Button DockPanel.Dock="Left" Classes="icon" Command="{Binding ToggleSidebarCommand}"
                                 ToolTip.Tip="Toggle sidebar (Ctrl+B)">
-                            <PathIcon Width="16" Height="16"
-                                      Data="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z" />
+                            <Viewbox Width="18" Height="18">
+                                <Path Width="24" Height="24" Fill="{DynamicResource AppGlyphBrush}"
+                                      Data="F0 M2,20 V8.5 Q2,5 5.5,5 H18.5 Q22,5 22,8.5 V20 Z M6,18.5 L18,6.5 H18.5 Q20.5,6.5 20.5,8.5 V18.5 Z M14.4,11.5 A3,3 0 0,1 19.6,11.5 Z M14.1,12.2 H19.9 L20,13 H14 Z M11.5,13 H20.5 V14 H10.5 Z M6,5 H7.2 V15 H6 Z" />
+                            </Viewbox>
                         </Button>
-                        <TextBlock Text="GameArtMatch" Classes="retroLabel" VerticalAlignment="Center"
-                                   Margin="8,0,0,0" IsVisible="{Binding IsSidebarOpen}" />
                     </DockPanel>
 
                     <!-- Footer: Options (About and the settings folder live inside it now).
@@ -127,18 +133,18 @@
                     <ScrollViewer IsVisible="{Binding IsSidebarOpen}" HorizontalScrollBarVisibility="Disabled">
                         <StackPanel Margin="8,0,8,12">
                             <StackPanel Margin="4,0,0,0">
-                                <TextBlock Text="SOURCES" Classes="sidebarSection" />
+                                <TextBlock Text="SOURCES" Classes="sectionHeading sidebarSection glitchable" />
 
-                                <TextBlock Text="ROMs" Classes="fieldLabel" />
+                                <TextBlock Text="ROMs" Classes="label fieldLabel glitchable" />
                                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource SpaceXs}">
-                                    <TextBox Text="{Binding Settings.RomsPathDisplayName}" IsReadOnly="True"
+                                    <TextBox Text="{Binding Settings.RomsPathDisplayName}" IsReadOnly="True" Classes="data"
                                              ToolTip.Tip="{Binding Settings.RomsPath}" />
                                     <Button Grid.Column="1" Content="..." Click="OnBrowseRomsClick" Padding="8,0" />
                                 </Grid>
 
-                                <TextBlock Text="Images" Classes="fieldLabel" Margin="0,10,0,4" />
+                                <TextBlock Text="Images" Classes="label fieldLabel glitchable" Margin="0,10,0,4" />
                                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource SpaceXs}">
-                                    <TextBox Text="{Binding Settings.ImagesPathDisplayName}" IsReadOnly="True"
+                                    <TextBox Text="{Binding Settings.ImagesPathDisplayName}" IsReadOnly="True" Classes="data"
                                              ToolTip.Tip="{Binding Settings.ImagesPath}" />
                                     <Button Grid.Column="1" Content="..." Click="OnBrowseImagesClick" Padding="8,0" />
                                 </Grid>
@@ -158,25 +164,25 @@
                                      handlers to fake the same thing. Disabled until a scan has
                                      produced something to filter. -->
                                 <StackPanel IsEnabled="{Binding MatchVm.HasResults}">
-                                    <TextBlock Text="FILTERS" Classes="sidebarSection" />
+                                    <TextBlock Text="FILTERS" Classes="sectionHeading sidebarSection glitchable" />
 
-                                    <TextBlock Text="File type" Classes="fieldLabel" />
+                                    <TextBlock Text="File type" Classes="label fieldLabel glitchable" />
                                     <ComboBox ItemsSource="{Binding MatchVm.AvailableFileTypes}"
                                               SelectedItem="{Binding MatchVm.SelectedFileType, Mode=TwoWay}"
                                               HorizontalAlignment="Stretch" />
 
-                                    <TextBlock Text="Region" Classes="fieldLabel" Margin="0,10,0,4" />
+                                    <TextBlock Text="Region" Classes="label fieldLabel glitchable" Margin="0,10,0,4" />
                                     <ComboBox ItemsSource="{Binding MatchVm.AvailableRegions}"
                                               SelectedItem="{Binding MatchVm.SelectedRegion, Mode=TwoWay}"
                                               HorizontalAlignment="Stretch" />
 
                                     <Grid ColumnDefinitions="*,Auto" Margin="0,12,0,0">
-                                        <TextBlock Text="Exact score only" VerticalAlignment="Center" />
+                                        <TextBlock Text="Exact score only" Classes="glitchable" VerticalAlignment="Center" />
                                         <ToggleSwitch Grid.Column="1" OnContent="{x:Null}" OffContent="{x:Null}" MinWidth="0"
                                                       IsChecked="{Binding MatchVm.ShowOnlyExactScoreMatches, Mode=TwoWay}" />
                                     </Grid>
                                     <Grid ColumnDefinitions="*,Auto">
-                                        <TextBlock Text="Hide same images" VerticalAlignment="Center" />
+                                        <TextBlock Text="Hide same images" Classes="glitchable" VerticalAlignment="Center" />
                                         <ToggleSwitch Grid.Column="1" OnContent="{x:Null}" OffContent="{x:Null}" MinWidth="0"
                                                       IsChecked="{Binding MatchVm.HideSameImages, Mode=TwoWay}" />
                                     </Grid>
@@ -192,10 +198,13 @@
                  MatchView, re-realizing the whole results tree, on every page flip. -->
             <DockPanel>
                 <!-- Title strip, the right half of the title bar (the sidebar header is the
-                     left): page name, then the window buttons. Empty space drags the
-                     window; a double-click toggles maximize. Same height as the sidebar
-                     header so the two read as one bar. -->
-                <DockPanel DockPanel.Dock="Top" Height="44" Background="Transparent"
+                     left): just the window buttons — no page name, since the highlighted nav
+                     row already says which page this is. Empty space drags the window; a
+                     double-click toggles maximize. Same height as the sidebar header so the
+                     two read as one bar. -->
+                <!-- LastChildFill="False": the window buttons are the only child now, and a
+                     DockPanel's last child otherwise fills the space and ignores Dock="Right". -->
+                <DockPanel DockPanel.Dock="Top" Height="44" Background="Transparent" LastChildFill="False"
                            PointerPressed="OnTitleBarPointerPressed">
                     <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Margin="0,0,6,0" Spacing="2">
                         <Button Classes="caption" Click="OnMinimizeClick" ToolTip.Tip="Minimize">
@@ -208,7 +217,6 @@
                             <PathIcon Data="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
                         </Button>
                     </StackPanel>
-                    <TextBlock Text="{Binding PageTitle}" Classes="retroLabel" VerticalAlignment="Center" Margin="16,0,0,0" />
                 </DockPanel>
 
                 <Panel>
@@ -249,7 +257,7 @@
             <Border VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,48"
                     Padding="20,14" CornerRadius="{DynamicResource CornerRadiusBase}"
                     Background="{DynamicResource BackroomsCardBrush}">
-                <TextBlock Name="NoclipCaption" Classes="retroLabel" Foreground="{DynamicResource BackroomsInkBrush}" />
+                <TextBlock Name="NoclipCaption" Classes="brand" Foreground="{DynamicResource BackroomsInkBrush}" />
             </Border>
         </Panel>
     </Panel>

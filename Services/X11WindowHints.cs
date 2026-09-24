@@ -62,9 +62,11 @@ public static class X11WindowHints
         {
             using var bitmap = new Bitmap(AssetLoader.Open(uri));
             var (w, h) = (bitmap.PixelSize.Width, bitmap.PixelSize.Height);
-            // Bgra8888 read as little-endian uint is 0xAARRGGBB — _NET_WM_ICON's layout.
-            // The icons are fully opaque or fully transparent, so premultiplied and
-            // straight alpha are the same here.
+            // Bgra8888 read as little-endian uint is 0xAARRGGBB — _NET_WM_ICON's layout —
+            // but CopyPixels hands back premultiplied colour, and _NET_WM_ICON wants
+            // straight colour. Fully opaque/transparent pixels are the same either way;
+            // the antialiased edges of a vector icon (the glyph) are not, and would
+            // otherwise come out too dark — see Unpremultiply.
             var pixels = new uint[w * h];
             var handle = GCHandle.Alloc(pixels, GCHandleType.Pinned);
             try
@@ -79,10 +81,20 @@ public static class X11WindowHints
             data.Add(w);
             data.Add(h);
             foreach (var p in pixels)
-                data.Add((nint)p);
+                data.Add((nint)Unpremultiply(p));
         }
 
         SetCardinals(window, "_NET_WM_ICON", data.ToArray());
+    }
+
+    private static uint Unpremultiply(uint argb)
+    {
+        var a = argb >> 24;
+        if (a is 0 or 255)
+            return argb;
+
+        uint Channel(int shift) => Math.Min(255u, (((argb >> shift) & 0xFF) * 255 + a / 2) / a);
+        return (a << 24) | (Channel(16) << 16) | (Channel(8) << 8) | Channel(0);
     }
 
     private static bool IsX11(Window window, out IntPtr xid)

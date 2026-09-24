@@ -21,7 +21,7 @@
         <!-- Reflects whatever the Match page's last scan found — not re-scanned here; it
              follows MatchViewModel.MissingRoms live (see ReportViewModel), so there's no
              Refresh button. -->
-        <TextBlock DockPanel.Dock="Top" Margin="0,0,0,8" Classes="hint"
+        <TextBlock DockPanel.Dock="Top" Margin="0,0,0,8" Classes="caption"
                    Text="ROMs the last scan on the Match page found no art for." />
 
         <!-- Matched was dropped — Missing is the only list left, so (matching
@@ -35,7 +35,7 @@
         <Panel>
             <!-- No scan yet / nothing missing / scan in progress — the list's stale contents
                  are hidden while a scan runs rather than passed off as current. -->
-            <TextBlock Text="{Binding EmptyStateText}" Classes="hint" FontSize="{DynamicResource FontSizeDefault}"
+            <TextBlock Text="{Binding EmptyStateText}" Classes="caption" FontSize="{DynamicResource FontSizeBody}"
                        TextAlignment="Center" MaxWidth="360"
                        HorizontalAlignment="Center" VerticalAlignment="Center"
                        IsVisible="{Binding IsEmptyStateVisible}" />
@@ -47,8 +47,8 @@
                         <Grid>
                             <Grid.ContextFlyout>
                                 <MenuFlyout>
-                                    <MenuItem Header="Open File Path" Click="OnOpenFilePathFromMissingClick" />
-                                    <MenuItem Header="Ignore Selected ROM(s)" Click="OnIgnoreFromMissingClick" />
+                                    <MenuItem Header="Open file path" Click="OnOpenFilePathFromMissingClick" />
+                                    <MenuItem Header="Ignore selected ROM(s)" Click="OnIgnoreFromMissingClick" />
                                     <!-- Same shape as MatchView.axaml's ROM row: sub-items come
                                          from IgnorableAncestorFolders, BottomSubmenuMenuItemTheme
                                          (see Styles.axaml) opens this submenu centered below
@@ -57,7 +57,7 @@
                                          auto-generated child was actually clicked (see
                                          OnIgnoreFolderFromMissingClick, which reads e.Source, not
                                          sender). -->
-                                    <MenuItem Header="Ignore Folder" Click="OnIgnoreFolderFromMissingClick"
+                                    <MenuItem Header="Ignore folder" Click="OnIgnoreFolderFromMissingClick"
                                               Theme="{StaticResource BottomSubmenuMenuItemTheme}"
                                               ItemsSource="{Binding IgnorableAncestorFolders}"
                                               IsEnabled="{Binding HasIgnorableAncestorFolders}" />
@@ -65,7 +65,7 @@
                             </Grid.ContextFlyout>
                             <Border ClipToBounds="True" Height="20">
                                 <Canvas>
-                                    <TextBlock Text="{Binding RomFileName}" behaviors:MarqueeOnHoverBehavior.IsEnabled="True" />
+                                    <TextBlock Text="{Binding RomFileName}" Classes="data" behaviors:MarqueeOnHoverBehavior.IsEnabled="True" />
                                 </Canvas>
                             </Border>
                         </Grid>

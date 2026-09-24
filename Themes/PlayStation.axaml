@@ -1,0 +1,67 @@
+<!--
+  32-bit grey disc console (the original PlayStation). Light grey plastic, the lid a
+  shade darker; text in the dark grey of the controller; accents from the four logo
+  colours (red #DF0024, yellow #F3C300, teal #00AC9F, blue #2E6DB4). On light grey
+  only the teal can be used exactly — it's only ever a faint row tint — so the blue,
+  red and yellow are the same hues deepened until they pass 4.5:1 as text (the yellow
+  ends up a dark gold; at full brightness it's 1.1:1, unreadable).
+  One of the app's colour themes (see Themes/ThemeCatalog.cs). Every theme file
+  defines exactly the same keys; ThemeService swaps the whole dictionary in and out of
+  Application.Resources, so views reference these with DynamicResource and never a hex
+  literal. To add a theme: copy this file, change the values, add one line to
+  ThemeCatalog.
+
+  Base variant: Light — ThemeService sets Application.RequestedThemeVariant to it,
+  which decides Fluent's own control chrome (TextBox/ComboBox/ScrollBar backgrounds)
+  and whether Fluent puts black (Dark) or white (Light) text on AccentBrush-coloured
+  buttons. Fluent's accent itself is overridden from AccentBrush by ThemeService, so
+  it never follows the OS accent colour.
+
+  Contrast (WCAG), background / sidebar: text 9.6 / 8.1, muted 5.7 / 4.8, accent
+  5.5 / 4.6, error 5.6 / 4.7, warning 5.6 / 4.7; white on accent 8.1, on the
+  accent fill (the exact logo blue) 5.3.
+-->
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Layers: window background, then one step "up" for panels (sidebars, Options
+         nav, floating cards), then hairlines. Body plastic, lid, seams. -->
+    <SolidColorBrush x:Key="BackgroundBrush" Color="#FFD5D4D0" />
+    <SolidColorBrush x:Key="SurfaceBrush" Color="#FFC4C3BF" />
+    <SolidColorBrush x:Key="BorderBrush" Color="#FFA6A5A0" />
+
+    <!-- Controller charcoal, and a softer grey for secondary text. -->
+    <SolidColorBrush x:Key="ForegroundBrush" Color="#FF2A2A2E" />
+    <SolidColorBrush x:Key="ForegroundMutedBrush" Color="#FF4E4D52" />
+
+    <!-- The logo blue, deepened to pass as text. Also fed to Fluent as its accent
+         (buttons, selection, progress, toggles, checkboxes — see ThemeService). -->
+    <SolidColorBrush x:Key="AccentBrush" Color="#FF225185" />
+    <!-- Optional key (only themes that need it set it): the colour for accent FILLS —
+         the Start scan button, selected rows, progress bar, toggles. They carry white
+         text on top, so the exact logo blue works here (white on it: 5.3:1) even though
+         as text on grey it doesn't. -->
+    <SolidColorBrush x:Key="AccentFillBrush" Color="#FF2E6DB4" />
+    <!-- The logo teal, exact. Used by the identical-image row shading below. -->
+    <SolidColorBrush x:Key="AccentSecondaryBrush" Color="#FF00AC9F" />
+
+    <!-- The logo red and yellow, deepened to pass as text. -->
+    <SolidColorBrush x:Key="ErrorBrush" Color="#FFA2001A" />
+    <SolidColorBrush x:Key="WarningBrush" Color="#FF5F4C00" />
+
+    <!-- Alternating row tints for clusters of byte-identical candidate images (see
+         MatchCandidate.IsContentShadeA/B): the exact logo teal and blue at ~15%
+         opacity — tints, never text, so the true logo colours can be used here. -->
+    <SolidColorBrush x:Key="ContentGroupShadeABrush" Color="#2600AC9F" />
+    <SolidColorBrush x:Key="ContentGroupShadeBBrush" Color="#262E6DB4" />
+
+    <!-- Dimmed backdrop behind the floating Options pane, and the drop shadow under
+         floating cards. Controller charcoal rather than pure black, light for a light
+         theme. -->
+    <SolidColorBrush x:Key="ScrimBrush" Color="#662A2A2E" />
+    <BoxShadows x:Key="FloatingShadow">0 12 40 0 #402A2A2E</BoxShadows>
+
+    <!-- Whether the Match page shows the Backrooms scene (Assets/Backrooms, see
+         BackroomsView) faintly behind its empty state. Only Level 0 turns it on. -->
+    <x:Boolean x:Key="ShowBackroomsBackdrop">False</x:Boolean>
+</ResourceDictionary>

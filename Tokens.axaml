@@ -37,38 +37,39 @@
          or edge snapping lands off the visible border. -->
     <Thickness x:Key="WindowShadowThickness">8</Thickness>
 
+    <!-- The sidebar's app glyph (MainWindow): a one-colour, Steam/Discord-style version
+         of the app icon, in the icon's own cartridge-plastic grey on every theme. Theme-
+         independent by choice; faint on the light themes (~1.7:1) — if that ever needs
+         fixing, give each theme its own value (or an outline) instead. -->
+    <SolidColorBrush x:Key="AppGlyphBrush" Color="#FF969DA4" />
+
     <!-- The noclip transition's caption card (MainWindow's NoclipOverlay). Fixed, not
          per-theme: the theme swaps underneath it mid-transition, and the card belongs to
          the Backrooms either way — Backrooms-22's darkest brown and palest yellow. -->
     <SolidColorBrush x:Key="BackroomsCardBrush" Color="#E62C211D" />
     <SolidColorBrush x:Key="BackroomsInkBrush" Color="#FFE9EAC0" />
 
-    <!-- Body/list font — bundled directly (Assets/Fonts) rather than via a NuGet
-         font package, so Program.cs's FontManagerOptions.DefaultFamilyName points
-         at this same avares:// URI and it becomes the app's implicit default,
-         matching how Avalonia.Fonts.Inter + WithInterFont() worked before. Share
-         Tech Mono over a pixel/display font here since ROM/image filenames need
-         to stay readable at small sizes, not just look retro. -->
-    <FontFamily x:Key="FontFamilyBase">avares://GameArtMatch/Assets/Fonts#Share Tech Mono</FontFamily>
-
-    <!-- Display/heading font — deliberately NOT the app-wide default. Used only
-         where text is short (column headers, buttons, one-line labels): Press
-         Start 2P's blocky glyphs get hard to read fast in longer strings, which
-         is exactly what ROM/image filenames are. -->
+    <!-- Three fonts, one job each (see the text roles in Styles.axaml):
+         Interface — Share Tech (the app default via Program.cs): buttons, nav, labels,
+           help text. The proportional sibling of the data font, so the two read as one
+           family. Regular only — there's no bold, so never set FontWeight (it'd be faked).
+         Data — Share Tech Mono: filenames, paths, scores, counts; monospace keeps them
+           aligned and makes similar names easy to compare.
+         Display — Press Start 2P: branding, page titles and section headings only. Its
+           blocky glyphs get hard to read in longer strings, so never for body text. -->
+    <FontFamily x:Key="FontFamilyUi">avares://GameArtMatch/Assets/Fonts#Share Tech</FontFamily>
+    <FontFamily x:Key="FontFamilyData">avares://GameArtMatch/Assets/Fonts#Share Tech Mono</FontFamily>
     <FontFamily x:Key="FontFamilyDisplay">avares://GameArtMatch/Assets/Fonts#Press Start 2P</FontFamily>
 
-    <!-- FontSizeSmall is reverse-engineered from every FontSize="12" literal in the
-         app (all secondary/hint text). FontSizeDefault/Large aren't used by any
-         current literal — the app relies on Fluent's inherited default everywhere
-         else — but are declared now to establish the scale for future use. -->
+    <!-- The type scale. Body is Fluent's own control size, so buttons and inputs match
+         the text around them without overrides. -->
     <x:Double x:Key="FontSizeSmall">12</x:Double>
-    <x:Double x:Key="FontSizeDefault">13</x:Double>
+    <x:Double x:Key="FontSizeBody">14</x:Double>
     <x:Double x:Key="FontSizeLarge">16</x:Double>
 
-    <!-- Smaller than FontSizeSmall on purpose: Press Start 2P's glyphs each fill a
-         full monospace cell and read noticeably larger than a normal font at the
-         same point size, so FontFamilyDisplay text needs a smaller size to sit
-         proportionately next to FontFamilyBase text around it. -->
+    <!-- Press Start 2P's glyphs fill a whole monospace cell and read larger than other
+         fonts at the same size, so section headings use this smaller size to sit
+         proportionately beside Body text. -->
     <x:Double x:Key="FontSizeDisplay">11</x:Double>
 
 </ResourceDictionary>

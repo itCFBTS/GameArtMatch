@@ -26,6 +26,10 @@ public partial class BackroomsView : UserControl
     private readonly Random _random = new();
     private readonly Queue<(Bitmap Frame, int Ms)> _burst = new();
 
+    /// <summary>Raised as each flicker burst begins — MatchView jolts the preview carousel
+    /// in sync with it (a Level 0 glitch).</summary>
+    public event EventHandler? BurstStarted;
+
     public BackroomsView()
     {
         InitializeComponent();
@@ -33,6 +37,19 @@ public partial class BackroomsView : UserControl
         _timer.Tick += (_, _) => Step();
         AttachedToVisualTree += (_, _) => ScheduleNextBurst();
         DetachedFromVisualTree += (_, _) => _timer.Stop();
+    }
+
+    // Pure decoration: never ask the layout for space. The Image fills with
+    // Stretch="UniformToFill", which by design measures LARGER than the space offered in
+    // one direction (then relies on clipping), and that inflated size leaked into
+    // whatever panel hosted the backdrop — after a resize, MatchView's carousel laid
+    // itself out for a taller area than was visible. Measuring the image but reporting
+    // zero keeps it out of layout; the host still arranges it at full size (Stretch
+    // alignment), and ClipToBounds crops the overflow as before.
+    protected override Size MeasureOverride(Size availableSize)
+    {
+        base.MeasureOverride(availableSize);
+        return default;
     }
 
     private static Bitmap Load(string state) =>
@@ -56,6 +73,7 @@ public partial class BackroomsView : UserControl
                 return;
             }
             PlanBurst();
+            BurstStarted?.Invoke(this, EventArgs.Empty);
         }
 
         var (frame, ms) = _burst.Dequeue();

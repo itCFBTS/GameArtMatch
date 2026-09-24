@@ -1,0 +1,60 @@
+<!--
+  Game Boy Color, Atomic Purple — the see-through purple shell. Clear plastic reads as a
+  pale, greyed, cool lavender (light passes through it), deepening only where it's
+  thick — edges and seams — so the surfaces are desaturated lavenders, the borders and
+  accent the thick-edge purple, and text the charcoal of the screen bezel and buttons.
+  Secondary and error colours come from the rainbow "COLOR" logo (its green and red).
+  One of the app's colour themes (see Themes/ThemeCatalog.cs). Every theme file
+  defines exactly the same keys; ThemeService swaps the whole dictionary in and out of
+  Application.Resources, so views reference these with DynamicResource and never a hex
+  literal. To add a theme: copy this file, change the values, add one line to
+  ThemeCatalog.
+
+  Base variant: Light — ThemeService sets Application.RequestedThemeVariant to it,
+  which decides Fluent's own control chrome (TextBox/ComboBox/ScrollBar backgrounds)
+  and whether Fluent puts black (Dark) or white (Light) text on AccentBrush-coloured
+  buttons. Fluent's accent itself is overridden from AccentBrush by ThemeService, so
+  it never follows the OS accent colour.
+
+  Contrast (WCAG), background / sidebar: text 11.1 / 9.3, muted 6.2 / 5.3, accent
+  6.2 / 5.3, error 6.0 / 5.0, warning 5.6 / 4.7; white on accent 8.0.
+-->
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Layers: window background, then one step "up" for panels (sidebars, Options
+         nav, floating cards), then hairlines. Thin plastic, thicker plastic, the edge. -->
+    <SolidColorBrush x:Key="BackgroundBrush" Color="#FFE6E1F0" />
+    <SolidColorBrush x:Key="SurfaceBrush" Color="#FFD6CEE6" />
+    <SolidColorBrush x:Key="BorderBrush" Color="#FFB6A8D2" />
+
+    <!-- Screen-bezel charcoal, and a greyed purple for secondary text. -->
+    <SolidColorBrush x:Key="ForegroundBrush" Color="#FF2B2A33" />
+    <SolidColorBrush x:Key="ForegroundMutedBrush" Color="#FF544D66" />
+
+    <!-- The purple where the clear plastic is thickest. Also fed to Fluent as its accent
+         (buttons, selection, progress, toggles, checkboxes — see ThemeService). -->
+    <SolidColorBrush x:Key="AccentBrush" Color="#FF5B3E9E" />
+    <!-- The "COLOR" logo's green. Used by the identical-image row shading below. -->
+    <SolidColorBrush x:Key="AccentSecondaryBrush" Color="#FF2E8B57" />
+
+    <!-- The logo's red, deepened for contrast; amber for warnings. -->
+    <SolidColorBrush x:Key="ErrorBrush" Color="#FFA0222A" />
+    <SolidColorBrush x:Key="WarningBrush" Color="#FF765000" />
+
+    <!-- Alternating row tints for clusters of byte-identical candidate images (see
+         MatchCandidate.IsContentShadeA/B): the two accents at ~15% opacity, so the
+         pair always belongs to the theme and stays distinct from Warning/Error. -->
+    <SolidColorBrush x:Key="ContentGroupShadeABrush" Color="#262E8B57" />
+    <SolidColorBrush x:Key="ContentGroupShadeBBrush" Color="#265B3E9E" />
+
+    <!-- Dimmed backdrop behind the floating Options pane, and the drop shadow under
+         floating cards (Options pane, scan-progress overlay). Tinted with the bezel
+         charcoal rather than pure black, lighter for a light theme. -->
+    <SolidColorBrush x:Key="ScrimBrush" Color="#662B2A33" />
+    <BoxShadows x:Key="FloatingShadow">0 12 40 0 #402B2A33</BoxShadows>
+
+    <!-- Whether the Match page shows the Backrooms scene (Assets/Backrooms, see
+         BackroomsView) faintly behind its empty state. Only Level 0 turns it on. -->
+    <x:Boolean x:Key="ShowBackroomsBackdrop">False</x:Boolean>
+</ResourceDictionary>

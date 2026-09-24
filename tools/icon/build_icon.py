@@ -13,7 +13,12 @@ Three hand-made designs, each used where there's room for its level of detail:
 main use); 64/128/256 are exact 2x/4x/8x enlargements of the 32, so they stay crisp.
 
     python tools/icon/build_icon.py
+
+Also renders the one-colour glyph (glyph.svg) as the window/taskbar icon — see
+build_glyph(). The full-colour .ico stays the Windows .exe icon (Start menu,
+Explorer, shortcuts).
 """
+import subprocess
 from pathlib import Path
 
 from PIL import Image
@@ -45,8 +50,30 @@ def build():
     return frames
 
 
+GLYPH_SVG = Path(__file__).resolve().parent / "glyph.svg"
+GLYPH_SIZES = (16, 24, 32, 48, 64, 128, 256)
+
+
+def build_glyph():
+    """The one-colour glyph as the window/taskbar icon: rendered from glyph.svg at every
+    size (it's vector, so each size is drawn fresh — no upscaling) into
+    Assets/Icon/glyph/ and Assets/Icon/gameartmatch-glyph.ico. Needs rsvg-convert
+    (librsvg)."""
+    out = OUT / "glyph"
+    out.mkdir(parents=True, exist_ok=True)
+    frames = []
+    for size in GLYPH_SIZES:
+        png = out / f"gameartmatch-glyph-{size}.png"
+        subprocess.run(["rsvg-convert", "-w", str(size), "-h", str(size), str(GLYPH_SVG), "-o", str(png)], check=True)
+        frames.append(Image.open(png).convert("RGBA"))
+    frames[-1].save(OUT / "gameartmatch-glyph.ico", format="ICO",
+                    sizes=[f.size for f in frames], append_images=frames[:-1])
+    return frames
+
+
 if __name__ == "__main__":
     frames = build()
+    build_glyph()
     ico = Image.open(OUT / "gameartmatch.ico")
     for f in frames:
         stored = ico.ico.getimage(f.size).convert("RGBA")

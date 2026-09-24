@@ -4,9 +4,9 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <!-- Icon of the .exe itself in Windows Explorer / on the taskbar before the window
-         has loaded (the window's own icon is MainWindow.axaml's Icon=). Built by
-         tools/icon/build_icon.py. -->
+    <!-- The full-colour icon, for the .exe itself: Windows Explorer, the Start menu,
+         shortcuts, pinned taskbar buttons. Running windows show the one-colour glyph
+         instead (MainWindow.axaml's Icon=). Both built by tools/icon/build_icon.py. -->
     <ApplicationIcon>Assets/Icon/gameartmatch.ico</ApplicationIcon>
     <!-- Declares which platforms `dotnet publish -r <rid>` can target below; has no effect
          on plain `dotnet build` / `dotnet run`. -->

@@ -84,7 +84,10 @@ public partial class OptionsViewModel : ViewModelBase
         Settings = settings;
         IgnoredRomsVm = ignoredRomsVm;
         SettingsFolderPath = settingsFolderPath;
-        SelectedTheme = ThemeCatalog.Find(themeId); // applies the saved theme (hidden ones too) at startup
+        // Applies the saved theme at startup — never a hidden one: MainViewModel doesn't
+        // save those, and an older settings file that did falls back to the default.
+        var saved = ThemeCatalog.Find(themeId);
+        SelectedTheme = saved.IsHidden ? ThemeCatalog.Default : saved;
     }
 
     /// <summary>Design-time only (XAML previewer's Design.DataContext).</summary>

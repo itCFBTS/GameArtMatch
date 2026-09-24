@@ -120,12 +120,22 @@ public partial class MatchViewModel : ViewModelBase
     {
         get
         {
+            var rom = RoomPun ? "ROOM" : "ROM";
             var text = Groups.Count == _allGroups.Count
-                ? $"{_allGroups.Count:N0} ROM(s)"
-                : $"{Groups.Count:N0} of {_allGroups.Count:N0} ROMs shown";
+                ? $"{_allGroups.Count:N0} {rom}(s)"
+                : $"{Groups.Count:N0} of {_allGroups.Count:N0} {rom}s shown";
             return SelectedCount > 0 ? $"{text} · {SelectedCount:N0} selected" : text;
         }
     }
+
+    /// <summary>Level 0 glitch (see Views/Level0Glitches): for a few seconds "ROM" reads
+    /// "ROOM" in the results summary and search placeholder. Interface text only — never
+    /// a filename or anything a rename decision rests on.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ResultsSummaryText), nameof(SearchPlaceholder))]
+    public partial bool RoomPun { get; set; }
+
+    public string SearchPlaceholder => RoomPun ? "Search rooms (Ctrl+F)" : "Search ROMs (Ctrl+F)";
 
     public bool IsEmptyStateVisible => !IsMatchRunning && Groups.Count == 0;
 
@@ -262,7 +272,10 @@ public partial class MatchViewModel : ViewModelBase
     {
         if (string.Equals(value?.Trim(), "/noclip", StringComparison.OrdinalIgnoreCase))
         {
-            SearchText = "";
+            // Posted, not immediate: this runs inside the search box's own binding write,
+            // and a value set back during that write never reaches the TextBox — the
+            // command would sit there in the box.
+            Dispatcher.UIThread.Post(() => SearchText = "");
             Noclipped?.Invoke(this, EventArgs.Empty);
             return;
         }
@@ -910,7 +923,7 @@ public partial class MatchViewModel : ViewModelBase
     /// button now", not a live reflection of the tree's actual mixed state.</summary>
     [ObservableProperty] public partial bool AreGroupsExpanded { get; set; } = true;
 
-    public string ExpandCollapseButtonText => AreGroupsExpanded ? "Collapse All" : "Expand All";
+    public string ExpandCollapseButtonText => AreGroupsExpanded ? "Collapse all" : "Expand all";
 
     partial void OnAreGroupsExpandedChanged(bool value) => OnPropertyChanged(nameof(ExpandCollapseButtonText));
 

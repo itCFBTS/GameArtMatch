@@ -57,8 +57,8 @@ Output lands in `publish/linux-x64/` and `publish/win-x64/`.
    with a score and any relevant markers (exact match, duplicate elsewhere,
    identical to another candidate here). Narrow them down with the sidebar's
    **Filters**.
-3. Select the correct image for each ROM (or use **Select Best** / **Select
-   Singles** above the results) and click **Rename** (Ctrl+Enter).
+3. Select the correct image for each ROM (or use **Select best** / **Select
+   singles** above the results) and click **Rename** (Ctrl+Enter).
 4. Use **Options** (Ctrl+,) at the foot of the sidebar to configure root
    folders, matching behavior, and ignored ROMs; the sidebar's **Report** page
    lists ROMs the last scan found no art for.

@@ -9,9 +9,11 @@ a commit log. See `git log` or compare tags on GitHub for full detail.
 - Scan progress floats over the results while they load.
 - Options opens as a floating pane over the app instead of a separate window.
 - Custom title bar with built-in minimize, maximize, and close buttons.
-- Colour themes (SNES, Mega Drive, Game Boy), chosen under Options > Appearance.
+- Colour themes (Super 16-Bit, Mega 16-Bit, Handheld, Handheld Color, Disc Station),
+  chosen under Options > Appearance.
 - Search box to filter results by ROM name (Ctrl+F).
 - New app icon.
+- Easier-to-read text: a retro-tech interface font, with the pixel font kept for headings.
 
 ## v0.5.0 - 2026-09-23
 
