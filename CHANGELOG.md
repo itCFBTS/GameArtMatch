@@ -3,7 +3,7 @@
 Notable changes to GameArtMatch, release by release — written for users, not as
 a commit log. See `git log` or compare tags on GitHub for full detail.
 
-## Unreleased
+## v0.6.0 - 2026-09-23
 
 - New app icon.
 - Typography and styling overhaul.
