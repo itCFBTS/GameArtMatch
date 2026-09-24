@@ -87,13 +87,13 @@
                         <!-- The app glyph is the sidebar toggle (in place of a ☰), and the only
                              branding in the window: a one-colour, Steam/Discord-style take on the
                              app icon — solid cartridge with its groove, opening along the diagonal
-                             into a window with the striped sun on the horizon. Vector (24-unit
-                             grid, even-odd fill so the window is a hole), so it's sharp at any
-                             scaling. The full-colour pixel icon stays the taskbar/.exe icon. -->
+                             into a window with the striped sun on the horizon. Drawn in the theme's
+                             text colour, so it matches every theme. Vector (24-unit grid, even-odd
+                             fill so the window is a hole), so it's sharp at any scaling. -->
                         <Button DockPanel.Dock="Left" Classes="icon" Command="{Binding ToggleSidebarCommand}"
                                 ToolTip.Tip="Toggle sidebar (Ctrl+B)">
                             <Viewbox Width="18" Height="18">
-                                <Path Width="24" Height="24" Fill="{DynamicResource AppGlyphBrush}"
+                                <Path Width="24" Height="24" Fill="{DynamicResource ForegroundBrush}"
                                       Data="F0 M2,20 V8.5 Q2,5 5.5,5 H18.5 Q22,5 22,8.5 V20 Z M6,18.5 L18,6.5 H18.5 Q20.5,6.5 20.5,8.5 V18.5 Z M14.4,11.5 A3,3 0 0,1 19.6,11.5 Z M14.1,12.2 H19.9 L20,13 H14 Z M11.5,13 H20.5 V14 H10.5 Z M6,5 H7.2 V15 H6 Z" />
                             </Viewbox>
                         </Button>
