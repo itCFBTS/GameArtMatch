@@ -1,9 +1,15 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Media;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
+using Avalonia.VisualTree;
+using CommunityToolkit.Mvvm.Input;
 using GameArtMatch.Services;
 using GameArtMatch.ViewModels;
 
@@ -14,96 +20,157 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+
+        // Stand-in for the old File > Exit — closing the main window ends the app.
+        KeyBindings.Add(new KeyBinding { Gesture = new KeyGesture(Key.Q, KeyModifiers.Control), Command = new RelayCommand(Close) });
+
+        // Ctrl+F: jump to the Match page's search box (switching to Match if needed).
+        KeyBindings.Add(new KeyBinding { Gesture = new KeyGesture(Key.F, KeyModifiers.Control), Command = new RelayCommand(FocusSearch) });
+
         DataContextChanged += (_, _) =>
         {
             if (DataContext is MainViewModel vm)
             {
-                vm.AboutRequested += (_, _) => new AboutWindow { DataContext = new AboutViewModel() }.ShowDialog(this);
-                vm.OptionsRequested += (_, _) =>
-                {
-                    // Ignored ROMs can change (from the Match tab or Report window) while
-                    // Options is closed — re-read before showing rather than relying on
-                    // whatever IgnoredRomsVm last saw at MainViewModel construction time.
-                    vm.IgnoredRomsVm.Refresh();
-                    new OptionsWindow { DataContext = vm.Settings, IgnoredRomsVm = vm.IgnoredRomsVm }.ShowDialog(this);
-                };
-                // Non-modal (Show, not ShowDialog) — Report is a reference window you'd
-                // reasonably want open alongside continued work in the Match tab (e.g.
-                // ignoring more ROMs, then hitting Refresh), unlike the blocking Options
-                // dialog.
-                vm.ReportRequested += (_, _) => new ReportWindow { DataContext = vm.ReportVm }.Show(this);
+                vm.NoclipTransition += async (_, e) => await PlayNoclipAsync(e);
+                _glitches?.Stop();
+                _glitches = new Level0Glitches(this, vm);
+                _glitches.Start();
             }
         };
-    }
+        Closed += (_, _) => _glitches?.Stop();
 
-    // Directory.CreateDirectory first — on a fresh install nothing has ever been
-    // persisted yet (MainViewModel.Persist only runs once a setting actually changes),
-    // so the folder may not exist yet; without this, the very first click on a clean
-    // install would try to reveal a path that isn't there.
-    private void OnOpenSettingsFolderClick(object? sender, RoutedEventArgs e)
-    {
-        if (DataContext is not MainViewModel vm)
-            return;
-
-        System.IO.Directory.CreateDirectory(vm.SettingsFolderPath);
-        FileExplorerService.RevealFolder(vm.SettingsFolderPath);
-    }
-
-    private void OnExitClick(object? sender, RoutedEventArgs e)
-    {
-        if (Avalonia.Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-            desktop.Shutdown();
-    }
-
-    // e.Source (not sender) deliberately — this handler is attached to the parent
-    // "File Type: ..." MenuItem, and Click bubbles up from whichever auto-generated
-    // child (one per AvailableFileTypes entry) was actually clicked; sender here would
-    // always be the parent itself, while e.Source is the specific child that raised the
-    // event. Same technique as MatchView's OnIgnoreFolderClick.
-    private void OnFileTypeClick(object? sender, RoutedEventArgs e)
-    {
-        if (e.Source is MenuItem { DataContext: string fileType } && DataContext is MainViewModel vm)
-            vm.MatchVm.SelectedFileType = fileType;
-    }
-
-    // Sets each auto-generated child's checkmark right before the submenu is shown,
-    // rather than via a live two-way binding — nothing needs to reflect a change while
-    // the submenu isn't open, and there's no single item whose own DataContext is both
-    // "this item's value" and "the currently selected value" to compare against.
-    private void OnFileTypeSubmenuOpened(object? sender, RoutedEventArgs e)
-    {
-        if (sender is not MenuItem { DataContext: MainViewModel vm } menu)
-            return;
-
-        for (var i = 0; i < menu.ItemCount; i++)
+        Opened += (_, _) =>
         {
-            if (menu.ContainerFromIndex(i) is not MenuItem { DataContext: string fileType } item)
-                continue;
+            UpdateFrameExtents();
+            // The window/taskbar icon is the one-colour glyph (the full-colour icon is the
+            // .exe's, for Start menus and shortcuts — see GameArtMatch.csproj). Every size
+            // as exact pixels — see X11WindowHints.SetIcons for why the .ico alone isn't
+            // enough on Linux. (Windows reads the .ico natively.)
+            X11WindowHints.SetIcons(this, IconSizes.Select(s => new Uri($"avares://GameArtMatch/Assets/Icon/glyph/gameartmatch-glyph-{s}.png")));
+        };
+        ScalingChanged += (_, _) => UpdateFrameExtents();
+    }
 
-            item.ToggleType = MenuItemToggleType.Radio;
-            item.IsChecked = string.Equals(fileType, vm.MatchVm.SelectedFileType, StringComparison.OrdinalIgnoreCase);
+    private void FocusSearch()
+    {
+        if (DataContext is MainViewModel vm)
+            vm.IsReportPageActive = false;
+        // Posted: if the Match page was hidden, its TextBox can't take focus until the
+        // layout pass that shows it.
+        Dispatcher.UIThread.Post(() => this.GetVisualDescendants().OfType<MatchView>().FirstOrDefault()?.FocusSearch(),
+            DispatcherPriority.Loaded);
+    }
+
+    /// <summary>Level 0's deliberate glitches — idle unless that theme is active.</summary>
+    private Level0Glitches? _glitches;
+
+    private bool _noclipPlaying;
+
+    // Lights stutter out, the theme swaps while the screen is dark, the Backrooms hold
+    // for a moment with a caption, then everything fades back in on the new theme.
+    private async Task PlayNoclipAsync(NoclipEventArgs e)
+    {
+        if (_noclipPlaying)
+            return;
+        _noclipPlaying = true;
+        try
+        {
+            NoclipCaption.Text = e.Entering ? "You've noclipped out of reality." : "You clipped back into reality.";
+            NoclipOverlay.IsVisible = true;
+
+            // Fluorescent stutter: the overlay blinks in, then steadies. Paced for WCAG
+            // 2.3.1 (at most three flashes a second — rapid full-screen flashing can
+            // trigger photosensitive seizures): each step holds 170ms+, so the whole
+            // stutter is ~2.5 flashes over a second, and the dips only dim (to 35% / 65%)
+            // rather than blacking out.
+            foreach (var (opacity, ms) in new[] { (0.8, 200), (0.35, 200), (1.0, 250), (0.65, 180), (1.0, 170) })
+            {
+                NoclipOverlay.Opacity = opacity;
+                await Task.Delay(ms);
+            }
+
+            e.ApplyTheme(); // hidden behind the fully opaque overlay
+            await Task.Delay(e.Entering ? 2200 : 1300);
+
+            for (var step = 1; step <= 20; step++)
+            {
+                NoclipOverlay.Opacity = 1 - step / 20.0;
+                await Task.Delay(30);
+            }
+        }
+        finally
+        {
+            NoclipOverlay.IsVisible = false;
+            NoclipOverlay.Opacity = 0;
+            _noclipPlaying = false;
         }
     }
 
-    private void OnRegionClick(object? sender, RoutedEventArgs e)
-    {
-        if (e.Source is MenuItem { DataContext: string region } && DataContext is MainViewModel vm)
-            vm.MatchVm.SelectedRegion = region;
-    }
+    private static readonly int[] IconSizes = [16, 24, 32, 48, 64, 128, 256];
 
-    private void OnRegionSubmenuOpened(object? sender, RoutedEventArgs e)
+
+    // Keeps the WM's idea of our shadow in step with what Avalonia draws: the shadow
+    // exists only in the normal state (Avalonia drops it when maximized/fullscreen), so
+    // report zero extents then, or a maximized window would be inset by the shadow width.
+    // Posted so it runs after Avalonia has applied the state change to its decorations.
+    private void UpdateFrameExtents() => Dispatcher.UIThread.Post(() =>
     {
-        if (sender is not MenuItem { DataContext: MainViewModel vm } menu)
+        var shadow = WindowState is WindowState.Normal or WindowState.Minimized
+                     && this.TryFindResource("WindowShadowThickness", out var value) && value is Thickness t
+            ? t
+            : default;
+        X11WindowHints.SetFrameExtents(this, shadow);
+    });
+
+    private const string MaximizeGlyph = "M4,4H20V20H4V4M6,6V18H18V6H6Z";
+    private const string RestoreGlyph = "M4,8H8V4H20V16H16V20H4V8M16,8V14H18V6H10V8H16M6,12V18H14V12H6Z";
+
+    // The title bar replacement: plain BeginMoveDrag rather than marking the strip with
+    // WindowDecorationProperties.ElementRole="TitleBar" — on X11 that role hands the
+    // press straight to the window manager as a move, so a double-click never reaches
+    // the app and can't toggle maximize. Buttons inside the strip mark their own
+    // presses handled, so they never start a drag.
+    private void OnTitleBarPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
             return;
 
-        for (var i = 0; i < menu.ItemCount; i++)
-        {
-            if (menu.ContainerFromIndex(i) is not MenuItem { DataContext: string region } item)
-                continue;
+        if (e.ClickCount == 2)
+            ToggleMaximized();
+        else
+            BeginMoveDrag(e);
+        e.Handled = true;
+    }
 
-            item.ToggleType = MenuItemToggleType.Radio;
-            item.IsChecked = string.Equals(region, vm.MatchVm.SelectedRegion, StringComparison.OrdinalIgnoreCase);
-        }
+    private void OnMinimizeClick(object? sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
+
+    private void OnMaximizeClick(object? sender, RoutedEventArgs e) => ToggleMaximized();
+
+    private void OnCloseClick(object? sender, RoutedEventArgs e) => Close();
+
+    private void ToggleMaximized() =>
+        WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+
+    // Swap the maximize glyph for "restore" while maximized — however that happened
+    // (button, double-click, or the OS itself, e.g. a Super+Up shortcut).
+    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+    {
+        base.OnPropertyChanged(change);
+        if (change.Property != WindowStateProperty || MaximizeIcon is null)
+            return;
+
+        UpdateFrameExtents();
+
+        var maximized = WindowState == WindowState.Maximized;
+        MaximizeIcon.Data = StreamGeometry.Parse(maximized ? RestoreGlyph : MaximizeGlyph);
+        ToolTip.SetTip(MaximizeButton, maximized ? "Restore" : "Maximize");
+    }
+
+    private void OnOptionsBackdropPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (DataContext is MainViewModel vm && vm.CloseOptionsCommand.CanExecute(null))
+            vm.CloseOptionsCommand.Execute(null);
+        e.Handled = true;
     }
 
     // Per-system pickers: start from the persisted root, if one is set, so picking a

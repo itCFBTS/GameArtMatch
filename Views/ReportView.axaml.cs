@@ -21,7 +21,7 @@ public partial class ReportView : UserControl
         // same technique (and same reason) as MatchView.axaml.cs's Ctrl+A/Space handling
         // on the results TreeView. DataContext is read lazily inside each lambda (at
         // keypress time, not here at construction time), since it isn't set yet when this
-        // constructor runs — ReportView is embedded in ReportWindow, whose DataContext is
+        // constructor runs — ReportView is hosted by MainWindow's Report page, whose DataContext is
         // assigned externally after construction.
         MissingList.AddHandler(InputElement.KeyDownEvent,
             (_, e) => HandleSelectAll(e, MissingList, (DataContext as ReportViewModel)?.Missing), RoutingStrategies.Tunnel);
@@ -77,7 +77,7 @@ public partial class ReportView : UserControl
     }
 
     // TopLevel.GetTopLevel(this) rather than a Window-typed field — this UserControl is
-    // hosted inside ReportWindow, but doesn't need to know that to reach StorageProvider.
+    // hosted inside MainWindow's Report page, but doesn't need to know that to reach StorageProvider.
     private async void OnExportClick(object? sender, RoutedEventArgs e)
     {
         if (DataContext is not ReportViewModel vm)

@@ -3,6 +3,18 @@
 Notable changes to GameArtMatch, release by release — written for users, not as
 a commit log. See `git log` or compare tags on GitHub for full detail.
 
+## Unreleased
+
+- New app icon.
+- Typography and styling overhaul.
+- Colour themes (Super 16-Bit, Mega 16-Bit, Handheld, Handheld Color,
+  Disc Station), chosen under Options > Appearance.
+- Menu bar replaced by sidebar; Report is now a page there, not a window.
+- Scan progress floats over the results while they load.
+- Options opens as a floating pane over the app instead of a separate window.
+- Custom title bar with built-in minimize, maximize, and close buttons.
+- Search box to filter results by ROM name (Ctrl+F).
+
 ## v0.5.0 - 2026-09-23
 
 - Tags are now sorted into categories (region, disc, revision, ...), and only the

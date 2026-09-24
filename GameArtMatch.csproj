@@ -4,10 +4,35 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- The full-colour icon, for the .exe itself: Windows Explorer, the Start menu,
+         shortcuts, pinned taskbar buttons. Running windows show the one-colour glyph
+         instead (MainWindow.axaml's Icon=). Both built by tools/icon/build_icon.py. -->
+    <ApplicationIcon>Assets/Icon/gameartmatch.ico</ApplicationIcon>
     <!-- Declares which platforms `dotnet publish -r <rid>` can target below; has no effect
          on plain `dotnet build` / `dotnet run`. -->
     <RuntimeIdentifiers>linux-x64;win-x64</RuntimeIdentifiers>
   </PropertyGroup>
+
+  <!-- Version comes from the nearest vX.Y.Z git tag (releases are tagged, e.g.
+       v0.5.0), so the About page can't drift from the release it was built from.
+       Runs before the SDK computes AssemblyVersion/FileVersion from $(Version). Falls
+       back to 0.0.0 when git or tags aren't available (e.g. a source zip). -->
+  <Target Name="SetVersionFromGitTag" BeforeTargets="GetAssemblyVersion;GenerateNuspec">
+    <Exec Command="git describe --tags --abbrev=0 --match &quot;v[0-9]*&quot;" ConsoleToMSBuild="true"
+          IgnoreExitCode="true" StandardOutputImportance="low" StandardErrorImportance="low"
+          WorkingDirectory="$(MSBuildProjectDirectory)">
+      <Output TaskParameter="ConsoleOutput" PropertyName="_GitTag" />
+      <Output TaskParameter="ExitCode" PropertyName="_GitTagExitCode" />
+    </Exec>
+    <PropertyGroup>
+      <_TagVersion Condition="'$(_GitTagExitCode)' == '0'">$([System.Text.RegularExpressions.Regex]::Match($(_GitTag), '\d+\.\d+\.\d+').Value)</_TagVersion>
+      <_TagVersion Condition="'$(_TagVersion)' == ''">0.0.0</_TagVersion>
+      <Version>$(_TagVersion)</Version>
+      <AssemblyVersion>$(_TagVersion)</AssemblyVersion>
+      <FileVersion>$(_TagVersion)</FileVersion>
+      <InformationalVersion>$(_TagVersion)</InformationalVersion>
+    </PropertyGroup>
+  </Target>
 
   <ItemGroup>
     <Folder Include="Models\" />

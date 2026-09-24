@@ -1,0 +1,16 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="360"
+             x:Class="GameArtMatch.Views.BackroomsView"
+             ClipToBounds="True" IsHitTestVisible="False">
+    <!-- IsHitTestVisible="False": decoration never takes the pointer. As the Match page
+         backdrop it sat under the carousel's gaps and swallowed the wheel there; the
+         noclip overlay still blocks clicks through its own panel's Background. -->
+    <!-- The Level 0 scene (Assets/Backrooms, rendered by tools/backrooms/export.py at a
+         native 320x180). BitmapInterpolationMode="None" = nearest-neighbour scaling, so
+         the pixel art stays crisp blocks at any size instead of blurring. Fills and crops
+         (UniformToFill) rather than letterboxing — it's a backdrop, not a picture. -->
+    <Image Name="Scene" Stretch="UniformToFill" RenderOptions.BitmapInterpolationMode="None" />
+</UserControl>

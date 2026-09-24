@@ -47,8 +47,10 @@ public partial class PreviewCarouselViewModel : ObservableObject
     private const double Gap = 4;
 
     /// <summary>Height fraction the current slide's box may take before width becomes
-    /// the limit — leaves room for both neighbours to actually show.</summary>
-    private const double CenterHeightFraction = 0.5;
+    /// the limit — leaves room for both neighbours to actually show. Public so MatchView
+    /// can cap the pane's width at the widest slot this allows (see
+    /// UpdatePreviewPaneMaxWidth) instead of letting it grow into empty space.</summary>
+    public const double CenterHeightFraction = 0.5;
 
     public ObservableCollection<PreviewSlide> Slides { get; } = [];
 

@@ -1,0 +1,52 @@
+<!--
+  SNES — warm charcoal with Super Famicom lavender. The default.
+  One of the app's colour themes (see Themes/ThemeCatalog.cs). Every theme file
+  defines exactly the same keys; ThemeService swaps the whole dictionary in and out of
+  Application.Resources, so views reference these with DynamicResource and never a hex
+  literal. To add a theme: copy this file, change the values, add one line to
+  ThemeCatalog.
+
+  Base variant: Dark — ThemeService sets Application.RequestedThemeVariant to it,
+  which decides Fluent's own control chrome (TextBox/ComboBox/ScrollBar backgrounds)
+  and whether Fluent puts black (Dark) or white (Light) text on AccentBrush-coloured
+  buttons. Fluent's accent itself is overridden from AccentBrush by ThemeService, so
+  it never follows the OS accent colour.
+
+  Contrast (WCAG): text 13.4:1, muted 4.8:1, accent 6.1:1 on the background; black on accent 7.7:1.
+-->
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Layers: window background, then one step "up" for panels (sidebars, Options
+         nav, floating cards), then hairlines. -->
+    <SolidColorBrush x:Key="BackgroundBrush" Color="#FF1E1E1C" />
+    <SolidColorBrush x:Key="SurfaceBrush" Color="#FF262420" />
+    <SolidColorBrush x:Key="BorderBrush" Color="#FF3A3833" />
+
+    <SolidColorBrush x:Key="ForegroundBrush" Color="#FFE8E6E3" />
+    <SolidColorBrush x:Key="ForegroundMutedBrush" Color="#FF8C8A85" />
+
+    <!-- SNES lavender-purple (the Super Famicom logo/buttons). Also fed to Fluent as its accent (buttons, selection, progress,
+         toggles, checkboxes — see ThemeService). -->
+    <SolidColorBrush x:Key="AccentBrush" Color="#FFA78BFA" />
+    <!-- Cyan secondary. Used by the identical-image row shading below. -->
+    <SolidColorBrush x:Key="AccentSecondaryBrush" Color="#FF4FD8EB" />
+
+    <SolidColorBrush x:Key="ErrorBrush" Color="#FFFF5C7A" />
+    <SolidColorBrush x:Key="WarningBrush" Color="#FFFFC94D" />
+
+    <!-- Alternating row tints for clusters of byte-identical candidate images (see
+         MatchCandidate.IsContentShadeA/B): the two accents at ~13% opacity, so the
+         pair always belongs to the theme and stays distinct from Warning/Error. -->
+    <SolidColorBrush x:Key="ContentGroupShadeABrush" Color="#224FD8EB" />
+    <SolidColorBrush x:Key="ContentGroupShadeBBrush" Color="#22A78BFA" />
+
+    <!-- Dimmed backdrop behind the floating Options pane, and the drop shadow under
+         floating cards (Options pane, scan-progress overlay). -->
+    <SolidColorBrush x:Key="ScrimBrush" Color="#99000000" />
+    <BoxShadows x:Key="FloatingShadow">0 12 40 0 #90000000</BoxShadows>
+
+    <!-- Whether the Match page shows the Backrooms scene (Assets/Backrooms, see
+         BackroomsView) faintly behind its empty state. Only Level 0 turns it on. -->
+    <x:Boolean x:Key="ShowBackroomsBackdrop">False</x:Boolean>
+</ResourceDictionary>

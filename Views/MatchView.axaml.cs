@@ -6,6 +6,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using GameArtMatch.Models;
@@ -29,6 +30,10 @@ public partial class MatchView : UserControl
     private readonly DispatcherTimer _zIndexTimer = new() { Interval = ZIndexSwapDelay };
     private PreviewCarouselViewModel? _subscribedCarousel;
 
+    /// <summary>Clears a clean rename's notice after a few seconds; one with skips or
+    /// failures is left up until dismissed. View-owned, like the other timers here.</summary>
+    private readonly DispatcherTimer _renameNoticeTimer = new() { Interval = TimeSpan.FromSeconds(6) };
+
     public MatchView()
     {
         InitializeComponent();
@@ -51,6 +56,13 @@ public partial class MatchView : UserControl
             ActivityDotsText.Text = ActivityDotsFrames[_activityDotsIndex];
         };
 
+        _renameNoticeTimer.Tick += (_, _) =>
+        {
+            _renameNoticeTimer.Stop();
+            if (DataContext is MatchViewModel { RenameNoticeHasProblems: false } vm)
+                vm.RenameNotice = null;
+        };
+
         _zIndexTimer.Tick += (_, _) =>
         {
             _zIndexTimer.Stop();
@@ -66,11 +78,29 @@ public partial class MatchView : UserControl
                 SubscribeCarousel(vm.Carousel);
             }
         };
+        // Level 0 glitch: the preview image jolts a couple of pixels as the ceiling light
+        // sputters, then snaps back. Backdrop only flickers while it's visible — i.e. in
+        // Level 0 — so this needs no theme check of its own.
+        Backdrop.BurstStarted += (_, _) => JoltCarousel();
+
         DetachedFromVisualTree += (_, _) =>
         {
             _zIndexTimer.Stop();
             _activityDotsTimer.Stop();
+            _renameNoticeTimer.Stop();
         };
+    }
+
+    private readonly Random _joltRandom = new();
+
+    private void JoltCarousel()
+    {
+        if (DataContext is not MatchViewModel { IsPreviewVisible: true, IsBusy: false })
+            return;
+
+        CarouselViewport.RenderTransform = new TranslateTransform(
+            _joltRandom.Next(2) == 0 ? -2 : 2, _joltRandom.Next(-1, 2));
+        DispatcherTimer.RunOnce(() => CarouselViewport.RenderTransform = null, TimeSpan.FromMilliseconds(110));
     }
 
     private void SubscribeCarousel(PreviewCarouselViewModel? carousel)
@@ -114,6 +144,23 @@ public partial class MatchView : UserControl
     {
         if (DataContext is MatchViewModel vm)
             vm.Carousel.SetViewport(e.NewSize.Width, e.NewSize.Height);
+        UpdatePreviewPaneMaxWidth(e.NewSize);
+    }
+
+    // The current slide is a square no wider than CenterHeightFraction of the viewport's
+    // height, so any pane width past that (plus the pane's own padding and scrollbar,
+    // i.e. whatever the pane has that the viewport doesn't) is just empty space beside
+    // the image — cap the star column there and let the results tree have the rest.
+    // Stable, not a feedback loop: narrowing the column changes the viewport's width,
+    // never its height, so the next SizeChanged computes the same cap.
+    private void UpdatePreviewPaneMaxWidth(Size viewport)
+    {
+        if (viewport.Height <= 0)
+            return;
+
+        var chrome = PreviewPane.Bounds.Width - viewport.Width;
+        ResultsLayout.ColumnDefinitions[2].MaxWidth =
+            viewport.Height * PreviewCarouselViewModel.CenterHeightFraction + Math.Max(0, chrome);
     }
 
     private void OnCarouselPointerWheelChanged(object? sender, PointerWheelEventArgs e)
@@ -150,6 +197,12 @@ public partial class MatchView : UserControl
         {
             case nameof(MatchViewModel.IsPreviewVisible):
                 SetPreviewPaneVisible(vm.IsPreviewVisible);
+                break;
+
+            case nameof(MatchViewModel.RenameNotice):
+                _renameNoticeTimer.Stop();
+                if (vm.RenameNotice is not null && !vm.RenameNoticeHasProblems)
+                    _renameNoticeTimer.Start();
                 break;
 
             case nameof(MatchViewModel.IsIndexing):
@@ -248,6 +301,22 @@ public partial class MatchView : UserControl
     {
         if (e.Source is MenuItem { DataContext: string folderPath } && DataContext is MatchViewModel vm)
             vm.IgnoreFolderCommand.Execute(folderPath);
+    }
+
+    private void OnSearchBoxKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (e.Key != Key.Escape || string.IsNullOrEmpty(SearchBox.Text))
+            return;
+
+        SearchBox.Text = "";
+        e.Handled = true;
+    }
+
+    /// <summary>For MainWindow's Ctrl+F.</summary>
+    public void FocusSearch()
+    {
+        SearchBox.Focus();
+        SearchBox.SelectAll();
     }
 
     private void OnOpenImageFilePathClick(object? sender, RoutedEventArgs e)

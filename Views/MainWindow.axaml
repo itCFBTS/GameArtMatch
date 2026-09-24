@@ -1,101 +1,264 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:GameArtMatch.ViewModels"
+        xmlns:views="using:GameArtMatch.Views"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="820" d:DesignHeight="680"
+        mc:Ignorable="d" d:DesignWidth="1060" d:DesignHeight="700"
         x:Class="GameArtMatch.Views.MainWindow"
         x:DataType="vm:MainViewModel"
-        Icon="/Assets/avalonia-logo.ico"
+        Icon="/Assets/Icon/gameartmatch-glyph.ico"
         Title="GameArtMatch"
-        Width="820" Height="680">
+        Width="1060" Height="700" MinWidth="720" MinHeight="480"
+        WindowDecorations="BorderOnly"
+        WindowDecorationsTheme="{StaticResource AppWindowDecorationsTheme}">
+    <!-- BorderOnly: no OS title bar — the sidebar header and the content column's top
+         strip stand in for it (drag to move, double-click to maximize, custom
+         minimize/maximize/close; see MainWindow.axaml.cs). The window keeps a resizable
+         border: on Linux/X11 Avalonia draws it (border, shadow, resize grips) and drops
+         the WM's frame; on Windows it's the native thin frame without a caption. -->
 
     <Design.DataContext>
         <vm:MainViewModel />
     </Design.DataContext>
 
-    <DockPanel>
-        <Menu DockPanel.Dock="Top">
-            <MenuItem Header="_File">
-                <MenuItem Header="_Rename Selected" Command="{Binding MatchVm.RenameFilesCommand}" />
-                <Separator />
-                <MenuItem Header="_Report..." Command="{Binding OpenReportCommand}" />
-                <MenuItem Header="_Options..." Command="{Binding OpenOptionsCommand}" />
-                <MenuItem Header="Open Settings _Folder" Click="OnOpenSettingsFolderClick" />
-                <Separator />
-                <MenuItem Header="_Exit" Click="OnExitClick" />
-            </MenuItem>
-            <MenuItem Header="_Select">
-                <MenuItem Header="Select Best Matched" Command="{Binding MatchVm.SelectBestMatchedCommand}" />
-                <MenuItem Header="Select Single Matches" Command="{Binding MatchVm.SelectSingleMatchesCommand}" />
-                <Separator />
-                <MenuItem Header="Deselect All" Command="{Binding MatchVm.DeselectAllCommand}" />
-            </MenuItem>
-            <MenuItem Header="_View">
-                <MenuItem Header="{Binding MatchVm.ExpandCollapseButtonText}" Command="{Binding MatchVm.ToggleExpandCollapseCommand}" />
-                <Separator />
-                <!-- Post-scan display filters — hide/show already-computed rows, don't
-                     re-run matching. File type only ever restricts ROMs; region restricts
-                     both ROMs and images, except English Translated, which always shows
-                     every image (see RegionFilter.Matches).
-                     File Type/Region are single-choice from a dynamic, scan-dependent
-                     list (MatchVm.AvailableFileTypes/AvailableRegions), so each is its own
-                     submenu of radio-checkable items rather than a combo box embedded in
-                     a menu — Click bubbles up from whichever auto-generated child was
-                     actually clicked (see OnFileTypeClick/OnRegionClick, which read
-                     e.Source for exactly that reason, same technique as MatchView's
-                     "Ignore Folder" submenu), and SubmenuOpened refreshes each child's
-                     checkmark against the current selection right before it's shown
-                     (see OnFileTypeSubmenuOpened/OnRegionSubmenuOpened) rather than via a
-                     live two-way binding, since nothing needs to reflect a change while
-                     the submenu isn't even open. The parent item's own header shows the
-                     current selection ("File Type: All") so it's visible without opening
-                     the submenu at all. -->
-                <MenuItem Header="{Binding MatchVm.SelectedFileType, StringFormat='File Type: {0}'}"
-                          ItemsSource="{Binding MatchVm.AvailableFileTypes}"
-                          Click="OnFileTypeClick" SubmenuOpened="OnFileTypeSubmenuOpened" />
-                <MenuItem Header="{Binding MatchVm.SelectedRegion, StringFormat='Region: {0}'}"
-                          ItemsSource="{Binding MatchVm.AvailableRegions}"
-                          Click="OnRegionClick" SubmenuOpened="OnRegionSubmenuOpened" />
-                <MenuItem Header="Exact Score Only" ToggleType="CheckBox"
-                          IsChecked="{Binding MatchVm.ShowOnlyExactScoreMatches, Mode=TwoWay}" />
-                <MenuItem Header="Hide Same Images" ToggleType="CheckBox"
-                          IsChecked="{Binding MatchVm.HideSameImages, Mode=TwoWay}" />
-            </MenuItem>
-            <MenuItem Header="_Help">
-                <MenuItem Header="_About" Command="{Binding ShowAboutCommand}" />
-            </MenuItem>
-        </Menu>
+    <!-- The menu bar's replacement for keyboard access (Alt+F-style mnemonics went with
+         it). Ctrl+Q (exit) is added from code-behind — it's a window action, not a
+         ViewModel command. -->
+    <Window.KeyBindings>
+        <KeyBinding Gesture="F5" Command="{Binding MatchVm.ToggleStartCancelCommand}" />
+        <KeyBinding Gesture="Ctrl+Enter" Command="{Binding MatchVm.RenameFilesCommand}" />
+        <KeyBinding Gesture="Ctrl+E" Command="{Binding MatchVm.ToggleExpandCollapseCommand}" />
+        <KeyBinding Gesture="Ctrl+OemComma" Command="{Binding OpenOptionsCommand}" />
+        <KeyBinding Gesture="Ctrl+B" Command="{Binding ToggleSidebarCommand}" />
+        <KeyBinding Gesture="Escape" Command="{Binding CloseOptionsCommand}" />
+    </Window.KeyBindings>
 
-        <!-- ROMs/Images pickers docked as their own top row now (root folders, extensions,
-             and "include subfolders" live in File > Options; the Report tab has moved to
-             its own window via File > Report — see OptionsWindow/ReportWindow). Report was
-             the only other tab, so the TabControl itself is gone now that Match is the only
-             thing left to host — a lone single-tab strip would've served no purpose. -->
-        <DockPanel>
-            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Left"
-                        Spacing="{DynamicResource SpaceLg}" Margin="16,10,0,10">
-                <Button Content="{Binding MatchVm.StartCancelButtonText}" Command="{Binding MatchVm.ToggleStartCancelCommand}"
-                        VerticalAlignment="Center" />
-                <StackPanel Orientation="Horizontal" Spacing="{DynamicResource SpaceXs}">
-                    <TextBlock Text="ROMs:" VerticalAlignment="Center" />
-                    <TextBox Text="{Binding Settings.RomsPathDisplayName}" IsReadOnly="True"
-                             Width="165" VerticalAlignment="Center" />
-                    <Button Content="..." Click="OnBrowseRomsClick" Padding="8,2" />
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Spacing="{DynamicResource SpaceXs}">
-                    <TextBlock Text="Images:" VerticalAlignment="Center" />
-                    <TextBox Text="{Binding Settings.ImagesPathDisplayName}" IsReadOnly="True"
-                             Width="165" VerticalAlignment="Center" />
-                    <Button Content="..." Click="OnBrowseImagesClick" Padding="8,2" />
-                </StackPanel>
-            </StackPanel>
+    <Window.Resources>
+        <!-- Fluent's drawn border/shadow, with the shadow width pinned to our own token so
+             X11WindowHints reports exactly what's drawn (see MainWindow.axaml.cs). -->
+        <ControlTheme x:Key="AppWindowDecorationsTheme" TargetType="WindowDrawnDecorations"
+                      BasedOn="{StaticResource {x:Type WindowDrawnDecorations}}">
+            <Setter Property="DefaultShadowThickness" Value="{DynamicResource WindowShadowThickness}" />
+        </ControlTheme>
+    </Window.Resources>
 
-            <!-- Hairline under the toolbar, separating it from the Match view below —
-                 same token as the vertical results/image-pane divider in MatchView. -->
-            <Border DockPanel.Dock="Top" Height="1" Background="{DynamicResource BorderBrush}" />
+    <Window.Styles>
+        <!-- Window buttons: small glyphs, no chrome until hovered (Claude-desktop style);
+             close hovers red like every OS's own close button. -->
+        <Style Selector="Button.caption">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Width" Value="36" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="Foreground" Value="{DynamicResource ForegroundMutedBrush}" />
+            <Style Selector="^ PathIcon">
+                <Setter Property="Width" Value="11" />
+                <Setter Property="Height" Value="11" />
+            </Style>
+        </Style>
+        <!-- Collapsed rail: nav rows center their initial/gear in the 32px-wide button. -->
+        <Style Selector="SplitView:closed Button.nav">
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="Padding" Value="0" />
+        </Style>
+        <Style Selector="Button.caption.close:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource ErrorBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource BackgroundBrush}" />
+        </Style>
+    </Window.Styles>
 
-            <ContentControl Content="{Binding MatchVm}" />
-        </DockPanel>
-    </DockPanel>
+    <Panel>
+        <!-- Sidebar in the order the app is actually used, top to bottom: pick folders ->
+             scan -> filter; the rename step lives at the foot of the Match page itself (see
+             MatchView). Replaces the old File/Select/View/Help menu bar and the ROMs/Images
+             toolbar. CompactInline + a 48px compact length collapses it (Ctrl+B) to an icon
+             rail: ☰, the page nav as initials, and the Options gear. Sources and Filters
+             hide outright rather than showing a clipped 48px sliver of their controls. -->
+        <SplitView IsPaneOpen="{Binding IsSidebarOpen}" DisplayMode="CompactInline"
+                   OpenPaneLength="236" CompactPaneLength="48"
+                   PaneBackground="{DynamicResource SurfaceBrush}">
+            <SplitView.Pane>
+                <DockPanel>
+                    <!-- Doubles as the title bar's left half: drag it to move the window. -->
+                    <DockPanel DockPanel.Dock="Top" Height="44" Margin="8,0" Background="Transparent"
+                               PointerPressed="OnTitleBarPointerPressed">
+                        <!-- The app glyph is the sidebar toggle (in place of a ☰), and the only
+                             branding in the window: a one-colour, Steam/Discord-style take on the
+                             app icon — solid cartridge with its groove, opening along the diagonal
+                             into a window with the striped sun on the horizon. Vector (24-unit
+                             grid, even-odd fill so the window is a hole), so it's sharp at any
+                             scaling. The full-colour pixel icon stays the taskbar/.exe icon. -->
+                        <Button DockPanel.Dock="Left" Classes="icon" Command="{Binding ToggleSidebarCommand}"
+                                ToolTip.Tip="Toggle sidebar (Ctrl+B)">
+                            <Viewbox Width="18" Height="18">
+                                <Path Width="24" Height="24" Fill="{DynamicResource AppGlyphBrush}"
+                                      Data="F0 M2,20 V8.5 Q2,5 5.5,5 H18.5 Q22,5 22,8.5 V20 Z M6,18.5 L18,6.5 H18.5 Q20.5,6.5 20.5,8.5 V18.5 Z M14.4,11.5 A3,3 0 0,1 19.6,11.5 Z M14.1,12.2 H19.9 L20,13 H14 Z M11.5,13 H20.5 V14 H10.5 Z M6,5 H7.2 V15 H6 Z" />
+                            </Viewbox>
+                        </Button>
+                    </DockPanel>
+
+                    <!-- Footer: Options (About and the settings folder live inside it now).
+                         Collapsed, it shrinks to a gear. -->
+                    <Border DockPanel.Dock="Bottom" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0"
+                            Height="{DynamicResource FooterHeight}" Padding="8,0">
+                        <Button Classes="nav" Command="{Binding OpenOptionsCommand}" ToolTip.Tip="Options (Ctrl+,)">
+                            <Panel>
+                                <TextBlock Text="Options" IsVisible="{Binding IsSidebarOpen}" />
+                                <PathIcon Width="16" Height="16" IsVisible="{Binding !IsSidebarOpen}"
+                                          Data="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z" />
+                            </Panel>
+                        </Button>
+                    </Border>
+
+                    <!-- Page nav stays when collapsed, down to its initials (M / R). -->
+                    <StackPanel DockPanel.Dock="Top" Margin="8,12,8,0" Spacing="2">
+                        <Button Classes="nav" Classes.active="{Binding IsMatchPageActive}"
+                                Command="{Binding ShowMatchPageCommand}" ToolTip.Tip="Match">
+                            <Panel>
+                                <TextBlock Text="Match" IsVisible="{Binding IsSidebarOpen}" />
+                                <TextBlock Text="M" IsVisible="{Binding !IsSidebarOpen}" />
+                            </Panel>
+                        </Button>
+                        <Button Classes="nav" Classes.active="{Binding IsReportPageActive}"
+                                Command="{Binding ShowReportPageCommand}" ToolTip.Tip="Report">
+                            <Panel>
+                                <TextBlock Text="Report" IsVisible="{Binding IsSidebarOpen}" />
+                                <TextBlock Text="R" IsVisible="{Binding !IsSidebarOpen}" />
+                            </Panel>
+                        </Button>
+                    </StackPanel>
+
+                    <ScrollViewer IsVisible="{Binding IsSidebarOpen}" HorizontalScrollBarVisibility="Disabled">
+                        <StackPanel Margin="8,0,8,12">
+                            <StackPanel Margin="4,0,0,0">
+                                <TextBlock Text="SOURCES" Classes="sectionHeading sidebarSection glitchable" />
+
+                                <TextBlock Text="ROMs" Classes="label fieldLabel glitchable" />
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource SpaceXs}">
+                                    <TextBox Text="{Binding Settings.RomsPathDisplayName}" IsReadOnly="True" Classes="data"
+                                             ToolTip.Tip="{Binding Settings.RomsPath}" />
+                                    <Button Grid.Column="1" Content="..." Click="OnBrowseRomsClick" Padding="8,0" />
+                                </Grid>
+
+                                <TextBlock Text="Images" Classes="label fieldLabel glitchable" Margin="0,10,0,4" />
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{DynamicResource SpaceXs}">
+                                    <TextBox Text="{Binding Settings.ImagesPathDisplayName}" IsReadOnly="True" Classes="data"
+                                             ToolTip.Tip="{Binding Settings.ImagesPath}" />
+                                    <Button Grid.Column="1" Content="..." Click="OnBrowseImagesClick" Padding="8,0" />
+                                </Grid>
+
+                                <Button Classes="accent" Content="{Binding MatchVm.StartCancelButtonText}"
+                                        Command="{Binding MatchVm.ToggleStartCancelCommand}"
+                                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                                        Margin="0,14,0,0" ToolTip.Tip="F5" />
+
+                                <!-- Post-scan display filters — hide/show already-computed rows,
+                                     don't re-run matching (see MatchViewModel.ApplyFilters). File
+                                     type only ever restricts ROMs; region restricts both ROMs and
+                                     images, except English Translated, which always shows every
+                                     image (see RegionFilter.Matches). Plain ComboBoxes over the
+                                     scan-dependent AvailableFileTypes/AvailableRegions lists — the
+                                     old View-menu radio submenus needed click/submenu-opened
+                                     handlers to fake the same thing. Disabled until a scan has
+                                     produced something to filter. -->
+                                <StackPanel IsEnabled="{Binding MatchVm.HasResults}">
+                                    <TextBlock Text="FILTERS" Classes="sectionHeading sidebarSection glitchable" />
+
+                                    <TextBlock Text="File type" Classes="label fieldLabel glitchable" />
+                                    <ComboBox ItemsSource="{Binding MatchVm.AvailableFileTypes}"
+                                              SelectedItem="{Binding MatchVm.SelectedFileType, Mode=TwoWay}"
+                                              HorizontalAlignment="Stretch" />
+
+                                    <TextBlock Text="Region" Classes="label fieldLabel glitchable" Margin="0,10,0,4" />
+                                    <ComboBox ItemsSource="{Binding MatchVm.AvailableRegions}"
+                                              SelectedItem="{Binding MatchVm.SelectedRegion, Mode=TwoWay}"
+                                              HorizontalAlignment="Stretch" />
+
+                                    <Grid ColumnDefinitions="*,Auto" Margin="0,12,0,0">
+                                        <TextBlock Text="Exact score only" Classes="glitchable" VerticalAlignment="Center" />
+                                        <ToggleSwitch Grid.Column="1" OnContent="{x:Null}" OffContent="{x:Null}" MinWidth="0"
+                                                      IsChecked="{Binding MatchVm.ShowOnlyExactScoreMatches, Mode=TwoWay}" />
+                                    </Grid>
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <TextBlock Text="Hide same images" Classes="glitchable" VerticalAlignment="Center" />
+                                        <ToggleSwitch Grid.Column="1" OnContent="{x:Null}" OffContent="{x:Null}" MinWidth="0"
+                                                      IsChecked="{Binding MatchVm.HideSameImages, Mode=TwoWay}" />
+                                    </Grid>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                    </ScrollViewer>
+                </DockPanel>
+            </SplitView.Pane>
+
+            <!-- Both pages stay alive and just swap visibility (see MainViewModel.
+                 IsReportPageActive) — swapping Content would have ViewLocator build a fresh
+                 MatchView, re-realizing the whole results tree, on every page flip. -->
+            <DockPanel>
+                <!-- Title strip, the right half of the title bar (the sidebar header is the
+                     left): just the window buttons — no page name, since the highlighted nav
+                     row already says which page this is. Empty space drags the window; a
+                     double-click toggles maximize. Same height as the sidebar header so the
+                     two read as one bar. -->
+                <!-- LastChildFill="False": the window buttons are the only child now, and a
+                     DockPanel's last child otherwise fills the space and ignores Dock="Right". -->
+                <DockPanel DockPanel.Dock="Top" Height="44" Background="Transparent" LastChildFill="False"
+                           PointerPressed="OnTitleBarPointerPressed">
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Margin="0,0,6,0" Spacing="2">
+                        <Button Classes="caption" Click="OnMinimizeClick" ToolTip.Tip="Minimize">
+                            <PathIcon Data="M4,11H20V13H4Z" />
+                        </Button>
+                        <Button Classes="caption" Click="OnMaximizeClick" Name="MaximizeButton" ToolTip.Tip="Maximize">
+                            <PathIcon Name="MaximizeIcon" Data="M4,4H20V20H4V4M6,6V18H18V6H6Z" />
+                        </Button>
+                        <Button Classes="caption close" Click="OnCloseClick" ToolTip.Tip="Close">
+                            <PathIcon Data="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
+                        </Button>
+                    </StackPanel>
+                </DockPanel>
+
+                <Panel>
+                    <ContentControl Content="{Binding MatchVm}" IsVisible="{Binding IsMatchPageActive}" />
+                    <ContentControl Content="{Binding ReportVm}" IsVisible="{Binding IsReportPageActive}" />
+                </Panel>
+            </DockPanel>
+        </SplitView>
+
+        <!-- Floating Options pane (Claude-desktop-settings style): an in-window card
+             over a dimmed backdrop instead of a separate OS window. Dismissed by the
+             corner button, Esc (see KeyBindings above), or a click on the backdrop.
+             MaxWidth/MaxHeight cap it on big windows; the Margin keeps a dimmed frame
+             around it on small ones. Tab cycles inside the card rather than wandering
+             into the app underneath. -->
+        <Panel IsVisible="{Binding IsOptionsOpen}">
+            <Border Background="{DynamicResource ScrimBrush}" PointerPressed="OnOptionsBackdropPressed" />
+            <Panel MaxWidth="820" MaxHeight="580" Margin="48"
+                   KeyboardNavigation.TabNavigation="Cycle">
+                <!-- Shadow on its own layer — the card itself clips to its rounded corners. -->
+                <Border CornerRadius="{DynamicResource CornerRadiusLarge}" Background="{DynamicResource BackgroundBrush}"
+                        BoxShadow="{DynamicResource FloatingShadow}" />
+                <views:OptionsView DataContext="{Binding OptionsVm}" />
+                <Button Classes="icon" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,14,14,0"
+                        Command="{Binding CloseOptionsCommand}" ToolTip.Tip="Close (Esc)">
+                    <PathIcon Width="14" Height="14"
+                              Data="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
+                </Button>
+            </Panel>
+        </Panel>
+
+        <!-- The noclip transition (MainWindow.axaml.cs PlayNoclipAsync): full-window, on
+             top of everything including the Options pane. Opacity is driven by hand —
+             a fluorescent stutter, then a fade — so no Transitions here. Background
+             swallows clicks while it's up. -->
+        <Panel Name="NoclipOverlay" IsVisible="False" Opacity="0" Background="{DynamicResource BackroomsCardBrush}">
+            <views:BackroomsView />
+            <Border VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,48"
+                    Padding="20,14" CornerRadius="{DynamicResource CornerRadiusBase}"
+                    Background="{DynamicResource BackroomsCardBrush}">
+                <TextBlock Name="NoclipCaption" Classes="brand" Foreground="{DynamicResource BackroomsInkBrush}" />
+            </Border>
+        </Panel>
+    </Panel>
 </Window>

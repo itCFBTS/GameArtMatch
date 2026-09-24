@@ -49,11 +49,13 @@ sealed class Program
 #if DEBUG
             .WithDeveloperTools()
 #endif
-            // Bundled font (see Assets/Fonts, Tokens.axaml's FontFamilyBase) as the app's
-            // implicit default, same role Avalonia.Fonts.Inter's WithInterFont() played before.
+            // Share Tech is the app's default (interface) font — buttons, labels, help
+            // text. It and the pixel and mono fonts are all bundled in Assets/Fonts; the
+            // pixel and mono ones are applied per role by the text styles in Styles.axaml
+            // (see Tokens.axaml's font tokens).
             .With(new FontManagerOptions
             {
-                DefaultFamilyName = "avares://GameArtMatch/Assets/Fonts#Share Tech Mono"
+                DefaultFamilyName = "avares://GameArtMatch/Assets/Fonts#Share Tech"
             })
             .LogToTrace();
 

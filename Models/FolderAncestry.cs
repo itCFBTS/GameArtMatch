@@ -5,7 +5,7 @@ using System.IO;
 namespace GameArtMatch.Models;
 
 /// <summary>Shared folder-path helpers backing "Ignore Folder" everywhere it appears
-/// (MatchView's ROM rows, the Report window's Missing list) and the scan-time filtering
+/// (MatchView's ROM rows, the Report page's Missing list) and the scan-time filtering
 /// that actually excludes an ignored folder's contents (MatchingService.ListRoms).</summary>
 public static class FolderAncestry
 {

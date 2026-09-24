@@ -52,4 +52,8 @@ public sealed class PersistedSettings
     /// <summary>Full folder paths the user has explicitly ignored — see
     /// MatchSettings.IgnoredRomFolders.</summary>
     public List<string>? IgnoredRomFolders { get; set; }
+
+    /// <summary>Id of the chosen colour theme (see Themes/ThemeCatalog.cs). Null or an
+    /// unknown id means the default theme.</summary>
+    public string? ThemeId { get; set; }
 }
