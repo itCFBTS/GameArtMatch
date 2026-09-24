@@ -138,11 +138,11 @@
             </Border>
 
             <Panel>
-                <!-- The preview pane's two right-hand columns (gap + pane) are collapsed to zero
-                     width from code-behind whenever nothing is selected, so the results tree
-                     gets the full width until there's actually art to show (see
-                     MatchView.SetPreviewPaneVisible). .scanning blurs it behind the overlay. -->
-                <Grid x:Name="ResultsLayout" ColumnDefinitions="2*,8,1*" Classes.scanning="{Binding IsMatchRunning}">
+                <!-- Results tree "*"; the gap and preview-pane columns are sized from code-behind:
+                     zero while nothing is selected, then a fixed pane width that doesn't change
+                     when the window or sidebar does (see MatchView.SetPreviewPaneVisible /
+                     UpdatePreviewPaneWidth). .scanning blurs it behind the overlay. -->
+                <Grid x:Name="ResultsLayout" ColumnDefinitions="*,0,0" Classes.scanning="{Binding IsMatchRunning}">
                     <Grid.Transitions>
                         <Transitions>
                             <EffectTransition Property="Effect" Duration="0:0:0.25" />
@@ -247,8 +247,10 @@
                                                                behaviors:MarqueeOnHoverBehavior.IsEnabled="True" />
                                                 </Canvas>
                                             </Border>
+                                            <!-- Right margin keeps it off the row's edge (and clear of the
+                                                 tree's overlay scrollbar). -->
                                             <TextBlock Grid.Column="1" Text=" · Same as above" VerticalAlignment="Center"
-                                                       Classes="label"
+                                                       Classes="label" Margin="0,0,12,0"
                                                        IsVisible="{Binding IsSameAsAbove}" />
                                         </Grid>
                                     </Grid>

@@ -83,6 +83,9 @@ public partial class MatchView : UserControl
         // Level 0 — so this needs no theme check of its own.
         Backdrop.BurstStarted += (_, _) => JoltCarousel();
 
+        // The pane's width cap depends on the results area's width (narrow windows).
+        ResultsLayout.SizeChanged += (_, _) => UpdatePreviewPaneWidth();
+
         DetachedFromVisualTree += (_, _) =>
         {
             _zIndexTimer.Stop();
@@ -144,23 +147,43 @@ public partial class MatchView : UserControl
     {
         if (DataContext is MatchViewModel vm)
             vm.Carousel.SetViewport(e.NewSize.Width, e.NewSize.Height);
-        UpdatePreviewPaneMaxWidth(e.NewSize);
+        _viewportHeight = e.NewSize.Height;
+        UpdatePreviewPaneWidth();
     }
 
-    // The current slide is a square no wider than CenterHeightFraction of the viewport's
-    // height, so any pane width past that (plus the pane's own padding and scrollbar,
-    // i.e. whatever the pane has that the viewport doesn't) is just empty space beside
-    // the image — cap the star column there and let the results tree have the rest.
-    // Stable, not a feedback loop: narrowing the column changes the viewport's width,
-    // never its height, so the next SizeChanged computes the same cap.
-    private void UpdatePreviewPaneMaxWidth(Size viewport)
+    private double _viewportHeight;
+    private double _previewPaneWidth = 280;
+
+    /// <summary>Upper bound on the pane's share of the results area, so on a narrow window
+    /// the results tree is never squeezed out by the fixed-width pane.</summary>
+    private const double MaxPreviewPaneShare = 0.45;
+
+    // The pane gets a FIXED width, and the results tree ("*") absorbs every width change —
+    // collapsing the sidebar or resizing the window leaves the carousel alone. The width
+    // is what the current slide can use: a square CenterHeightFraction of the viewport's
+    // height, plus the pane's fixed chrome (padding, scrollbar and its margin). It
+    // depends only on heights and constants, never on a width this layout produces, so
+    // setting it can't feed back into itself. (The previous version capped a star column
+    // using PreviewPane.Bounds.Width - viewport.Width, read mid-layout from two different
+    // passes; the widths ping-ponged, and every layout pass — even a hover — re-kicked it,
+    // jittering the images.)
+    private void UpdatePreviewPaneWidth()
     {
-        if (viewport.Height <= 0)
+        if (_viewportHeight <= 0)
             return;
 
-        var chrome = PreviewPane.Bounds.Width - viewport.Width;
-        ResultsLayout.ColumnDefinitions[2].MaxWidth =
-            viewport.Height * PreviewCarouselViewModel.CenterHeightFraction + Math.Max(0, chrome);
+        var scrollBar = this.TryFindResource("ScrollBarSize", out var size) && size is double d ? d : 12;
+        var chrome = PreviewPane.Padding.Left + PreviewPane.Padding.Right + 4 + scrollBar;
+        var width = _viewportHeight * PreviewCarouselViewModel.CenterHeightFraction + chrome;
+        if (ResultsLayout.Bounds.Width > 0)
+            width = Math.Min(width, ResultsLayout.Bounds.Width * MaxPreviewPaneShare);
+        width = Math.Round(width);
+
+        if (Math.Abs(width - _previewPaneWidth) < 1)
+            return;
+        _previewPaneWidth = width;
+        if (DataContext is MatchViewModel { IsPreviewVisible: true })
+            ResultsLayout.ColumnDefinitions[2].Width = new GridLength(width);
     }
 
     private void OnCarouselPointerWheelChanged(object? sender, PointerWheelEventArgs e)
@@ -220,15 +243,16 @@ public partial class MatchView : UserControl
         }
     }
 
-    // The preview Border's own IsVisible is bound in XAML, but a star-sized Grid column
-    // keeps its share of the width even when its only child is collapsed — so the gap
-    // and pane columns are zeroed here too, letting the results tree take the full
-    // width until a ROM or candidate row is actually highlighted.
+    // The preview Border's own IsVisible is bound in XAML, but its column keeps its
+    // width even when its only child is collapsed — so the gap and pane columns are
+    // zeroed here too, letting the results tree take the full width until a ROM or
+    // candidate row is actually highlighted. Visible, the pane gets its fixed width (see
+    // UpdatePreviewPaneWidth).
     private void SetPreviewPaneVisible(bool visible)
     {
         var columns = ResultsLayout.ColumnDefinitions;
         columns[1].Width = visible ? new GridLength(8) : new GridLength(0);
-        columns[2].Width = visible ? new GridLength(1, GridUnitType.Star) : new GridLength(0);
+        columns[2].Width = visible ? new GridLength(_previewPaneWidth) : new GridLength(0);
     }
 
     private void OnResultsTreeKeyDown(object? sender, KeyEventArgs e)

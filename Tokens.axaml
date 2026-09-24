@@ -37,11 +37,6 @@
          or edge snapping lands off the visible border. -->
     <Thickness x:Key="WindowShadowThickness">8</Thickness>
 
-    <!-- The sidebar's app glyph (MainWindow): a one-colour, Steam/Discord-style version
-         of the app icon, in the icon's own cartridge-plastic grey on every theme. Theme-
-         independent by choice; faint on the light themes (~1.7:1) — if that ever needs
-         fixing, give each theme its own value (or an outline) instead. -->
-    <SolidColorBrush x:Key="AppGlyphBrush" Color="#FF969DA4" />
 
     <!-- The noclip transition's caption card (MainWindow's NoclipOverlay). Fixed, not
          per-theme: the theme swaps underneath it mid-transition, and the card belongs to
